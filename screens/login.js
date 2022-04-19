@@ -1,12 +1,15 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import React, {useState,useContext} from 'react';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 
 
 const LoginPage = ({navigation}) => {
 
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
+
+    const {login} = useContext(AuthContext);
 
 
   return (
@@ -46,6 +49,9 @@ const LoginPage = ({navigation}) => {
           title="LOGIN"
           color="#1185AA"
           accessibilityLabel="Learn more about this purple button"
+          onPress={()=> {
+            login(email, password);
+          }}
         />
       </SafeAreaView>
       <SafeAreaView style={styles.buttonSafeAreaStyle}>
@@ -110,7 +116,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
     color: '#1185AA',
-  }
+  },
 
 });
 
