@@ -1,16 +1,28 @@
 /* eslint-disable prettier/prettier */
-import React, {useState,useContext} from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button } from 'react-native';
-import { AuthContext } from '../context/AuthContext';
-
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const LoginPage = ({navigation}) => {
 
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
 
-    const {login} = useContext(AuthContext);
+    loginFunction = async () => {
+      await fetch('https://beta.centaurmd.com/api/login', {
+        method: 'POST',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({"email_address" : email, "password": password})
+      }).then(res => res.json())
+      .then(resData => {
+        console.log(resData);
+      });
+    }
 
+//  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
   return (
     <View style={styles.container}>
@@ -28,20 +40,27 @@ const LoginPage = ({navigation}) => {
         </Text>
       </SafeAreaView>
       <SafeAreaView style={styles.inputSafeAreaStyle}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your Email"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={text_email => setEmail(text_email)}
-        />
-        <TextInput
-          style={styles.input}
-          secureTextEntry
-          placeholder="Enter your Password"
-          value={password}
-          onChangeText={text_password => setPassword(text_password)}
-        />
+
+        <View style={styles.inputContainer}>
+          <Icon name="email-outline" size={20} color="gray" style={{marginRight: 5}}  />
+          <TextInput
+            placeholder="Enter your Email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={text_email => setEmail(text_email)}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Icon name="lock-outline" size={20} color="gray" style={{marginRight: 5}}  />
+          <TextInput
+            secureTextEntry
+            placeholder="Enter your Password"
+            value={password}
+            onChangeText={text_password => setPassword(text_password)}
+          />
+        </View>
+      
       </SafeAreaView>
       <SafeAreaView style={styles.buttonSafeAreaStyle}>
         <Button
@@ -49,9 +68,7 @@ const LoginPage = ({navigation}) => {
           title="LOGIN"
           color="#1185AA"
           accessibilityLabel="Learn more about this purple button"
-          onPress={()=> {
-            login(email, password);
-          }}
+          onPress={loginFunction}
         />
       </SafeAreaView>
       <SafeAreaView style={styles.buttonSafeAreaStyle}>
@@ -72,6 +89,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
+  inputContainer: {
+    flexDirection: 'row',
+    height: 50,
+    marginVertical: 10,
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#1185AA',
+    borderRadius: 5,
+    paddingHorizontal: 15, 
+    alignItems: 'center',
+  },
   logoSafeAreaStyle:{
     height: 300,
     display: 'flex',
@@ -90,7 +118,7 @@ const styles = StyleSheet.create({
     height: 150,
   },
   input: {
-    height: 40,
+    height: 50,
     margin: 12,
     borderWidth: 1,
     borderColor: '#1185AA',
