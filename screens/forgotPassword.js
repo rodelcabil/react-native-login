@@ -1,4 +1,5 @@
 /* eslint-disable prettier/prettier */
+/* eslint-disable no-undef */
 import React, {useState} from 'react';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,7 +10,7 @@ const ForgotPasswordPage = () => {
 
 
     return (
-        <View style={styles.container}>
+          <View style={styles.container}>
             <SafeAreaView style={styles.logoSafeAreaStyle}>
                 <Image
                 style={styles.logoImg}

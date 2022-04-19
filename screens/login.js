@@ -1,35 +1,39 @@
+/* eslint-disable no-undef */
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const LoginPage = ({navigation}) => {
+const LoginPage = ({ navigation }) => {
 
-    const [email, setEmail] = useState(null);
-    const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
 
-    loginFunction = async () => {
-      await fetch('https://beta.centaurmd.com/api/login', {
-        method: 'POST',
-        headers:{
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({"email_address" : email, "password": password})
-      }).then(res => res.json())
+  loginFunction = async () => {
+    await fetch('https://beta.centaurmd.com/api/login', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ "email_address": email, "password": password }),
+    }).then(res => res.json())
       .then(resData => {
-        console.log(resData);
+        console.log("my data",resData);
+        // navigation.navigate('HomePage');
+      }).catch(e => {
+        // ToastAndroid.show("Invalid Login Credentials !", ToastAndroid.SHORT);
       });
-    }
+  };
 
-//  jayar@centaurmarketing.co H1stmj8e4s62xz6c
+  //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.logoSafeAreaStyle}>
         <Image
           style={styles.logoImg}
-          source ={{
+          source={{
             uri: 'https://media.discordapp.net/attachments/965809658054971413/965812475406725151/unknown.png',
           }}
         />
@@ -42,7 +46,7 @@ const LoginPage = ({navigation}) => {
       <SafeAreaView style={styles.inputSafeAreaStyle}>
 
         <View style={styles.inputContainer}>
-          <Icon name="email-outline" size={20} color="gray" style={{marginRight: 5}}  />
+          <Icon name="email-outline" size={20} color="gray" style={{ marginRight: 5 }} />
           <TextInput
             placeholder="Enter your Email"
             keyboardType="email-address"
@@ -52,7 +56,7 @@ const LoginPage = ({navigation}) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Icon name="lock-outline" size={20} color="gray" style={{marginRight: 5}}  />
+          <Icon name="lock-outline" size={20} color="gray" style={{ marginRight: 5 }} />
           <TextInput
             secureTextEntry
             placeholder="Enter your Password"
@@ -60,7 +64,7 @@ const LoginPage = ({navigation}) => {
             onChangeText={text_password => setPassword(text_password)}
           />
         </View>
-      
+
       </SafeAreaView>
       <SafeAreaView style={styles.buttonSafeAreaStyle}>
         <Button
@@ -73,7 +77,7 @@ const LoginPage = ({navigation}) => {
       </SafeAreaView>
       <SafeAreaView style={styles.buttonSafeAreaStyle}>
         <Text
-          onPress={() =>{
+          onPress={() => {
             navigation.navigate('ForgotPasswordPage');
           }}
           style={styles.textSmall}>
@@ -97,10 +101,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#1185AA',
     borderRadius: 5,
-    paddingHorizontal: 15, 
+    paddingHorizontal: 15,
     alignItems: 'center',
   },
-  logoSafeAreaStyle:{
+  logoSafeAreaStyle: {
     height: 300,
     display: 'flex',
     padding: 20,
@@ -113,7 +117,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#1185AA',
   },
-  logoImg:{
+  logoImg: {
     width: 150,
     height: 150,
   },
@@ -127,16 +131,16 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
-  inputSafeAreaStyle:{
+  inputSafeAreaStyle: {
     paddingLeft: 20,
     paddingRight: 20,
   },
-  buttonSafeAreaStyle:{
+  buttonSafeAreaStyle: {
     paddingTop: 10,
     paddingLeft: 30,
     paddingRight: 30,
   },
-  button:{
+  button: {
     borderRadius: 5,
   },
   textSmall: {
