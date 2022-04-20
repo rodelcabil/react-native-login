@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 import { Agenda } from 'react-native-calendars';
 import AppBar from './ReusableComponents/AppBar';
-
+import {showNotification, handleScheduleNotification, handleCancel} from './ReusableComponents/notification.android' 
 const Home = () => {
 
     const [items, setItems] = useState({
@@ -29,6 +29,12 @@ const Home = () => {
     return (
         <View style={styles.container}>
             <AppBar/>
+            <Button
+                  title="Push Notification"
+                  color="#28A745"
+                  accessibilityLabel="Learn more about this purple button"
+                  onPress={() => showNotification("Hi!", "WELCOME")}
+                />
             <Agenda
                 items={items}
                 renderItem={renderItems}
