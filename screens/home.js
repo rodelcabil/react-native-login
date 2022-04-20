@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Agenda } from 'react-native-calendars'
+import { Agenda } from 'react-native-calendars';
+import AppBar from './ReusableComponents/AppBar';
 
 const Home = () => {
 
@@ -27,6 +28,7 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
+            <AppBar/>
             <Agenda
                 items={items}
                 renderItem={renderItems}

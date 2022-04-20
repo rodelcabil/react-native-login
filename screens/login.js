@@ -2,8 +2,20 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const LoginPage = ({ navigation }) => {
+
+  const tokenLogin = async() => {
+    const value = await AsyncStorage.getItem('token')
+    if(value !== null){
+      navigation.navigate('HomePage');
+      console.log("still logged in");
+    }
+  }
+
+  tokenLogin();
 
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
@@ -22,6 +34,7 @@ const LoginPage = ({ navigation }) => {
         console.log(resData);
 
         if(resData.status === 'success' && (email !== '' || password !== '')){
+          storeToken();
           navigation.navigate('HomePage');
           setEmail(null);
           setPassword(null);
@@ -33,15 +46,16 @@ const LoginPage = ({ navigation }) => {
       });
   };
 
+  const storeToken = async() =>{
+    await AsyncStorage.setItem('token', email);
+  };
+
   //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
   return (
-
-    
     <KeyboardAvoidingView
         style={{flex: 1}}
         enabled={true}
-      
       >
       <ScrollView style={{backgroundColor: '#fff'}}>
         <View style={styles.blueContainer}>
@@ -148,6 +162,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textBig: {
+    marginTop: 10,
+    marginBottom: 10,
     fontSize: 25,
     textAlign: 'center',
     fontWeight: '500',
