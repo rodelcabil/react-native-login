@@ -33,9 +33,13 @@ const Home = () => {
                 items={items}
                 renderItem={renderItems}
                 selected={'2022-04-25'}
+                theme={{
+                    selectedDayBackgroundColor: '#075DA7',
+                }}
             />
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
