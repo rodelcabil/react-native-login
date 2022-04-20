@@ -1,13 +1,23 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable no-undef */
 import React, {useState} from 'react';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, } from 'react-native';
+import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ForgotPasswordPage = () => {
 
     const [email, setEmail] = useState(null);
 
+    const showToastWithGravityAndOffset = () => {
+      ToastAndroid.showWithGravityAndOffset(
+        "A wild toast appeared!",
+        ToastAndroid.LONG,
+        ToastAndroid.BOTTOM,
+        25,
+        50
+      );
+    };
+  
 
     return (
           <View style={styles.container}>
@@ -50,7 +60,7 @@ const ForgotPasswordPage = () => {
                     title="SUBMIT"
                     color="#1185AA"
                     accessibilityLabel="Learn more about this purple button"
-                    onPress={loginFunction}
+                    onPress={ () => showToastWithGravityAndOffset() }
                 />
             </SafeAreaView>
 

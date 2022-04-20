@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Toast from 'react-native-simple-toast';
 
 const LoginPage = ({ navigation }) => {
 
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  
 
   loginFunction = async () => {
     await fetch('https://beta.centaurmd.com/api/login', {
@@ -19,10 +21,17 @@ const LoginPage = ({ navigation }) => {
       body: JSON.stringify({ "email_address": email, "password": password }),
     }).then(res => res.json())
       .then(resData => {
-        console.log("my data",resData);
-        // navigation.navigate('HomePage');
-      }).catch(e => {
-        // ToastAndroid.show("Invalid Login Credentials !", ToastAndroid.SHORT);
+        console.log(resData);
+
+        if(resData.status === 'success' && (email !== '' || password !== '')){
+          navigation.navigate('HomePage');
+          setEmail(null);
+          setPassword(null);
+        }
+        else{
+          alert(resData.message)
+        }
+      
       });
   };
 

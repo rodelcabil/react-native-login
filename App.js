@@ -21,7 +21,7 @@ const App = () => {
         <Stack.Screen
           name="ForgotPasswordPage"
           component={ForgotPasswordPage}
-          options={{headerShown: false}}
+          
         />
          <Stack.Screen
           name="HomePage"
