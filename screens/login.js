@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , ScrollView} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
