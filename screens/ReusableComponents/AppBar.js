@@ -9,9 +9,7 @@ import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 const AppBar = () => {
      
     const [visible, setVisible] = useState(false);
-
     const hideMenu = () => setVisible(false);
-  
     const showMenu = () => setVisible(true);
 
     const navigation = useNavigation(); 
