@@ -6,13 +6,10 @@ import { Agenda } from 'react-native-calendars';
 import AppBar from './ReusableComponents/AppBar';
 import {showNotification, handleScheduleNotification, handleCancel} from './ReusableComponents/notification.android' 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import axios from 'axios';
 
 const Home = ({ navigation }) => {
-
-  
-   
 
     const [items, setItems] = useState({
         '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
@@ -22,25 +19,21 @@ const Home = ({ navigation }) => {
         '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
     });
 
-    const getData = async () =>{
-        // await fetch('https://beta.centaurmd.com/api/user-info', {
-        //     method: 'GET',
-        //     headers: {
-        //       'Accept': 'application/json',
-        //       'Content-Type': 'application/json'
-        //     },
-        //   }).then(res => res.json())
-        //     .then(resData => {
-        //       console.log(resData);
-        //     });
+    
+    const [dayGet, setDay] = useState(null);
 
-        await axios.get('https://beta.centaurmd.com/api/user-info').then( res =>{
-            console.log('HELLO',res)
-        }).catch(e =>{
-            console.log('error',e)
-        })
+        const getData = async () =>{
+            await fetch('https://beta.centaurmd.com/api/user-info', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            }).then(res => res.json())
+                .then(resData => {
+                console.log(resData);
+                });
         }
-
     
       const renderItems = (item) => {
         return (
@@ -81,8 +74,9 @@ const Home = ({ navigation }) => {
               />
             <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
             <Button
-                  title="Add Event"
+                  title="Add Schedule"
                   color="#28A745"
+                  onPress={() => {navigation.navigate('Add Schedule', { getdate: dayGet});} }
             />
         </View>
         );
@@ -105,7 +99,7 @@ const Home = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <AppBar title={"My Schedule"} showMenuIcon={true}/>
-            <View style={styles.types}>
+            <View style={styles.typesContainer}>
                 <View style={styles.types}>
                     <View style={styles.circleOrange}></View>
                     <Text style={styles.text2}>CONSULTS</Text>
@@ -135,6 +129,11 @@ const Home = ({ navigation }) => {
                 items={items}
                 renderItem={renderItems}
                 renderEmptyData={renderEmptyDate}
+                onDayPress={day => {
+                    console.log('day pressed', day);
+                    setDay(day.dateString);
+                    console.log(dayGet);
+                }}
                 selected={Date.now()}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
@@ -248,7 +247,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         display: 'flex',
 
-    } 
+    },
+    typesContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        display: 'flex',
+        width: wp('20.5%'),
+
+    }  
 });
 
 export default Home;

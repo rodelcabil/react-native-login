@@ -18,6 +18,20 @@ const AppBar = ({title, showMenuIcon}) => {
         navigation.navigate('LoginPage')
     }
 
+    getUserInfo = async () => {
+        await fetch('https://beta.centaurmd.com/api/user-info', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        }).then(res => res.json())
+        .then(resData => {
+            console.log(resData);
+        });
+    };
+
+
     return (
         <View style={styles.container}>
             <SafeAreaView>

@@ -7,6 +7,7 @@ import LoginPage from './screens/login';
 import ForgotPasswordPage from './screens/forgotPassword';
 import Home from './screens/home';
 import ViewSchedule from './screens/viewSchedule';
+import AddSchedule from './screens/addSchedule';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ const App = () => {
         <Stack.Screen
           name="View Schedule"
           component={ViewSchedule}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Add Schedule"
+          component={AddSchedule}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
