@@ -72,7 +72,7 @@ const LoginPage = ({ navigation }) => {
             <View style={styles.whiteContainer}>
               <SafeAreaView >
                 <Text style={styles.textBig}>
-                  SIGN IN
+                 LOGIN TO YOUR ACCOUNT
                 </Text>
               </SafeAreaView>
               <SafeAreaView style={styles.inputSafeAreaStyle}>
@@ -101,7 +101,7 @@ const LoginPage = ({ navigation }) => {
               <SafeAreaView style={styles.buttonSafeAreaStyle}>
                 <Button
                   style={styles.button}
-                  title="LOGIN"
+                  title="SIGN IN"
                   color="#28A745"
                   accessibilityLabel="Learn more about this purple button"
                   onPress={loginFunction}
@@ -115,6 +115,29 @@ const LoginPage = ({ navigation }) => {
                   style={styles.textSmall}>
                   Forgot Password?
                 </Text>
+              </SafeAreaView>
+
+              <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{flex: 1, height: 1, backgroundColor: 'grey', marginRight: 10}} />
+                <View>
+                  <Text style={styles.textOr}>
+                    OR
+                  </Text>
+                </View>
+                <View style={{flex: 1, height: 1, backgroundColor: 'grey', marginLeft: 10}} />
+              </View>
+              </SafeAreaView>
+                  
+              <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                <Button
+                  style={styles.button}
+                  title="SIGN IN WITH GOOGLE"
+                  color="#ff2e44"
+                  accessibilityLabel="Learn more about this purple button"
+                
+                />
               </SafeAreaView>
             </View>
 
@@ -155,7 +178,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   logoSafeAreaStyle: {
-    height: 350,
+    height: 250,
     display: 'flex',
     padding: 20,
     alignItems: 'center',
@@ -200,6 +223,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '500',
     color: '#ff2e44',
+  },
+  textOr: {
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '500',
+    color: 'grey',
+    marginVertical: 10
   },
 
 });

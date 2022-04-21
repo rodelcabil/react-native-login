@@ -9,6 +9,8 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const [userInfo, setUserInfo] = useState(false);
 
+   
+
     const login = (email_address, password) => {
         axios.post(`${BASE_URL}`,{
             email_address,
