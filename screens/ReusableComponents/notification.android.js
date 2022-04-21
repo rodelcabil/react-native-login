@@ -4,16 +4,19 @@ const showNotification = (title, message) => {
     PushNotification.localNotification({
         title: title,
         message: message,
-        channelId: "321",
+        channelId: "123",
     });
 };
 
-const handleScheduleNotification = (title, message) => {
+const handleScheduleNotification = (title, message, date) => {
     PushNotification.localNotificationSchedule({
         title: title,
         message: message,
-        channelId: "321",
+        channelId: "123",
+        //date: new Date(Date.now() + 5 * 1000), 
+        //3600
         date: new Date(Date.now() + 5 * 1000), 
+        allowWhileIdle: true,
     });
 };
 

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Button, Image} from 'react-native';
 import {Card, Avatar} from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import AppBar from './ReusableComponents/AppBar';
@@ -39,20 +39,72 @@ const Home = () => {
           </TouchableOpacity>
         );
       };
+
     
+    const renderEmptyDate = () => {
+        return (
+        <View style={styles.itemEmptyContainer}>
+              <Image
+                style={styles.logoImg}
+                source={require('../assets/calendar.png')}
+              />
+            <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
+            <Button
+                  title="Add Event"
+                  color="#28A745"
+            />
+        </View>
+        );
+    }
+
+
+    function toTimestamp(strDate){
+        var datum = Date.parse(strDate);
+        return datum;
+    }
+
+    const checkSched = (item) => {
+        var dateString = toTimestamp(item.date);
+        console.log(dateString);
+        if(dateString === item.date){
+            handleScheduleNotification("Hi!", "WELCOME", item.date)
+        }
+    }
 
     return (
         <View style={styles.container}>
             <AppBar/>
-            <Button
+            <View style={styles.types}>
+                <View style={styles.types}>
+                    <View style={styles.circleOrange}></View>
+                    <Text style={styles.text2}>CONSULTS</Text>
+                </View>
+                <View style={styles.types}>
+                    <View style={styles.circleGY}></View>
+                    <Text style={styles.text2}>PROCEDURES</Text>
+                </View>
+                <View style={styles.types}>
+                    <View style={styles.circleBlue}></View>
+                    <Text style={styles.text2}>REMINDER</Text>
+                </View>
+                <View style={styles.types}>
+                    <View style={styles.circleLG}></View>
+                    <Text style={styles.text2}>OTHER</Text>
+                </View>
+            </View>
+            {/*
+                <Button
                   title="Push Notification"
                   color="#28A745"
                   accessibilityLabel="Learn more about this purple button"
-                  onPress={() => showNotification("Hi!", "WELCOME")}
+                  onPress={() => showNotification(items.title, items.agenda)}
                 />
+            */}
             <Agenda
                 items={items}
                 renderItem={renderItems}
+                renderEmptyData={renderEmptyDate}
+                selected={Date.now()}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
                 }}
@@ -105,7 +157,67 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#fff',
         
-    }
+    },
+    itemEmptyContainer:{
+        padding: 20,
+        borderRadius: 5,
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    text1:{
+        marginTop: 15,
+        marginBottom: 15,
+        fontSize: 15,
+    },
+    text2:{
+        fontSize: 12,
+    },
+    logoImg: {
+        width: 200,
+        height: 200,
+        opacity: 0.5,
+        resizeMode: 'contain',
+    },
+    circleOrange: {
+        marginLeft: 10,
+        marginRight: 10,
+        height: 20,
+        width: 20,
+        borderRadius: 15,
+        backgroundColor: "#da7331",
+    },
+    circleGY: {
+        marginLeft: 10,
+        marginRight: 10,
+        height: 20,
+        width: 20,
+        borderRadius: 15,
+        backgroundColor: "#ffc000",
+    },
+    circleBlue: {
+        marginLeft: 10,
+        marginRight: 10,
+        height: 20,
+        width: 20,
+        borderRadius: 15,
+        backgroundColor: "#3a87ad",
+    },
+    circleLG: {
+        marginLeft: 10,
+        marginRight: 10,
+        height: 20,
+        width: 20,
+        borderRadius: 15,
+        backgroundColor: "#81c784",
+    },
+    types: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        display: 'flex',
+
+    } 
 });
 
 export default Home;
