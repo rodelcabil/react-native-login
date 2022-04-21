@@ -5,8 +5,7 @@ import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, Keyboar
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 
-
-const AppBar = () => {
+const AppBar = ({title, showMenuIcon}) => {
      
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
@@ -22,8 +21,12 @@ const AppBar = () => {
     return (
         <View style={styles.container}>
             <SafeAreaView>
-                <View style={styles.headerWrapper}>
-                <Icon name="menu" size={30} color="black"/>
+                <View style={styles.headerWrapper}> 
+                <View style={{flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto'}}>
+                    {showMenuIcon === true? <Icon name="menu" size={30} color="black"/> :  <Icon name="keyboard-backspace" size={30} color="black" onPress={()=> navigation.navigate('Home Page')}/>}
+                    <Text style={{marginLeft: 10, fontSize: 16, color: 'black'}}>{title}</Text>
+                </View>
+              
                 <Menu
                     style={styles.containerMenu}
                     visible={visible}
@@ -64,6 +67,7 @@ const AppBar = () => {
 const styles = StyleSheet.create({
     container:{
         backgroundColor: 'fff',
+       
     },
     containerMenu:{
         width: 200,

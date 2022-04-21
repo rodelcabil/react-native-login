@@ -1,32 +1,63 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button, Image} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableHighlight,Image, Button} from 'react-native';
 import {Card, Avatar} from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import AppBar from './ReusableComponents/AppBar';
 import {showNotification, handleScheduleNotification, handleCancel} from './ReusableComponents/notification.android' 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-const Home = () => {
+
+import axios from 'axios';
+
+const Home = ({ navigation }) => {
+
+  
+   
 
     const [items, setItems] = useState({
-        '2022-03-20': [{ event: 'Event title 1', tag: {name:['Dr. Al', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
-        '2022-04-20': [{ event: 'Event Title 1', tag: {name:['Dr. Jim',  ' Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }],
-        '2022-04-21': [{ event: 'Event Title 1', tag: {name:['Dr. Al',  ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'reminder' }],
-        '2022-04-22': [{ event: 'Event Title 2', tag: {name:['Dr. Rodel', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
-        '2022-04-23': [{ event: 'Event Title 2', tag: {name:['Dr. Jay Ar', ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
+        '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
+        '2022-04-20': [{ event: 'Schedule Title 2', tag: {name:['Dr. Jim',  ' Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }],
+        '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'reminder' }],
+        '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
+        '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
     });
+
+    const getData = async () =>{
+        // await fetch('https://beta.centaurmd.com/api/user-info', {
+        //     method: 'GET',
+        //     headers: {
+        //       'Accept': 'application/json',
+        //       'Content-Type': 'application/json'
+        //     },
+        //   }).then(res => res.json())
+        //     .then(resData => {
+        //       console.log(resData);
+        //     });
+
+        await axios.get('https://beta.centaurmd.com/api/user-info').then( res =>{
+            console.log('HELLO',res)
+        }).catch(e =>{
+            console.log('error',e)
+        })
+        }
 
     
       const renderItems = (item) => {
         return (
-          <TouchableOpacity style={{marginRight: 10, marginTop: 17}}>
+          <TouchableHighlight 
+            style={{marginRight: 10, marginTop: 17}} 
+            activeOpacity={0.6} 
+            underlayColor="#DDDDDD"
+            onPress={() => {getData(); navigation.navigate('View Schedule', {
+              item: item,
+            });} }
+            >
             <Card style={{ backgroundColor: item.type === 'consults' ? '#da7331' : item.type === 'procedures' ? '#ffc000' :  item.type === 'reminder' ? '#3a87ad' :  '#81c784'}}>
               <Card.Content>
                 <View style={styles.columnContainer}>
                   <Text style={styles.titleStyle}>{item.event}</Text>
                   <View style={styles.rowContainer}>
                     <Icon name="doctor" size={20} color="white" style={{ marginRight: 5 }} />
-                    {}  
                     <Text style={styles.tagStyle}>{item.tag.name}</Text>
                   </View>
                   <View style={styles.rowContainer}>
@@ -36,7 +67,7 @@ const Home = () => {
                 </View> 
               </Card.Content>
             </Card>
-          </TouchableOpacity>
+          </TouchableHighlight>
         );
       };
 
@@ -73,7 +104,7 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-            <AppBar/>
+            <AppBar title={"My Schedule"} showMenuIcon={true}/>
             <View style={styles.types}>
                 <View style={styles.types}>
                     <View style={styles.circleOrange}></View>
@@ -118,7 +149,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        fontFamily: "AppleSDGothicNeo-Regular",
+        fontFamily: "Roboto",
        
     },
     itemContainer:{
@@ -144,7 +175,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.2,
         fontWeight: '800',
         color: '#fff',
-        fontSize: 20,
+        fontSize: 18,
     },
     tagStyle: {
         fontWeight: '700',

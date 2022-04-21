@@ -15,7 +15,7 @@ const LoginPage = ({ navigation }) => {
   const tokenLogin = async() => {
     const value = await AsyncStorage.getItem('token')
     if(value !== null){
-      navigation.navigate('HomePage');
+      navigation.navigate('Home Page');
       console.log("still logged in");
     }
   }
@@ -39,7 +39,7 @@ const LoginPage = ({ navigation }) => {
 
         if(resData.status === 'success' && (email !== '' || password !== '')){
           storeToken();
-          navigation.navigate('HomePage');
+          navigation.navigate('Home Page');
           setEmail(null);
           setPassword(null);
         }
