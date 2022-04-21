@@ -4,7 +4,7 @@ const showNotification = (title, message) => {
     PushNotification.localNotification({
         title: title,
         message: message,
-        channelId: "123",
+        channelId: "321",
     });
 };
 
@@ -12,7 +12,7 @@ const handleScheduleNotification = (title, message) => {
     PushNotification.localNotificationSchedule({
         title: title,
         message: message,
-        channelId: "123",
+        channelId: "321",
         date: new Date(Date.now() + 5 * 1000), 
     });
 };

@@ -5,8 +5,13 @@ import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const LoginPage = ({ navigation }) => {
 
+const LoginPage = ({ navigation }) => {
+  
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+ 
   const tokenLogin = async() => {
     const value = await AsyncStorage.getItem('token')
     if(value !== null){
@@ -17,8 +22,7 @@ const LoginPage = ({ navigation }) => {
 
   tokenLogin();
 
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+ 
   
 
   loginFunction = async () => {
@@ -117,28 +121,7 @@ const LoginPage = ({ navigation }) => {
                 </Text>
               </SafeAreaView>
 
-              <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <View style={{flex: 1, height: 1, backgroundColor: 'grey', marginRight: 10}} />
-                <View>
-                  <Text style={styles.textOr}>
-                    OR
-                  </Text>
-                </View>
-                <View style={{flex: 1, height: 1, backgroundColor: 'grey', marginLeft: 10}} />
-              </View>
-              </SafeAreaView>
-                  
-              <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                <Button
-                  style={styles.button}
-                  title="SIGN IN WITH GOOGLE"
-                  color="#ff2e44"
-                  accessibilityLabel="Learn more about this purple button"
-                
-                />
-              </SafeAreaView>
+             
             </View>
 
           
@@ -178,7 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   logoSafeAreaStyle: {
-    height: 250,
+    height: 300,
     display: 'flex',
     padding: 20,
     alignItems: 'center',
