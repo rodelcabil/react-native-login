@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.3",
     "@react-native-google-signin/google-signin": "^7.2.2",
+    "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/drawer": "^6.4.1",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.1",
@@ -22,6 +23,7 @@
     "react-native-calendars": "^1.1282.0",
     "react-native-dropdown-picker": "^5.4.0",
     "react-native-hide-show-password-input": "^1.2.0",
+    "react-native-ionicons": "^4.6.5",
     "react-native-material-menu": "^2.0.0",
     "react-native-paper": "^4.12.0",
     "react-native-password-field": "^1.0.8",

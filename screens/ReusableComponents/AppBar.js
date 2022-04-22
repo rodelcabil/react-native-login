@@ -2,8 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , TouchableHighlight} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const AppBar = ({title, showMenuIcon}) => {
      
@@ -37,8 +38,8 @@ const AppBar = ({title, showMenuIcon}) => {
             <SafeAreaView>
                 <View style={styles.headerWrapper}> 
                 <View style={{flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto'}}>
-                    {showMenuIcon === true? <Icon name="menu" size={30} color="black"/> :  <Icon name="keyboard-backspace" size={30} color="black" onPress={()=> navigation.navigate('Home Page')}/>}
-                    <Text style={{marginLeft: 10, fontSize: 16, color: 'black'}}>{title}</Text>
+                    <Icon name="arrow-back" size={30} color="black" style={{display: showMenuIcon === true? 'flex' : 'none'}} onPress={()=> navigation.navigate('Home Page')}/>
+                    <Text style={{marginLeft: showMenuIcon === true? 10 : 0 , fontSize: 16, color: 'black'}}>{title}</Text>
                 </View>
               
                 <Menu

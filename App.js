@@ -2,17 +2,20 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import LoginPage from './screens/login';
 import ForgotPasswordPage from './screens/forgotPassword';
-import Home from './screens/home';
+import Home from './screens/Home/home';
 import ViewSchedule from './screens/viewSchedule';
 import AddSchedule from './screens/addSchedule';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator(); 
+const Tab = createBottomTabNavigator();
 
 const App = () => {
   return (
+    <>
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
@@ -42,6 +45,7 @@ const App = () => {
         />
       </Stack.Navigator>
     </NavigationContainer>
+    </>
   );
 };
 

@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+  //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
 
 const LoginPage = ({ navigation }) => {
@@ -35,7 +36,7 @@ const LoginPage = ({ navigation }) => {
       body: JSON.stringify({ "email_address": email, "password": password }),
     }).then(res => res.json())
       .then(resData => {
-        console.log(resData);
+        console.log("Token",resData.token);
 
         if(resData.status === 'success' && (email !== '' || password !== '')){
           storeToken();
@@ -54,7 +55,6 @@ const LoginPage = ({ navigation }) => {
     await AsyncStorage.setItem('token', email);
   };
 
-  //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
   return (
     <KeyboardAvoidingView

@@ -3,27 +3,26 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableHighlight,Image, Button} from 'react-native';
 import {Card, Avatar} from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
-import AppBar from './ReusableComponents/AppBar';
-import {showNotification, handleScheduleNotification, handleCancel} from './ReusableComponents/notification.android' 
+import AppBar from '../../ReusableComponents/AppBar';
+import {showNotification, handleScheduleNotification, handleCancel} from '../../ReusableComponents/notification.android' 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import axios from 'axios';
 
-const Home = ({ navigation }) => {
+
+const Calendar = ({ navigation }) => {
 
     const [items, setItems] = useState({
-        '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
-        '2022-04-20': [{ event: 'Schedule Title 2', tag: {name:['Dr. Jim',  ' Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }],
-        '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'reminder' }],
-        '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', ' Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
-        '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', ' Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
+        '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
+        '2022-04-20': [{ event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }, { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'other' }], 
+        '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', type: 'reminder' }],
+        '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
+        '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
     });
 
-    
-    const [dayGet, setDay] = useState(null);
-
+    useEffect(()=>{
         const getData = async () =>{
-            await fetch('https://beta.centaurmd.com/api/user-info', {
+            await fetch('https://beta.centaurmd.com/api/schedules', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -31,17 +30,27 @@ const Home = ({ navigation }) => {
                 },
             }).then(res => res.json())
                 .then(resData => {
-                console.log(resData);
-                });
+                console.log("sched: ",resData);
+            });
         }
+
+        console.log('ITEMS: ', items[0]?.type)
+
+        getData()
+    },[]);
+
+    
+    const [dayGet, setDay] = useState(null);
+
+   
     
       const renderItems = (item) => {
         return (
           <TouchableHighlight 
-            style={{marginRight: 10, marginTop: 17}} 
+            style={{ margin: 10}} 
             activeOpacity={0.6} 
             underlayColor="#DDDDDD"
-            onPress={() => {getData(); navigation.navigate('View Schedule', {
+            onPress={() => { navigation.navigate('View Schedule', {
               item: item,
             });} }
             >
@@ -51,7 +60,7 @@ const Home = ({ navigation }) => {
                   <Text style={styles.titleStyle}>{item.event}</Text>
                   <View style={styles.rowContainer}>
                     <Icon name="doctor" size={20} color="white" style={{ marginRight: 5 }} />
-                    <Text style={styles.tagStyle}>{item.tag.name}</Text>
+                    <Text style={styles.tagStyle}>{item.tag.name}&nbsp;</Text>
                   </View>
                   <View style={styles.rowContainer}>
                     <Icon name="calendar" size={20} color="white" style={{ marginRight: 5 }} />
@@ -70,7 +79,7 @@ const Home = ({ navigation }) => {
         <View style={styles.itemEmptyContainer}>
               <Image
                 style={styles.logoImg}
-                source={require('../assets/calendar.png')}
+                source={require('../../../assets/calendar.png')}
               />
             <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
             <Button
@@ -98,7 +107,7 @@ const Home = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <AppBar title={"My Schedule"} showMenuIcon={true}/>
+            <AppBar title={"My Schedule"} showMenuIcon={false}/>
             <View style={styles.typesContainer}>
                 <View style={styles.types}>
                     <View style={styles.circleOrange}></View>
@@ -126,6 +135,7 @@ const Home = ({ navigation }) => {
                 />
             */}
             <Agenda
+               
                 items={items}
                 renderItem={renderItems}
                 renderEmptyData={renderEmptyDate}
@@ -149,6 +159,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         fontFamily: "Roboto",
+        
        
     },
     itemContainer:{
@@ -205,8 +216,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     logoImg: {
-        width: 200,
-        height: 200,
+        width: 100,
+        height: 100,
         opacity: 0.5,
         resizeMode: 'contain',
     },
@@ -257,4 +268,4 @@ const styles = StyleSheet.create({
     }  
 });
 
-export default Home;
+export default Calendar;
