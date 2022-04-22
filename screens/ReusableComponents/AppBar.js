@@ -85,8 +85,7 @@ const AppBar = ({title, showMenuIcon}) => {
                         />
                         <Text style={styles.textEmail}>Dr. Sample Name</Text>
                     </View>
-                    <MenuItem onPress={hideMenu}>View Account</MenuItem>
-                    {/*<MenuItem disabled>Disabled item</MenuItem> */}
+                    <MenuItem onPress={hideMenu}>Settings</MenuItem>
                     <MenuDivider />
                     <MenuItem onPress={logout}><Text style={styles.textLogOut}>Log Out</Text></MenuItem>
                 </Menu>

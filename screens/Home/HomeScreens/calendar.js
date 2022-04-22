@@ -7,37 +7,66 @@ import AppBar from '../../ReusableComponents/AppBar';
 import {showNotification, handleScheduleNotification, handleCancel} from '../../ReusableComponents/notification.android' 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
+
+
 
 
 const Calendar = ({ navigation }) => {
 
-    const [items, setItems] = useState({
-        '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
-        '2022-04-20': [{ event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }, { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'other' }], 
-        '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', type: 'reminder' }],
-        '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
-        '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
-    });
+    // const [items, setItems] = useState({
+    //     '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
+    //     '2022-04-20': [
+    //         { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }, 
+    //         { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'other' }
+    //     ], 
+    //     '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', type: 'reminder' }],
+    //     '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', type: 'consults' }],
+    //     '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
+    //     '2022-04-23': [{ event: 'Schedule Title 6', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', type: 'other' }],
+    // });
+
+    const [items, setItems] = useState({});
+
+    
 
     useEffect(()=>{
         const getData = async () =>{
+            const token = await AsyncStorage.getItem('token');
+            // console.log(token, "token");
             await fetch('https://beta.centaurmd.com/api/schedules', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
             }).then(res => res.json())
-                .then(resData => {
-                console.log("sched: ",resData);
+            .then(resData => {
+
+                const reduced = resData.reduce(
+                    (acc, currentItem) => {
+                      const {start, ...coolItem} = currentItem;
+                      acc[moment(start).format("YYYY-MM-DD")] = [coolItem];
+            
+                      return acc;
+                    },
+                    {},
+                  );
+
+                  setItems(reduced);
+              
             });
         }
 
-        console.log('ITEMS: ', items[0]?.type)
+        
+
+        console.log("Items: ",items);
 
         getData()
     },[]);
+
+   
 
     
     const [dayGet, setDay] = useState(null);
@@ -54,17 +83,17 @@ const Calendar = ({ navigation }) => {
               item: item,
             });} }
             >
-            <Card style={{ backgroundColor: item.type === 'consults' ? '#da7331' : item.type === 'procedures' ? '#ffc000' :  item.type === 'reminder' ? '#3a87ad' :  '#81c784'}}>
+            <Card style={{ backgroundColor: item.category === 'consults' ? '#da7331' : item.typcategorye === 'procedures' ? '#ffc000' :  item.category === 'reminder' ? '#3a87ad' :  '#81c784'}}>
               <Card.Content>
                 <View style={styles.columnContainer}>
-                  <Text style={styles.titleStyle}>{item.event}</Text>
+                  <Text style={styles.titleStyle}>{item.title}</Text>
                   <View style={styles.rowContainer}>
                     <Icon name="doctor" size={20} color="white" style={{ marginRight: 5 }} />
-                    <Text style={styles.tagStyle}>{item.tag.name}&nbsp;</Text>
+                    <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
                   </View>
                   <View style={styles.rowContainer}>
                     <Icon name="calendar" size={20} color="white" style={{ marginRight: 5 }} />
-                    <Text style={styles.scheduleStyle}>{item.schedule}</Text>
+                    <Text style={styles.scheduleStyle}>{item.end}</Text>
                 </View>
                 </View> 
               </Card.Content>

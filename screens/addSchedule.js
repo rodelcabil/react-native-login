@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text, TextInput, Button} from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import {Card, Avatar} from 'react-native-paper';
