@@ -7,7 +7,8 @@ import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const AppBar = ({title, showMenuIcon}) => {
-     
+
+
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
@@ -20,11 +21,29 @@ const AppBar = ({title, showMenuIcon}) => {
     }
 
     getUserInfo = async () => {
+        const token = await AsyncStorage.getItem('token');
+        console.log(token, "token");
         await fetch('https://beta.centaurmd.com/api/user-info', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Authorization': 'Bearer ' + token,
+        },
+        }).then(res => res.json())
+        .then(resData => {
+            console.log(resData);
+        });
+    };
+
+
+    getSchedule = async () => {
+        const token = await AsyncStorage.getItem('token');
+        console.log(token, "token");
+        await fetch('https://beta.centaurmd.com/api/schedules', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + token,
         },
         }).then(res => res.json())
         .then(resData => {

@@ -11,6 +11,7 @@ const LoginPage = ({ navigation }) => {
   
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [gToken, setToken] = useState(null);
 
  
   const tokenLogin = async() => {
@@ -22,9 +23,6 @@ const LoginPage = ({ navigation }) => {
   }
 
   tokenLogin();
-
- 
-  
 
   loginFunction = async () => {
     await fetch('https://beta.centaurmd.com/api/login', {
@@ -39,6 +37,10 @@ const LoginPage = ({ navigation }) => {
         console.log("Token",resData.token);
 
         if(resData.status === 'success' && (email !== '' || password !== '')){
+          setToken(resData.token);
+          const storeToken = async() =>{
+            await AsyncStorage.setItem('token', resData.token);
+          };
           storeToken();
           navigation.navigate('Home Page');
           setEmail(null);
@@ -51,9 +53,10 @@ const LoginPage = ({ navigation }) => {
       });
   };
 
-  const storeToken = async() =>{
-    await AsyncStorage.setItem('token', email);
-  };
+  
+ /* const storeToken = async() =>{
+    await AsyncStorage.setItem('token', token);
+  };*/
 
 
   return (
