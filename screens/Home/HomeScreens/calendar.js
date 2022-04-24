@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight,Image, Button} from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight,Image, Button, TouchableOpacity} from 'react-native';
 import {Card, Avatar} from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import AppBar from '../../ReusableComponents/AppBar';
@@ -9,9 +9,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
-
-
-
+import DeviceInfo from 'react-native-device-info';
+import { FloatingAction } from "react-native-floating-action";
 
 const Calendar = ({ navigation }) => {
 
@@ -28,10 +27,16 @@ const Calendar = ({ navigation }) => {
     // });
 
     const [items, setItems] = useState({});
+    const [dayGet, setDay] = useState(null);
 
+    const [deviceID, setDeviceID] = useState();
     
+    /*useEffect(()=>{
+        const getDeviceID = () => {
+            var uniqueID = DeviceInfo.getUniqueId;
+            setDeviceID(uniqueID); 
+        }
 
-    useEffect(()=>{
         const getData = async () =>{
             const token = await AsyncStorage.getItem('token');
             // console.log(token, "token");
@@ -43,12 +48,13 @@ const Calendar = ({ navigation }) => {
             },
             }).then(res => res.json())
             .then(resData => {
-
+                console.log(resData);
                 const reduced = resData.reduce(
                     (acc, currentItem) => {
+                        console.log(currentItem.start);
                       const {start, ...coolItem} = currentItem;
                       acc[moment(start).format("YYYY-MM-DD")] = [coolItem];
-            
+                      
                       return acc;
                     },
                     {},
@@ -58,23 +64,48 @@ const Calendar = ({ navigation }) => {
               
             });
         }
-
-        
-
-        console.log("Items: ",items);
-
         getData()
+        getDeviceID()
+        console.log("Device ID", deviceID);
+        console.log("Items: ",items);
+    },[]);*/
+
+    useEffect(()=>{
+        const getDeviceID = () => {
+            var uniqueID = DeviceInfo.getUniqueId;
+            setDeviceID(uniqueID); 
+        }
+        
+        const getData = async () =>{
+            const token = await AsyncStorage.getItem('token');
+            // console.log(token, "token");
+            await fetch('https://beta.centaurmd.com/api/schedules', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            }).then(res => res.json())
+            .then(resData => {
+                console.log(resData);
+                const newItem = {};
+                Object.keys(resData).forEach((key) =>{
+                    const dateget = moment(resData[key].start).format("YYYY-MM-DD");
+                    newItem[dateget] = [resData[key]];
+                })
+
+                setItems(newItem);
+            });
+        }
+        getData()
+        getDeviceID()
+        console.log("Device ID", deviceID);
+        console.log("Items: ",items);
     },[]);
-
-   
-
-    
-    const [dayGet, setDay] = useState(null);
-
-   
-    
+       
       const renderItems = (item) => {
         return (
+           moment(item.start).format('YYYY-MM-DD') !== dayGet ? <></> :
           <TouchableHighlight 
             style={{ margin: 10}} 
             activeOpacity={0.6} 
@@ -83,7 +114,7 @@ const Calendar = ({ navigation }) => {
               item: item,
             });} }
             >
-            <Card style={{ backgroundColor: item.category === 'consults' ? '#da7331' : item.typcategorye === 'procedures' ? '#ffc000' :  item.category === 'reminder' ? '#3a87ad' :  '#81c784'}}>
+            <Card style={{ backgroundColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' :  item.category === 'reminder' ? '#3a87ad' :  '#81c784'}}>
               <Card.Content>
                 <View style={styles.columnContainer}>
                   <Text style={styles.titleStyle}>{item.title}</Text>
@@ -111,11 +142,11 @@ const Calendar = ({ navigation }) => {
                 source={require('../../../assets/calendar.png')}
               />
             <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
-            <Button
+           {/* <Button
                   title="Add Schedule"
                   color="#28A745"
                   onPress={() => {navigation.navigate('Add Schedule', { getdate: dayGet});} }
-            />
+            />*/}
         </View>
         );
     }
@@ -133,6 +164,11 @@ const Calendar = ({ navigation }) => {
             handleScheduleNotification("Hi!", "WELCOME", item.date)
         }
     }
+
+    const clickHandler = () => {
+        navigation.navigate('Add Schedule', { getdate: dayGet})
+      };
+
 
     return (
         <View style={styles.container}>
@@ -164,20 +200,29 @@ const Calendar = ({ navigation }) => {
                 />
             */}
             <Agenda
-               
                 items={items}
                 renderItem={renderItems}
                 renderEmptyData={renderEmptyDate}
                 onDayPress={day => {
-                    console.log('day pressed', day);
+                    //console.log('day pressed', day);
                     setDay(day.dateString);
-                    console.log(dayGet);
+                    //console.log(dayGet);
                 }}
                 selected={Date.now()}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
                 }}
             />
+             <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={clickHandler}
+                style={styles.touchableOpacityStyle}>
+                <Image
+                    source={require('../../../assets/addIcon.png')}
+                    style={styles.floatingButtonStyle}
+                />
+            </TouchableOpacity>
+
         </View>
     );
 
@@ -294,7 +339,22 @@ const styles = StyleSheet.create({
         display: 'flex',
         width: wp('20.5%'),
 
-    }  
+    },
+    touchableOpacityStyle: {
+        position: 'absolute',
+        width: 50,
+        height: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        right: 30,
+        bottom: 30,
+      },
+      floatingButtonStyle: {
+        resizeMode: 'contain',
+        width: 50,
+        height: 50,
+        //backgroundColor:'black'
+      }, 
 });
 
 export default Calendar;

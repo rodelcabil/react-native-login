@@ -38,7 +38,7 @@ const AddSchedule = ({route}) =>{
                     borderWidth: 2}}
              />
 
-            <Text style={styles.text}>Schedule Name</Text>
+            <Text style={styles.text}>Schedule Title</Text>
             <View style={styles.inputContainer}>
                 <TextInput
                     keyboardType="email-address"
@@ -46,7 +46,7 @@ const AddSchedule = ({route}) =>{
                 />
             </View>
 
-            <Text style={styles.text}>Person Involved</Text>
+            <Text style={styles.text}>Tags</Text>
             <View style={styles.inputContainer}>
                 <TextInput
                     keyboardType="email-address"
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     inputContainer: {
         marginHorizontal: 3,
         flexDirection: 'row',
-        height: 55,
+        height: 50,
         marginVertical: 2,
         borderWidth: 1,
         borderColor: 'gray',
