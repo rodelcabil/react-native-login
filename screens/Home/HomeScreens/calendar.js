@@ -166,7 +166,7 @@ const Calendar = ({ navigation }) => {
     }
 
     const clickHandler = () => {
-        navigation.navigate('Add Schedule', { getdate: dayGet})
+        navigation.navigate('Add Schedule', { getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet})
       };
 
 
