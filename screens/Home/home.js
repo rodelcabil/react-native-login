@@ -36,13 +36,33 @@ const Home = () => {
                 }}
             />
             <Tab.Screen 
-                name="Group" 
+                name="Messaging" 
                 component={Group} 
                 options={{
                     headerShown:false,
                     tabBarLabel: 'Group',
                     tabBarIcon: ({ color, size }) => (
-                        <Icon name="account-group" color={color} size={size} />
+                        <Icon name="chat" color={color} size={size} />
+                    ),
+                }}/>
+             <Tab.Screen 
+                name="Settings" 
+                component={Group} 
+                options={{
+                    headerShown:false,
+                    tabBarLabel: 'Group',
+                    tabBarIcon: ({ color, size }) => (
+                        <Icon name="chat" color={color} size={size} />
+                    ),
+                }}/>
+            <Tab.Screen 
+                name="Help" 
+                component={Group} 
+                options={{
+                    headerShown:false,
+                    tabBarLabel: 'Group',
+                    tabBarIcon: ({ color, size }) => (
+                        <Icon name="chat" color={color} size={size} />
                     ),
                 }}/>
         </Tab.Navigator>

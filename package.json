@@ -24,6 +24,7 @@
     "react-native": "0.68.1",
     "react-native-calendars": "^1.1282.0",
     "react-native-device-info": "^8.7.0",
+    "react-native-double-tap": "^1.0.1",
     "react-native-dropdown-picker": "^5.4.0",
     "react-native-floating-action": "^1.22.0",
     "react-native-hide-show-password-input": "^1.2.0",
