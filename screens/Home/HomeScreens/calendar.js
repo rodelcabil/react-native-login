@@ -9,8 +9,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+<<<<<<< Updated upstream
 import DeviceInfo from 'react-native-device-info';
 import { FloatingAction } from "react-native-floating-action";
+=======
+import {addDays, format} from 'date-fns';
+
+
+>>>>>>> Stashed changes
 
 const Calendar = ({ navigation }) => {
 
@@ -48,6 +54,7 @@ const Calendar = ({ navigation }) => {
             },
             }).then(res => res.json())
             .then(resData => {
+<<<<<<< Updated upstream
                 console.log(resData);
                 const reduced = resData.reduce(
                     (acc, currentItem) => {
@@ -56,12 +63,36 @@ const Calendar = ({ navigation }) => {
                       acc[moment(start).format("YYYY-MM-DD")] = [coolItem];
                       
                       return acc;
+=======
+
+
+                const mappedData = resData.map((data) => {
+                    const date = data.start;
+                   
+                    return {
+                        ...data,
+                        date: moment(date).format('YYYY-MM-DD')
+                    };
+                    });
+
+                const reduced = mappedData.reduce(
+                    (acc, currentItem) => {
+                    const {date, ...coolItem} = currentItem;
+                    acc[date] = [coolItem];
+                    
+                    return acc;
+>>>>>>> Stashed changes
                     },
                     {},
-                  );
+                );
 
-                  setItems(reduced);
-              
+                
+                setItems(reduced);
+        
+
+               
+                
+
             });
         }
         getData()
@@ -70,6 +101,7 @@ const Calendar = ({ navigation }) => {
         console.log("Items: ",items);
     },[]);*/
 
+<<<<<<< Updated upstream
     useEffect(()=>{
         const getDeviceID = () => {
             var uniqueID = DeviceInfo.getUniqueId;
@@ -97,6 +129,10 @@ const Calendar = ({ navigation }) => {
                 setItems(newItem);
             });
         }
+=======
+        console.log("ITEMS: ",items)
+        
+>>>>>>> Stashed changes
         getData()
         getDeviceID()
         console.log("Device ID", deviceID);
@@ -124,7 +160,7 @@ const Calendar = ({ navigation }) => {
                   </View>
                   <View style={styles.rowContainer}>
                     <Icon name="calendar" size={20} color="white" style={{ marginRight: 5 }} />
-                    <Text style={styles.scheduleStyle}>{item.end}</Text>
+                    <Text style={styles.scheduleStyle}>{item.start}</Text>
                 </View>
                 </View> 
               </Card.Content>
