@@ -1,10 +1,11 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity } from 'react-native';
-import { Card, Avatar } from 'react-native-paper';
+import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal } from 'react-native';
+import { Card, Avatar, Button } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import AppBar from '../../ReusableComponents/AppBar';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
+import Icon2 from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,10 +15,74 @@ import { FloatingAction } from "react-native-floating-action";
 import { Dimensions } from "react-native";
 import DoubleClick from 'react-native-double-tap';
 import {addDays, format} from 'date-fns';
+import { Form, FormItem, Label  } from 'react-native-form-component';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 var width = Dimensions.get('window').width - 20;
 
 
-const Calendar = ({ navigation }) => {
+
+const Calendar = ({ navigation, route }) => {
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
+    const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
+
+    const [title, setTitle] = useState(null);
+    const [desc, setDesc] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+
+    const [datePickerTitle, setdatePickerTitle] = useState(null);
+    const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
+
+    const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
+    
+    const showDatePicker = () => {
+        setDatePickerVisibility(true);
+      };
+    
+      const hideDatePicker = () => {
+        setDatePickerVisibility(false);
+      };
+
+      const handleConfirm = (date) => {
+        //console.warn("A date has been picked: ", date);
+        setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
+        setEndDate(moment(date).format("YYYY-MM-DD"));
+        hideDatePicker();
+      };
+
+      const showDatePickerTime = () => {
+        setDatePickerTimeVisibility(true);
+      };
+    
+      const hideDatePickerTime = () => {
+        setDatePickerTimeVisibility(false);
+      };
+
+      const handleConfirmTime = (time) => {
+        var convTime = moment(time).format("HH:mm")
+        setdatePickerTitleTime( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setStartTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
+        hideDatePickerTime();
+      };
+
+      const showDatePickerTimeStart = () => {
+        setDatePickerVisibilityStart(true);
+      };
+    
+      const hideDatePickerTimeStart = () => {
+        setDatePickerVisibilityStart(false);
+      };
+
+      const handleConfirmTimeStart = (time) => {
+        var convTime = moment(time).format("HH:mm")
+        setdatePickerTitleTimeStart( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setEndTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
+        hideDatePickerTimeStart();
+      };
+
+      const [showModal, setShowModal] = useState(false);
 
     // const [items, setItems] = useState({
     //     '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
@@ -36,6 +101,19 @@ const Calendar = ({ navigation }) => {
     const [dayGet, setDay] = useState(null);
 
     const [deviceID, setDeviceID] = useState();
+
+    const submitSched = (title, desc, endDate, startTime, endTime, dayGet) => {
+        console.log(title, desc, endDate, startTime, endTime, "Others", dayGet);
+        const convDate = moment(dayGet).format('YYYY-MM-DD');
+       const newElement = {
+           ...items,
+           [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }] 
+       }
+        setItems(newElement);
+        console.log(items);
+    
+    
+    };
 
     /*useEffect(()=>{
         const getDeviceID = () => {
@@ -92,7 +170,7 @@ const Calendar = ({ navigation }) => {
                 .then(resData => {
 
                     // console.log("NEW DATA? ", resData)
-                    // setTempItems(resData);
+                     setTempItems(resData);
 
 
                     const mappedData = resData.map((data) => {
@@ -326,13 +404,120 @@ const Calendar = ({ navigation }) => {
             />
             <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={clickHandler}
+                onPress={() => {
+                    setShowModal(!showModal)
+                }}
                 style={styles.touchableOpacityStyle}>
                 <Image
                     source={require('../../../assets/addIcon.png')}
                     style={styles.floatingButtonStyle}
                 />
             </TouchableOpacity>
+
+            <Modal
+                animationType={'slide'}
+                transparent={false}
+                visible={showModal}
+                onRequestClose={() => {
+
+                }}
+            >
+
+            <View style={styles.container}>
+            <SafeAreaView>
+                <View style={styles.headerWrapper}> 
+                
+                <View style={{flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto'}}>
+                    <Icon2 name="arrow-back" size={30} color="black" onPress={()=> {setShowModal(!showModal)}}/>
+                    <Text style={{marginLeft: 10, fontSize: 16, color: 'black'}}>Add Personal Schedule</Text>
+                </View>
+              
+                </View>
+            </SafeAreaView>
+
+             <View style={styles.dateContainer}>
+             <Image
+                style={styles.logoImg2}
+                source={require('../../../assets/calendar.png')}
+              />
+                 <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet}</Text>
+             </View>
+
+             <SafeAreaView style={styles.safeAreaViewContainer}>
+             <Form onButtonPress={() =>submitSched(title, desc, endDate, startTime, endTime, dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet)}
+                buttonStyle={styles.buttonCont}
+             >
+                <FormItem
+                    label="Title"
+                    isRequired
+                    value={title}
+                    style={styles.inputContainer}
+                    onChangeText={titleInp => setTitle(titleInp)}
+                    asterik />
+
+                <FormItem
+                    label="Description"
+                    isRequired
+                    value={desc}
+                    style={styles.inputContainer}
+                    onChangeText={descript => setDesc(descript)}
+                    asterik />
+
+                <Label text="End Date" isRequired asterik />
+                    <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={showDatePicker}
+                    >
+                    <View style={styles.inputContainer2}>
+                        <Text style={styles.text3}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                        <DateTimePickerModal
+                            isVisible={isDatePickerVisible}
+                            mode="date"
+                            value={endDate}
+                            onConfirm={handleConfirm}
+                            onCancel={hideDatePicker}
+                        />
+                    </View>
+                </TouchableOpacity>
+
+                <Label text="Start Time" isRequired asterik />
+                <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={showDatePickerTimeStart}
+                    >
+                    <View style={styles.inputContainer2}>
+                        <Text style={styles.text3}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                        <DateTimePickerModal
+                            isVisible={isDatePickerVisibleStart}
+                            mode="time"
+                            value={startTime}
+                            onConfirm={handleConfirmTimeStart}
+                            onCancel={hideDatePickerTimeStart}
+                        />
+                    </View>
+                    </TouchableOpacity>
+
+                    <Label text="End Time" isRequired asterik />
+                    <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={showDatePickerTime}
+                    >
+                    <View style={styles.inputContainer2}>
+                        <Text style={styles.text3}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                        <DateTimePickerModal
+                            isVisible={isDatePickerTimeVisible}
+                            mode="time"
+                            value={endTime}
+                            onConfirm={handleConfirmTime}
+                            onCancel={hideDatePickerTime}
+                        />
+                    </View>
+                    </TouchableOpacity>
+
+            </Form>
+             </SafeAreaView>
+             </View>
+            </Modal>
 
         </View>
     );
@@ -401,6 +586,11 @@ const styles = StyleSheet.create({
     text2: {
         fontSize: 12,
     },
+    safeAreaViewContainer: {
+        padding: 20,
+        flex: 1,
+        backgroundColor: '#F2F4F5'
+    },
     logoImg: {
         width: 100,
         height: 100,
@@ -467,6 +657,84 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         //backgroundColor:'black'
+    },
+    headerWrapper:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 10,
+        alignItems: 'center',
+    },
+    text3:{
+        fontSize: 15,
+        fontWeight: '400',
+        alignSelf: 'center',
+        marginHorizontal: 15,
+    },
+
+    dateContainer: {
+        flexDirection: 'row',
+        height: 80,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        fontSize: 18,
+        backgroundColor: '#3a87ad',
+      },
+      datetimeCont: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+      },
+      
+    inputContainer: {
+        marginHorizontal: 3,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        paddingHorizontal: 5,
+        alignItems: 'center',
+        fontSize: 13,
+        backgroundColor: 'white',
+      },
+
+      inputContainer2: {
+        height: 50,
+        marginHorizontal: 3,
+        marginVertical: 2,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        fontSize: 13,
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        marginBottom: 20,
+      },
+      buttonCont:{
+        marginHorizontal: 5,
+        marginTop: 10,
+        backgroundColor: 'green'
+    },
+    buttonDate:{
+        marginHorizontal: 5,
+        marginTop: 10,
+    },
+    logoImg2: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+        resizeMode: 'contain',
+    },
+    errorMsg:{
+        color: 'red',
+        fontSize: 13,
+        marginHorizontal: 3,
+        marginBottom: 10,
+    },
+    textTitle:{
+        fontSize: 18,
+        fontWeight: '700',
+        padding: 5,
+        color: 'white',
     },
 });
 

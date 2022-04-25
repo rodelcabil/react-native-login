@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, Text, TextInput, Button, Image, TouchableOpacity} from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
-import {Card, Avatar} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Form, FormItem, Label  } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
-
+import * as Animatable from 'react-native-animatable';
+import  Calendar  from './Home/HomeScreens/calendar';
 
 const AddSchedule = ({route}) =>{
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-   /* const [items, setItems] = useState([
-        {label: 'Consults', value: 'consults'},
-        {label: 'Procedures', value: 'procedures'},
-        {label: 'Reminder', value: 'reminder'},
-        {label: 'Other', value: 'other'},
-    ]);*/
+    const submitSched = (title, desc, endDate, startTime, endTime, dateSelected) => {
+        console.log(title, desc, endDate, startTime, endTime, "Others", dateSelected);
+    
+    };
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
@@ -24,6 +19,9 @@ const AddSchedule = ({route}) =>{
 
     const [title, setTitle] = useState(null);
     const [desc, setDesc] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
 
     const [datePickerTitle, setdatePickerTitle] = useState(null);
     const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
@@ -42,6 +40,7 @@ const AddSchedule = ({route}) =>{
       const handleConfirm = (date) => {
         //console.warn("A date has been picked: ", date);
         setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
+        setEndDate(moment(date).format("YYYY-MM-DD"));
         hideDatePicker();
       };
 
@@ -56,6 +55,7 @@ const AddSchedule = ({route}) =>{
       const handleConfirmTime = (time) => {
         var convTime = moment(time).format("HH:mm")
         setdatePickerTitleTime( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setStartTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
         hideDatePickerTime();
       };
 
@@ -70,6 +70,7 @@ const AddSchedule = ({route}) =>{
       const handleConfirmTimeStart = (time) => {
         var convTime = moment(time).format("HH:mm")
         setdatePickerTitleTimeStart( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setEndTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
         hideDatePickerTimeStart();
       };
 
@@ -83,40 +84,28 @@ const AddSchedule = ({route}) =>{
               />
                  <Text style={styles.textTitle}>Date - {route.params.getdate}</Text>
              </View>
+
              <SafeAreaView style={styles.safeAreaViewContainer}>
-            {/*
-            <DropDownPicker
-                open={open}
-                value={value}
-                items={items}
-                setOpen={setOpen}
-                setValue={setValue}
-                setItems={setItems}
-                textStyle={{
-                    fontSize: 15,
-                }}
-                style={{ borderColor: value === 'consults' ? '#da7331' : value === 'procedures' ? '#ffc000' :  value === 'reminder' ? '#3a87ad' : value === 'other' ? '#81c784' :  '#fff', 
-                    borderWidth: 2}}
-             />
-            */} 
-            <Text style={styles.text}>Title</Text>
-            <TextInput
+             <Form onButtonPress={() =>submitSched(title, desc, endDate, startTime, endTime, route.params.getdate)}
+                buttonStyle={styles.buttonCont}
+             >
+                <FormItem
+                    label="Title"
+                    isRequired
+                    value={title}
                     style={styles.inputContainer}
-                    keyboardType="email-address"
-                    multiline={true}
                     onChangeText={titleInp => setTitle(titleInp)}
-            />
+                    asterik />
 
-            <Text style={styles.text}>Description</Text>
-            <TextInput
+                <FormItem
+                    label="Description"
+                    isRequired
+                    value={desc}
                     style={styles.inputContainer}
-                    keyboardType="email-address"
-                    multiline={true}
                     onChangeText={descript => setDesc(descript)}
-            />
+                    asterik />
 
-                <View style={styles.columnContainer}>
-                <Text style={styles.text}>End Date</Text>
+                <Label text="End Date" isRequired asterik />
                     <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePicker}
@@ -126,17 +115,15 @@ const AddSchedule = ({route}) =>{
                         <DateTimePickerModal
                             isVisible={isDatePickerVisible}
                             mode="date"
+                            value={endDate}
                             onConfirm={handleConfirm}
                             onCancel={hideDatePicker}
                         />
                     </View>
                 </TouchableOpacity>
-                </View>
 
-
-                <View style={styles.columnContainer}>
-                    <Text style={styles.text}>Start Time</Text>
-                    <TouchableOpacity
+                <Label text="Start Time" isRequired asterik />
+                <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePickerTimeStart}
                     >
@@ -145,15 +132,14 @@ const AddSchedule = ({route}) =>{
                         <DateTimePickerModal
                             isVisible={isDatePickerVisibleStart}
                             mode="time"
+                            value={startTime}
                             onConfirm={handleConfirmTimeStart}
                             onCancel={hideDatePickerTimeStart}
                         />
                     </View>
                     </TouchableOpacity>
-                </View>
 
-                <View style={styles.columnContainer}>
-                    <Text style={styles.text}>End Time</Text>
+                    <Label text="End Time" isRequired asterik />
                     <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePickerTime}
@@ -163,26 +149,36 @@ const AddSchedule = ({route}) =>{
                         <DateTimePickerModal
                             isVisible={isDatePickerTimeVisible}
                             mode="time"
+                            value={endTime}
                             onConfirm={handleConfirmTime}
                             onCancel={hideDatePickerTime}
                         />
                     </View>
                     </TouchableOpacity>
-                </View>
 
+            </Form>
 
-            <View style={styles.buttonCont}>
-            <Button
-                  title="Add"
-                  color="#28A745"
+            
 
+           {/*
+           <Text style={styles.text}>Description</Text>
+            <TextInput
+                    style={styles.inputContainer}
+                    keyboardType="email-address"
+                    multiline={true}
+                    onChangeText={descript => setDesc(descript)}
             />
-            </View>
+            <Animatable.View animation="fadeInLeft" duration={500}>
+                <Text style={styles.errorMsg}> Description is required</Text>
+            </Animatable.View>
+
+           */}  
 
              </SafeAreaView>
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -206,15 +202,13 @@ const styles = StyleSheet.create({
       
     inputContainer: {
         marginHorizontal: 3,
-        marginVertical: 2,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        paddingHorizontal: 15,
+        paddingHorizontal: 5,
         alignItems: 'center',
         fontSize: 13,
         backgroundColor: 'white',
-        marginBottom: 15,
       },
 
       inputContainer2: {
@@ -226,8 +220,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         fontSize: 13,
         backgroundColor: 'white',
-        marginBottom: 15,
         flexDirection: 'row',
+        marginBottom: 20,
       },
 
     itemContainer: {
@@ -235,7 +229,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderLeftColor: 'green',
         borderLeftWidth: 5,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingVertical: 10
     },
     safeAreaViewContainer: {
@@ -289,7 +283,8 @@ const styles = StyleSheet.create({
     },
     buttonCont:{
         marginHorizontal: 5,
-        marginTop: 30,
+        marginTop: 10,
+        backgroundColor: 'green'
     },
     buttonDate:{
         marginHorizontal: 5,
@@ -301,6 +296,12 @@ const styles = StyleSheet.create({
         marginRight: 10,
         resizeMode: 'contain',
     },
+    errorMsg:{
+        color: 'red',
+        fontSize: 13,
+        marginHorizontal: 3,
+        marginBottom: 10,
+    }
 });
 
 export default AddSchedule;
