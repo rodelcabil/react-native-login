@@ -13,8 +13,9 @@ import DeviceInfo from 'react-native-device-info';
 import { FloatingAction } from "react-native-floating-action";
 import { Dimensions } from "react-native";
 import DoubleClick from 'react-native-double-tap';
-
+import {addDays, format} from 'date-fns';
 var width = Dimensions.get('window').width - 20;
+
 
 const Calendar = ({ navigation }) => {
 
@@ -119,9 +120,7 @@ const Calendar = ({ navigation }) => {
 
                 });
         }
-
-
-       
+        console.log("ITEMS: ",items)
         getData()
         getDeviceID()
         console.log("Device ID", deviceID);
