@@ -14,8 +14,8 @@ import DeviceInfo from 'react-native-device-info';
 import { FloatingAction } from "react-native-floating-action";
 import { Dimensions } from "react-native";
 import DoubleClick from 'react-native-double-tap';
-import {addDays, format} from 'date-fns';
-import { Form, FormItem, Label  } from 'react-native-form-component';
+import { addDays, format } from 'date-fns';
+import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 var width = Dimensions.get('window').width - 20;
 
@@ -36,53 +36,53 @@ const Calendar = ({ navigation, route }) => {
     const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
 
     const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
-    
+
     const showDatePicker = () => {
         setDatePickerVisibility(true);
-      };
-    
-      const hideDatePicker = () => {
-        setDatePickerVisibility(false);
-      };
+    };
 
-      const handleConfirm = (date) => {
+    const hideDatePicker = () => {
+        setDatePickerVisibility(false);
+    };
+
+    const handleConfirm = (date) => {
         //console.warn("A date has been picked: ", date);
         setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
         setEndDate(moment(date).format("YYYY-MM-DD"));
         hideDatePicker();
-      };
+    };
 
-      const showDatePickerTime = () => {
+    const showDatePickerTime = () => {
         setDatePickerTimeVisibility(true);
-      };
-    
-      const hideDatePickerTime = () => {
-        setDatePickerTimeVisibility(false);
-      };
+    };
 
-      const handleConfirmTime = (time) => {
+    const hideDatePickerTime = () => {
+        setDatePickerTimeVisibility(false);
+    };
+
+    const handleConfirmTime = (time) => {
         var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTime( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
         setStartTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
         hideDatePickerTime();
-      };
+    };
 
-      const showDatePickerTimeStart = () => {
+    const showDatePickerTimeStart = () => {
         setDatePickerVisibilityStart(true);
-      };
-    
-      const hideDatePickerTimeStart = () => {
-        setDatePickerVisibilityStart(false);
-      };
+    };
 
-      const handleConfirmTimeStart = (time) => {
+    const hideDatePickerTimeStart = () => {
+        setDatePickerVisibilityStart(false);
+    };
+
+    const handleConfirmTimeStart = (time) => {
         var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTimeStart( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
         setEndTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
         hideDatePickerTimeStart();
-      };
+    };
 
-      const [showModal, setShowModal] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     // const [items, setItems] = useState({
     //     '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
@@ -105,14 +105,14 @@ const Calendar = ({ navigation, route }) => {
     const submitSched = (title, desc, endDate, startTime, endTime, dayGet) => {
         console.log(title, desc, endDate, startTime, endTime, "Others", dayGet);
         const convDate = moment(dayGet).format('YYYY-MM-DD');
-       const newElement = {
-           ...items,
-           [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }] 
-       }
+        const newElement = {
+            ...items,
+            [convDate]: [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }]
+        }
         setItems(newElement);
         console.log(items);
-    
-    
+
+
     };
 
     /*useEffect(()=>{
@@ -159,7 +159,7 @@ const Calendar = ({ navigation, route }) => {
 
         const getData = async () => {
             const token = await AsyncStorage.getItem('token');
-            console.log(token, "token");
+            // console.log(token, "token");
             await fetch('https://beta.centaurmd.com/api/schedules', {
                 method: 'GET',
                 headers: {
@@ -198,7 +198,7 @@ const Calendar = ({ navigation, route }) => {
 
                 });
         }
-        console.log("ITEMS: ",items)
+        console.log("ITEMS: ", items)
         getData()
         getDeviceID()
         console.log("Device ID", deviceID);
@@ -206,28 +206,46 @@ const Calendar = ({ navigation, route }) => {
     }, []);
 
 
-    const getItem = () =>{
-        const mappedData = items.map((data) => {
-            const date = data.date_from;
-
-            return {
-                ...data,
-                date: moment(date).format('YYYY-MM-DD')
-            };
-        });
-
-        const reduced = mappedData.reduce(
-            (acc, currentItem) => {
-                const { date, ...coolItem } = currentItem;
-                acc[date] = [coolItem];
-
-                return acc;
+    const getAllSchedules = async () => {
+        const token = await AsyncStorage.getItem('token');
+        // console.log(token, "token");
+        await fetch('https://beta.centaurmd.com/api/schedules', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + token,
             },
-            {},
-        );
+        }).then(res => res.json())
+            .then(resData => {
+
+                // console.log("NEW DATA? ", resData)
+                setTempItems(resData);
 
 
-        setItems(reduced);
+                const mappedData = resData.map((data) => {
+                    const date = data.date_from;
+
+                    return {
+                        ...data,
+                        date: moment(date).format('YYYY-MM-DD')
+                    };
+                });
+
+                const reduced = mappedData.reduce(
+                    (acc, currentItem) => {
+                        const { date, ...coolItem } = currentItem;
+                        acc[date] = [coolItem];
+
+                        return acc;
+                    },
+                    {},
+                );
+
+
+                setItems(reduced);
+
+
+            });
     }
 
     const renderDay = (day, item) => {
@@ -245,79 +263,79 @@ const Calendar = ({ navigation, route }) => {
                 >
                     <SafeAreaView style={{ flex: 1 }}>
                         <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
-                        {item.category === 'reminder' ?
-                            <Card.Content>
-                                <View style={styles.columnContainer}>
-                                    <Text style={styles.titleStyle}>{item.title}</Text>
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
-                                       
-                                    </View>
-                                   
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
-                                    </View>
-                                </View>
-                            </Card.Content>
+                            {item.category === 'reminder' ?
+                                <Card.Content>
+                                    <View style={styles.columnContainer}>
+                                        <Text style={styles.titleStyle}>{item.title}</Text>
+                                        <View style={styles.rowContainer}>
+                                            <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                            <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
 
-                            :
+                                        </View>
 
-                            item.category === 'procedures' ?
-                            <Card.Content>
-                                <View style={styles.columnContainer}>
-                                    <Text style={styles.titleStyle}>{item.procedures}</Text>
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                        <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
-                                       
+                                        <View style={styles.rowContainer}>
+                                            <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                            <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                        </View>
                                     </View>
-                                   
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
-                                    </View>
-                                </View>
-                            </Card.Content>
-                            
-                            :
+                                </Card.Content>
 
-                            item.category === 'consults' ?
-                            <Card.Content>
-                                <View style={styles.columnContainer}>
-                                    <Text style={styles.titleStyle}>{item.procedures}</Text>
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
-                                        <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
-                                       
-                                    </View>
-                                   
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
-                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
-                                    </View>
-                                </View>
-                            </Card.Content>
+                                :
 
-                            :
+                                item.category === 'procedures' ?
+                                    <Card.Content>
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
 
-                            <Card.Content>
-                                <View style={styles.columnContainer}>
-                                    <Text style={styles.titleStyle}>{item.title}</Text>
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
-                                       
-                                    </View>
-                                   
-                                    <View style={styles.rowContainer}>
-                                        <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
-                                    </View>
-                                </View>
-                            </Card.Content>
-                        }
+                                            </View>
+
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                            </View>
+                                        </View>
+                                    </Card.Content>
+
+                                    :
+
+                                    item.category === 'consults' ?
+                                        <Card.Content>
+                                            <View style={styles.columnContainer}>
+                                                <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                                <View style={styles.rowContainer}>
+                                                    <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
+
+                                                </View>
+
+                                                <View style={styles.rowContainer}>
+                                                    <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                                </View>
+                                            </View>
+                                        </Card.Content>
+
+                                        :
+
+                                        <Card.Content>
+                                            <View style={styles.columnContainer}>
+                                                <Text style={styles.titleStyle}>{item.title}</Text>
+                                                <View style={styles.rowContainer}>
+                                                    <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+
+                                                </View>
+
+                                                <View style={styles.rowContainer}>
+                                                    <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                                </View>
+                                            </View>
+                                        </Card.Content>
+                            }
                         </Card>
                     </SafeAreaView>
                 </TouchableHighlight>
@@ -389,52 +407,55 @@ const Calendar = ({ navigation, route }) => {
         <View style={styles.container}>
             <AppBar title={"My Schedule"} showMenuIcon={false} />
             <View style={styles.typesContainer}>
-               
-                <TouchableHighlight
+
+                {/* <TouchableHighlight
                     style={{ padding: 5, borderRadius: 5 }}
                     activeOpacity={0.6}
                     underlayColor="#DDDDDD"
                     onPress={() => filterItems("consults")}
+                > */}
+                <DoubleClick
+                    singleTap={() => {filterItems("consults")}}
+                    doubleTap={() => {getAllSchedules()}}
+                    delay={200}
                 >
                     <View style={styles.types}>
                         <View style={styles.circleOrange}></View>
                         <Text style={styles.text2}>CONSULTS</Text>
                     </View>
-                </TouchableHighlight>
-                
-                <TouchableHighlight
-                    style={{ padding: 5, borderRadius: 5 }}
-                    activeOpacity={0.6}
-                    underlayColor="#DDDDDD"
-                    onPress={() => filterItems("procedures")}
+                </DoubleClick>
+                {/* </TouchableHighlight> */}
+
+                <DoubleClick
+                    singleTap={() => {filterItems("procedures")}}
+                    doubleTap={() => {getAllSchedules()}}
+                    delay={200}
                 >
                     <View style={styles.types}>
                         <View style={styles.circleGY}></View>
                         <Text style={styles.text2}>PROCEDURES</Text>
                     </View>
-                </TouchableHighlight>
-                <TouchableHighlight
-                    style={{ padding: 5, borderRadius: 5 }}
-                    activeOpacity={0.6}
-                    underlayColor="#DDDDDD"
-                    onPress={() => filterItems("reminder")}
+                </DoubleClick>
+                <DoubleClick
+                    singleTap={() => {filterItems("reminder")}}
+                    doubleTap={() => {getAllSchedules()}}
+                    delay={200}
                 >
                     <View style={styles.types}>
                         <View style={styles.circleBlue}></View>
                         <Text style={styles.text2}>REMINDER</Text>
                     </View>
-                </TouchableHighlight>
-                <TouchableHighlight
-                    style={{ padding: 5, borderRadius: 5 }}
-                    activeOpacity={0.6}
-                    underlayColor="#DDDDDD"
-                    onPress={() => filterItems("other")}
+                </DoubleClick>
+                <DoubleClick
+                    singleTap={() => {filterItems("other")}}
+                    doubleTap={() => {getAllSchedules()}}
+                    delay={200}
                 >
                     <View style={styles.types}>
                         <View style={styles.circleLG}></View>
                         <Text style={styles.text2}>OTHER</Text>
                     </View>
-                </TouchableHighlight>
+                </DoubleClick>
             </View>
 
             <Agenda
@@ -473,100 +494,100 @@ const Calendar = ({ navigation, route }) => {
                 }}
             >
 
-            <View style={styles.container}>
-            <SafeAreaView>
-                <View style={styles.headerWrapper}> 
-                
-                <View style={{flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto'}}>
-                    <Icon2 name="arrow-back" size={30} color="black" onPress={()=> {setShowModal(!showModal)}}/>
-                    <Text style={{marginLeft: 10, fontSize: 16, color: 'black'}}>Add Personal Schedule</Text>
+                <View style={styles.container}>
+                    <SafeAreaView>
+                        <View style={styles.headerWrapper}>
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto' }}>
+                                <Icon2 name="arrow-back" size={30} color="black" onPress={() => { setShowModal(!showModal) }} />
+                                <Text style={{ marginLeft: 10, fontSize: 16, color: 'black' }}>Add Personal Schedule</Text>
+                            </View>
+
+                        </View>
+                    </SafeAreaView>
+
+                    <View style={styles.dateContainer}>
+                        <Image
+                            style={styles.logoImg2}
+                            source={require('../../../assets/calendar.png')}
+                        />
+                        <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet}</Text>
+                    </View>
+
+                    <SafeAreaView style={styles.safeAreaViewContainer}>
+                        <Form onButtonPress={() => submitSched(title, desc, endDate, startTime, endTime, dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet)}
+                            buttonStyle={styles.buttonCont}
+                        >
+                            <FormItem
+                                label="Title"
+                                isRequired
+                                value={title}
+                                style={styles.inputContainer}
+                                onChangeText={titleInp => setTitle(titleInp)}
+                                asterik />
+
+                            <FormItem
+                                label="Description"
+                                isRequired
+                                value={desc}
+                                style={styles.inputContainer}
+                                onChangeText={descript => setDesc(descript)}
+                                asterik />
+
+                            <Label text="End Date" isRequired asterik />
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePicker}
+                            >
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.text3}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerVisible}
+                                        mode="date"
+                                        value={endDate}
+                                        onConfirm={handleConfirm}
+                                        onCancel={hideDatePicker}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+
+                            <Label text="Start Time" isRequired asterik />
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePickerTimeStart}
+                            >
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.text3}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerVisibleStart}
+                                        mode="time"
+                                        value={startTime}
+                                        onConfirm={handleConfirmTimeStart}
+                                        onCancel={hideDatePickerTimeStart}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+
+                            <Label text="End Time" isRequired asterik />
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePickerTime}
+                            >
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.text3}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerTimeVisible}
+                                        mode="time"
+                                        value={endTime}
+                                        onConfirm={handleConfirmTime}
+                                        onCancel={hideDatePickerTime}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+
+                        </Form>
+                    </SafeAreaView>
                 </View>
-              
-                </View>
-            </SafeAreaView>
-
-             <View style={styles.dateContainer}>
-             <Image
-                style={styles.logoImg2}
-                source={require('../../../assets/calendar.png')}
-              />
-                 <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet}</Text>
-             </View>
-
-             <SafeAreaView style={styles.safeAreaViewContainer}>
-             <Form onButtonPress={() =>submitSched(title, desc, endDate, startTime, endTime, dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet)}
-                buttonStyle={styles.buttonCont}
-             >
-                <FormItem
-                    label="Title"
-                    isRequired
-                    value={title}
-                    style={styles.inputContainer}
-                    onChangeText={titleInp => setTitle(titleInp)}
-                    asterik />
-
-                <FormItem
-                    label="Description"
-                    isRequired
-                    value={desc}
-                    style={styles.inputContainer}
-                    onChangeText={descript => setDesc(descript)}
-                    asterik />
-
-                <Label text="End Date" isRequired asterik />
-                    <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePicker}
-                    >
-                    <View style={styles.inputContainer2}>
-                        <Text style={styles.text3}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerVisible}
-                            mode="date"
-                            value={endDate}
-                            onConfirm={handleConfirm}
-                            onCancel={hideDatePicker}
-                        />
-                    </View>
-                </TouchableOpacity>
-
-                <Label text="Start Time" isRequired asterik />
-                <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePickerTimeStart}
-                    >
-                    <View style={styles.inputContainer2}>
-                        <Text style={styles.text3}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerVisibleStart}
-                            mode="time"
-                            value={startTime}
-                            onConfirm={handleConfirmTimeStart}
-                            onCancel={hideDatePickerTimeStart}
-                        />
-                    </View>
-                    </TouchableOpacity>
-
-                    <Label text="End Time" isRequired asterik />
-                    <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePickerTime}
-                    >
-                    <View style={styles.inputContainer2}>
-                        <Text style={styles.text3}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerTimeVisible}
-                            mode="time"
-                            value={endTime}
-                            onConfirm={handleConfirmTime}
-                            onCancel={hideDatePickerTime}
-                        />
-                    </View>
-                    </TouchableOpacity>
-
-            </Form>
-             </SafeAreaView>
-             </View>
             </Modal>
 
         </View>
@@ -694,7 +715,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-evenly',
         display: 'flex',
-
+        marginTop: 20
 
     },
     touchableOpacityStyle: {
@@ -712,7 +733,7 @@ const styles = StyleSheet.create({
         height: 50,
         //backgroundColor:'black'
     },
-    headerWrapper:{
+    headerWrapper: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingHorizontal: 20,
@@ -720,7 +741,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         alignItems: 'center',
     },
-    text3:{
+    text3: {
         fontSize: 15,
         fontWeight: '400',
         alignSelf: 'center',
@@ -734,12 +755,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         fontSize: 18,
         backgroundColor: '#3a87ad',
-      },
-      datetimeCont: {
+    },
+    datetimeCont: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-      },
-      
+    },
+
     inputContainer: {
         marginHorizontal: 3,
         borderWidth: 1,
@@ -749,9 +770,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         fontSize: 13,
         backgroundColor: 'white',
-      },
+    },
 
-      inputContainer2: {
+    inputContainer2: {
         height: 50,
         marginHorizontal: 3,
         marginVertical: 2,
@@ -762,13 +783,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flexDirection: 'row',
         marginBottom: 20,
-      },
-      buttonCont:{
+    },
+    buttonCont: {
         marginHorizontal: 5,
         marginTop: 10,
         backgroundColor: 'green'
     },
-    buttonDate:{
+    buttonDate: {
         marginHorizontal: 5,
         marginTop: 10,
     },
@@ -778,13 +799,13 @@ const styles = StyleSheet.create({
         marginRight: 10,
         resizeMode: 'contain',
     },
-    errorMsg:{
+    errorMsg: {
         color: 'red',
         fontSize: 13,
         marginHorizontal: 3,
         marginBottom: 10,
     },
-    textTitle:{
+    textTitle: {
         fontSize: 18,
         fontWeight: '700',
         padding: 5,

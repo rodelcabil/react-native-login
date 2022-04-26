@@ -10,33 +10,17 @@ import { Dimensions } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 var width = Dimensions.get('window').width;
-const ViewSchedule = ({ route }) => {
+const ViewSchedule = ({ route, navigation }) => {
 
-    const [carouselItem, setCarouselItem] = useState([
-        { src: 'https://images.unsplash.com/photo-1612277795259-607df5c06e6d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGF0aWVudHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60' },
-        { src: 'https://images.unsplash.com/photo-1611095790444-1dfa35e37b52?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTR8fHBhdGllbnR8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60' },
-        { src: 'https://media.istockphoto.com/photos/happy-young-indian-doctor-discussing-treatment-with-african-patient-picture-id1337312743?b=1&k=20&m=1337312743&s=170667a&w=0&h=OOkHSgQkR8yyLEW_maRVoxD7aMyRVRzt22Ln0ZSPT14=' },
-        { src: 'https://images.unsplash.com/photo-1576091358783-a212ec293ff3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8Y29uc3VsdHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60' },
-        { src: 'https://images.unsplash.com/photo-1631217872822-1c2546d6b864?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGNvbnN1bHR8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60' },
 
-    ]);
+    const [carouselItem, setCarouselItem] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [patientDetails, setPatientDetails] = useState([]);
 
-    const renderItem = ({ item, index }) => {
-        return (
-            <Image
-                key={index}
-                style={styles.carouselImg}
-                source={{
-                    uri: item.src,
-                }}
-            />
-        )
-    }
+    
 
     useEffect(()=>{
-        const getPatiendData = async () => {
+        const geConsultFormData = async () => {
             const token = await AsyncStorage.getItem('token');
             console.log(token, "token");
             await fetch('https://beta.centaurmd.com/api/consult-info/'+ route.params.item?.id, {
@@ -47,21 +31,40 @@ const ViewSchedule = ({ route }) => {
                 },
             }).then(res => res.json())
                 .then(resData => {
-                    console.log("PATIENT DETAILS", resData);
+                    let arrayImages = [];
+
+                    console.log("CONSULT FORM DETAILS", resData);
+                    arrayImages.push(resData.front_photo);
+                    arrayImages.push(resData.right_side_photo);
+                    arrayImages.push(resData.left_side_photo);
 
 
+                    setCarouselItem(arrayImages);
+                    
                 });
         }
 
-        getPatiendData();
-    });
+        geConsultFormData();
+    }, []);
+
+    const renderItem = ({ item, index }) => {
+        return (
+            <Image
+                key={index}
+                style={styles.carouselImg}
+                source={{
+                    uri: item,
+                }}
+            />
+        )
+    }
 
     return (
         <View style={styles.container}>
             <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  route.params.item?.title} showMenuIcon={true} />
             <ScrollView>
                 { route.params.item?.category !== "consults" ? <></> :
-                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', height: 320}}>
                     <Carousel
                         layout={"default"}
                         //   ref={ref => carousel = ref}
@@ -72,9 +75,9 @@ const ViewSchedule = ({ route }) => {
                         onSnapToItem={index => setActiveIndex(index)} />
                 </View>
                 }
-                <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
+                {/* <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
                     <Text style={styles.textDetailsHeader}>Details</Text>
-                </SafeAreaView>
+                </SafeAreaView> */}
                 <SafeAreaView style={styles.safeAreaViewContainer}>
                     <View
                         style={{
@@ -107,17 +110,17 @@ const ViewSchedule = ({ route }) => {
                                             <Icon name="information" size={23} color="#da7331" />
                                             <Text style={styles.tagStyle}>{route.params.item?.notes}</Text>
                                         </View>
-                                        <View style={styles.border} />
+                                       
                                         <View style={styles.rowContainer}>
                                             <Icon name="calendar" size={23} color="#da7331" />
                                             <Text style={styles.scheduleStyle}>{route.params.item?.time_from} - {route.params.item?.time_to}</Text>
                                         </View>
-                                        <View style={styles.border} />
+                                        
                                         <View style={styles.rowContainer}>
                                             <EntypoIcon name="location-pin" size={23} color="#da7331" />
                                             <Text style={styles.scheduleStyle}>{route.params.item?.location}</Text>
                                         </View>
-                                        <View style={styles.border} />
+                                       
                                         <View style={styles.rowContainer}>
                                             <FontistoIcon name="doctor" size={23} color="#da7331" />
                                             <Text style={styles.scheduleStyle}>{route.params.item?.surgeon}</Text>
@@ -128,7 +131,11 @@ const ViewSchedule = ({ route }) => {
                                                 title="VIEW PATIENT DETAILS"
                                                 color="#da7331"
                                                 accessibilityLabel="Learn more about this purple button"
-                                               
+                                                onPress={()=>{
+                                                    navigation.navigate('View Patient Details', {
+                                                        data: route.params.item?.lead_id,
+                                                    });
+                                                }}
                                             />
                                        </View>
                                     </View>
@@ -221,8 +228,7 @@ const styles = StyleSheet.create({
     rowContainer: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        marginTop: 5,
-        padding: 15,
+        paddingVertical: 8,
 
 
     },
@@ -236,7 +242,8 @@ const styles = StyleSheet.create({
         letterSpacing: 0.2,
         fontWeight: '800',
         color: '#0E2138',
-        fontSize: 18,
+        fontSize: 20,
+        marginBottom: 10
     },
     tagStyle: {
 
@@ -257,7 +264,7 @@ const styles = StyleSheet.create({
     },
     carouselImg: {
         width: 380,
-        height: 200,
+        height: 300,
         borderRadius: 10
     },
     button: {

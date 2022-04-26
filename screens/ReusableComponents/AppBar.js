@@ -57,7 +57,7 @@ const AppBar = ({title, showMenuIcon}) => {
             <SafeAreaView>
                 <View style={styles.headerWrapper}> 
                 <View style={{flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto'}}>
-                    <Icon name="arrow-back" size={30} color="black" style={{display: showMenuIcon === true? 'flex' : 'none'}} onPress={()=> navigation.navigate('Home Page')}/>
+                    <Icon name="arrow-back" size={30} color="black" style={{display: showMenuIcon === true? 'flex' : 'none'}} onPress={()=> navigation.goBack()}/>
                     <Text style={{marginLeft: showMenuIcon === true? 10 : 0 , fontSize: 16, color: 'black'}}>{title}</Text>
                 </View>
               
@@ -99,7 +99,16 @@ const AppBar = ({title, showMenuIcon}) => {
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: 'fff',
+        backgroundColor: '#fff',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
        
     },
     containerMenu:{
