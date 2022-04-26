@@ -2,8 +2,10 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+import FAIcon from 'react-native-vector-icons/FontAwesome5';
 import Calendar from './HomeScreens/calendar';
 import Dashboard from './HomeScreens/dashsboard';
 import Group from './HomeScreens/group';
@@ -31,7 +33,7 @@ const Home = () => {
                     headerShown:false,
                     tabBarLabel: 'My Calendar',
                     tabBarIcon: ({ color, size }) => (
-                        <Icon name="calendar" color={color} size={size} />
+                        <FAIcon name="calendar-alt" color={color} size={size} />
                     ),
                 }}
             />
@@ -52,7 +54,7 @@ const Home = () => {
                     headerShown:false,
                     tabBarLabel: 'Settings',
                     tabBarIcon: ({ color, size }) => (
-                        <Icon name="chat" color={color} size={size} />
+                        <IonIcon name="settings" color={color} size={size} />
                     ),
                 }}/>
             <Tab.Screen 
@@ -62,7 +64,7 @@ const Home = () => {
                     headerShown:false,
                     tabBarLabel: 'Help',
                     tabBarIcon: ({ color, size }) => (
-                        <Icon name="chat" color={color} size={size} />
+                        <EntypoIcon name="help-with-circle" color={color} size={size} />
                     ),
                 }}/>
         </Tab.Navigator>

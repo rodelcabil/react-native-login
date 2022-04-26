@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, TextInput, Button, Image, TouchableOpacity} from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
-import { Form, FormItem, Label  } from 'react-native-form-component';
+import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
 import * as Animatable from 'react-native-animatable';
-import  Calendar  from './Home/HomeScreens/calendar';
+import Calendar from './Home/HomeScreens/calendar';
 
-const AddSchedule = ({route}) =>{
+const AddSchedule = ({ route }) => {
     const submitSched = (title, desc, endDate, startTime, endTime, dateSelected) => {
         console.log(title, desc, endDate, startTime, endTime, "Others", dateSelected);
-    
+
     };
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -27,140 +27,141 @@ const AddSchedule = ({route}) =>{
     const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
 
     const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
-    
+
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
-      };
-    
-      const hideDatePicker = () => {
-        setDatePickerVisibility(false);
-      };
+    };
 
-      const handleConfirm = (date) => {
+    const hideDatePicker = () => {
+        setDatePickerVisibility(false);
+    };
+
+    const handleConfirm = (date) => {
         //console.warn("A date has been picked: ", date);
         setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
         setEndDate(moment(date).format("YYYY-MM-DD"));
         hideDatePicker();
-      };
+    };
 
-      const showDatePickerTime = () => {
+    const showDatePickerTime = () => {
         setDatePickerTimeVisibility(true);
-      };
-    
-      const hideDatePickerTime = () => {
-        setDatePickerTimeVisibility(false);
-      };
+    };
 
-      const handleConfirmTime = (time) => {
+    const hideDatePickerTime = () => {
+        setDatePickerTimeVisibility(false);
+    };
+
+    const handleConfirmTime = (time) => {
         var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTime( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
         setStartTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
         hideDatePickerTime();
-      };
+    };
 
-      const showDatePickerTimeStart = () => {
+    const showDatePickerTimeStart = () => {
         setDatePickerVisibilityStart(true);
-      };
-    
-      const hideDatePickerTimeStart = () => {
-        setDatePickerVisibilityStart(false);
-      };
+    };
 
-      const handleConfirmTimeStart = (time) => {
+    const hideDatePickerTimeStart = () => {
+        setDatePickerVisibilityStart(false);
+    };
+
+    const handleConfirmTimeStart = (time) => {
         var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTimeStart( moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
         setEndTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
         hideDatePickerTimeStart();
-      };
+    };
 
-    return(
+    return (
         <View style={styles.container}>
-             <AppBar title={"Add Personal Schedule"} showMenuIcon={true}/>
-             <View style={styles.dateContainer}>
-             <Image
-                style={styles.logoImg}
-                source={require('../assets/calendar.png')}
-              />
-                 <Text style={styles.textTitle}>Date - {route.params.getdate}</Text>
-             </View>
+            <AppBar title={"Add Personal Schedule"} showMenuIcon={true} />
+         
+                <View style={styles.dateContainer}>
+                    <Image
+                        style={styles.logoImg}
+                        source={require('../assets/calendar.png')}
+                    />
+                    <Text style={styles.textTitle}>Date - {route.params.getdate}</Text>
+                </View>
+                <ScrollView>
+                <SafeAreaView style={styles.safeAreaViewContainer}>
+                    <Form onButtonPress={() => submitSched(title, desc, endDate, startTime, endTime, route.params.getdate)}
+                        buttonStyle={styles.buttonCont}
+                    >
+                        <FormItem
+                            label="Title"
+                            isRequired
+                            value={title}
+                            style={styles.inputContainer}
+                            onChangeText={titleInp => setTitle(titleInp)}
+                            asterik />
 
-             <SafeAreaView style={styles.safeAreaViewContainer}>
-             <Form onButtonPress={() =>submitSched(title, desc, endDate, startTime, endTime, route.params.getdate)}
-                buttonStyle={styles.buttonCont}
-             >
-                <FormItem
-                    label="Title"
-                    isRequired
-                    value={title}
-                    style={styles.inputContainer}
-                    onChangeText={titleInp => setTitle(titleInp)}
-                    asterik />
+                        <FormItem
+                            label="Description"
+                            isRequired
+                            value={desc}
+                            style={styles.inputContainer}
+                            onChangeText={descript => setDesc(descript)}
+                            asterik />
 
-                <FormItem
-                    label="Description"
-                    isRequired
-                    value={desc}
-                    style={styles.inputContainer}
-                    onChangeText={descript => setDesc(descript)}
-                    asterik />
-
-                <Label text="End Date" isRequired asterik />
-                    <TouchableOpacity
+                        <Label text="End Date" isRequired asterik />
+                        <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePicker}
-                    >
-                    <View style={styles.inputContainer2}>
-                        <Text style={styles.text2}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerVisible}
-                            mode="date"
-                            value={endDate}
-                            onConfirm={handleConfirm}
-                            onCancel={hideDatePicker}
-                        />
-                    </View>
-                </TouchableOpacity>
+                        >
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.text2}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisible}
+                                    mode="date"
+                                    value={endDate}
+                                    onConfirm={handleConfirm}
+                                    onCancel={hideDatePicker}
+                                />
+                            </View>
+                        </TouchableOpacity>
 
-                <Label text="Start Time" isRequired asterik />
-                <TouchableOpacity
+                        <Label text="Start Time" isRequired asterik />
+                        <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePickerTimeStart}
-                    >
-                    <View style={styles.inputContainer2}>
-                        <Text style={styles.text2}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerVisibleStart}
-                            mode="time"
-                            value={startTime}
-                            onConfirm={handleConfirmTimeStart}
-                            onCancel={hideDatePickerTimeStart}
-                        />
-                    </View>
-                    </TouchableOpacity>
+                        >
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.text2}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleStart}
+                                    mode="time"
+                                    value={startTime}
+                                    onConfirm={handleConfirmTimeStart}
+                                    onCancel={hideDatePickerTimeStart}
+                                />
+                            </View>
+                        </TouchableOpacity>
 
-                    <Label text="End Time" isRequired asterik />
-                    <TouchableOpacity
+                        <Label text="End Time" isRequired asterik />
+                        <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePickerTime}
-                    >
-                    <View style={styles.inputContainer2}>
-                        <Text style={styles.text2}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                        <DateTimePickerModal
-                            isVisible={isDatePickerTimeVisible}
-                            mode="time"
-                            value={endTime}
-                            onConfirm={handleConfirmTime}
-                            onCancel={hideDatePickerTime}
-                        />
-                    </View>
-                    </TouchableOpacity>
+                        >
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.text2}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerTimeVisible}
+                                    mode="time"
+                                    value={endTime}
+                                    onConfirm={handleConfirmTime}
+                                    onCancel={hideDatePickerTime}
+                                />
+                            </View>
+                        </TouchableOpacity>
 
-            </Form>
+                    </Form>
 
-            
 
-           {/*
+
+                    {/*
            <Text style={styles.text}>Description</Text>
             <TextInput
                     style={styles.inputContainer}
@@ -172,9 +173,10 @@ const AddSchedule = ({route}) =>{
                 <Text style={styles.errorMsg}> Description is required</Text>
             </Animatable.View>
 
-           */}  
+           */}
 
-             </SafeAreaView>
+                </SafeAreaView>
+            </ScrollView>
         </View>
     );
 };
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         fontFamily: "Roboto",
-       
+
     },
     dateContainer: {
         flexDirection: 'row',
@@ -194,12 +196,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         fontSize: 18,
         backgroundColor: '#3a87ad',
-      },
-      datetimeCont: {
+    },
+    datetimeCont: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-      },
-      
+    },
+
     inputContainer: {
         marginHorizontal: 3,
         borderWidth: 1,
@@ -209,9 +211,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         fontSize: 13,
         backgroundColor: 'white',
-      },
+    },
 
-      inputContainer2: {
+    inputContainer2: {
         height: 50,
         marginHorizontal: 3,
         marginVertical: 2,
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flexDirection: 'row',
         marginBottom: 20,
-      },
+    },
 
     itemContainer: {
         backgroundColor: 'white',
@@ -237,14 +239,14 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#F2F4F5'
     },
-    columnContainer:{
+    columnContainer: {
         flexDirection: 'column',
-       
+
     },
-    rowContainer:{
+    rowContainer: {
         flexDirection: 'row',
         marginTop: 5,
-       
+
     },
     titleStyle: {
         letterSpacing: 0.2,
@@ -256,37 +258,37 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 14,
         color: 'white',
-        
+
     },
     scheduleStyle: {
         fontWeight: '700',
         fontSize: 14,
         color: 'white',
     },
-    
-    text:{
+
+    text: {
         marginHorizontal: 10,
         fontSize: 15,
         fontWeight: '400',
     },
-    text2:{
+    text2: {
         fontSize: 15,
         fontWeight: '400',
         alignSelf: 'center',
         marginHorizontal: 15,
     },
-    textTitle:{
+    textTitle: {
         fontSize: 18,
         fontWeight: '700',
         padding: 5,
         color: 'white',
     },
-    buttonCont:{
+    buttonCont: {
         marginHorizontal: 5,
         marginTop: 10,
         backgroundColor: 'green'
     },
-    buttonDate:{
+    buttonDate: {
         marginHorizontal: 5,
         marginTop: 10,
     },
@@ -296,7 +298,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
         resizeMode: 'contain',
     },
-    errorMsg:{
+    errorMsg: {
         color: 'red',
         fontSize: 13,
         marginHorizontal: 3,

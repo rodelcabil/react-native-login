@@ -1,9 +1,13 @@
-import React, { useState } from "react";
-import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
+import FAIcon from 'react-native-vector-icons/FontAwesome';
+import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import Carousel from 'react-native-snap-carousel';
 import { Dimensions } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 var width = Dimensions.get('window').width;
 const ViewSchedule = ({ route }) => {
@@ -17,6 +21,7 @@ const ViewSchedule = ({ route }) => {
 
     ]);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [patientDetails, setPatientDetails] = useState([]);
 
     const renderItem = ({ item, index }) => {
         return (
@@ -30,10 +35,32 @@ const ViewSchedule = ({ route }) => {
         )
     }
 
+    useEffect(()=>{
+        const getPatiendData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            console.log(token, "token");
+            await fetch('https://beta.centaurmd.com/api/consult-info/'+ route.params.item?.id, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                },
+            }).then(res => res.json())
+                .then(resData => {
+                    console.log("PATIENT DETAILS", resData);
+
+
+                });
+        }
+
+        getPatiendData();
+    });
+
     return (
         <View style={styles.container}>
-            <AppBar title={route.params.item?.title} showMenuIcon={true} />
+            <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  route.params.item?.title} showMenuIcon={true} />
             <ScrollView>
+                { route.params.item?.category !== "consults" ? <></> :
                 <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center' }}>
                     <Carousel
                         layout={"default"}
@@ -44,7 +71,7 @@ const ViewSchedule = ({ route }) => {
                         renderItem={renderItem}
                         onSnapToItem={index => setActiveIndex(index)} />
                 </View>
-
+                }
                 <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
                     <Text style={styles.textDetailsHeader}>Details</Text>
                 </SafeAreaView>
@@ -85,6 +112,25 @@ const ViewSchedule = ({ route }) => {
                                             <Icon name="calendar" size={23} color="#da7331" />
                                             <Text style={styles.scheduleStyle}>{route.params.item?.time_from} - {route.params.item?.time_to}</Text>
                                         </View>
+                                        <View style={styles.border} />
+                                        <View style={styles.rowContainer}>
+                                            <EntypoIcon name="location-pin" size={23} color="#da7331" />
+                                            <Text style={styles.scheduleStyle}>{route.params.item?.location}</Text>
+                                        </View>
+                                        <View style={styles.border} />
+                                        <View style={styles.rowContainer}>
+                                            <FontistoIcon name="doctor" size={23} color="#da7331" />
+                                            <Text style={styles.scheduleStyle}>{route.params.item?.surgeon}</Text>
+                                        </View>
+                                        <View style={{marginTop: 10}}>
+                                            <Button
+                                                style={styles.button}
+                                                title="VIEW PATIENT DETAILS"
+                                                color="#da7331"
+                                                accessibilityLabel="Learn more about this purple button"
+                                               
+                                            />
+                                       </View>
                                     </View>
                                 </>
                                 :
@@ -101,6 +147,26 @@ const ViewSchedule = ({ route }) => {
                                             <View style={styles.rowContainer}>
                                                 <Icon name="calendar" size={23} color="#ffc000" />
                                                 <Text style={styles.scheduleStyle}>{route.params.item?.time_from} - {route.params.item?.time_to}</Text>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <EntypoIcon name="location-pin" size={23} color="#ffc000" />
+                                                <Text style={styles.scheduleStyle}>{route.params.item?.location}</Text>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <FontistoIcon name="doctor" size={23} color="#ffc000" />
+                                                <Text style={styles.scheduleStyle}>{route.params.item?.surgeon}</Text>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="account-group" size={23} color="#ffc000" />
+                                                <Text style={styles.scheduleStyle}>{route.params.item?.ethnicity}</Text>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                {route.params.item?.gender === "male" ? <Icon name="gender-male" size={25} color="#ffc000" /> : <Icon name="gender-female" size={25} color="#ffc000" />}
+                                                <Text style={styles.scheduleStyle}>{route.params.item?.gender}</Text>
                                             </View>
                                         </View>
                                     </>
@@ -194,7 +260,10 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 10
     },
-
+    button: {
+        borderRadius: 5,
+        
+      },
 });
 
 export default ViewSchedule;

@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
+    
     borderRadius: 5,
   },
   textSmall: {

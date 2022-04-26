@@ -159,7 +159,7 @@ const Calendar = ({ navigation, route }) => {
 
         const getData = async () => {
             const token = await AsyncStorage.getItem('token');
-            // console.log(token, "token");
+            console.log(token, "token");
             await fetch('https://beta.centaurmd.com/api/schedules', {
                 method: 'GET',
                 headers: {
