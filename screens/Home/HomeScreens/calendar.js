@@ -17,11 +17,13 @@ import DoubleClick from 'react-native-double-tap';
 import { addDays, format } from 'date-fns';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import ApiCalendar from 'react-google-calendar-api';
+
+
 var width = Dimensions.get('window').width - 20;
 
-
-
 const Calendar = ({ navigation, route }) => {
+
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
     const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
@@ -105,14 +107,37 @@ const Calendar = ({ navigation, route }) => {
     const submitSched = (title, desc, endDate, startTime, endTime, dayGet) => {
         console.log(title, desc, endDate, startTime, endTime, "Others", dayGet);
         const convDate = moment(dayGet).format('YYYY-MM-DD');
-        const newElement = {
-            ...items,
-            [convDate]: [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }]
-        }
-        setItems(newElement);
+
+        const newSet = {};
+        Object.keys(items).forEach((key) =>{
+            console.log(items[convDate] === convDate );
+            if(items[key] === convDate ){
+                newSet[convDate] =  {[convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }]} 
+                 setItems(newSet);
+                 console.log("dsadasdas11");
+            }
+            else{
+                const newElement = {
+                    ...items,
+                    [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }] 
+                 }
+                 setItems(newElement);
+                 
+                 console.log("dsadasdas22");
+            }
+        })
+
         console.log(items);
-
-
+    
+        /*
+                        const newElement = {
+                    ...items,
+                    [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }] 
+                 }
+                 setItems(newElement);
+                 
+                 console.log("dsadasdas22"); */
+    
     };
 
     /*useEffect(()=>{
@@ -240,13 +265,40 @@ const Calendar = ({ navigation, route }) => {
                     },
                     {},
                 );
-
-
                 setItems(reduced);
 
 
             });
     }
+    componentDidMount = () =>{
+        const newSet = [];
+        let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
+        fetch(postsUrl)
+            .then((response) => response.json())
+            .then((responseData) => {
+              console.log(responseData);
+              console.log(responseData.items[0].start.dateTime);
+              for (let i = 0; i < responseData.items.length; i++) {
+                const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
+                const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
+                const dateEnd = moment(responseData.items[i].end.dateTime).format("YYYY-MM-DD");
+                const timeEnd = moment(responseData.items[i].end.dateTime).format("HH:mma");
+                const title = (responseData.items[i].summary);
+                const description = (responseData.items[i].description);
+
+                console.log(responseData.items[i].start.dateTime);
+                newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
+                const output = Object.assign({}, ...newSet)
+                
+                const newElement = {
+                    ...items, ...output
+                 }
+                 setItems(newElement);
+                 console.log(output, "NEW SETTTTTTTTTTTTTTT");
+              }
+            })
+            console.log(items)
+    } 
 
     const renderDay = (day, item) => {
         return (
@@ -406,6 +458,7 @@ const Calendar = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             <AppBar title={"My Schedule"} showMenuIcon={false} />
+            <Button title="Sync Google Calendar" onPress={componentDidMount} titleStyle={styles.text2} style={styles.buttonCont}></Button>
             <View style={styles.typesContainer}>
 
                 {/* <TouchableHighlight
@@ -473,6 +526,7 @@ const Calendar = ({ navigation, route }) => {
                 }}
 
             />
+
             <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => {
@@ -484,6 +538,8 @@ const Calendar = ({ navigation, route }) => {
                     style={styles.floatingButtonStyle}
                 />
             </TouchableOpacity>
+
+            
 
             <Modal
                 animationType={'slide'}
@@ -787,7 +843,7 @@ const styles = StyleSheet.create({
     buttonCont: {
         marginHorizontal: 5,
         marginTop: 10,
-        backgroundColor: 'green'
+        backgroundColor: 'green',
     },
     buttonDate: {
         marginHorizontal: 5,
