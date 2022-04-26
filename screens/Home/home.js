@@ -40,7 +40,7 @@ const Home = () => {
                 component={Group} 
                 options={{
                     headerShown:false,
-                    tabBarLabel: 'Group',
+                    tabBarLabel: 'Messaging',
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="chat" color={color} size={size} />
                     ),
@@ -50,7 +50,7 @@ const Home = () => {
                 component={Group} 
                 options={{
                     headerShown:false,
-                    tabBarLabel: 'Group',
+                    tabBarLabel: 'Settings',
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="chat" color={color} size={size} />
                     ),
@@ -60,7 +60,7 @@ const Home = () => {
                 component={Group} 
                 options={{
                     headerShown:false,
-                    tabBarLabel: 'Group',
+                    tabBarLabel: 'Help',
                     tabBarIcon: ({ color, size }) => (
                         <Icon name="chat" color={color} size={size} />
                     ),

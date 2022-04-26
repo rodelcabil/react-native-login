@@ -170,7 +170,7 @@ const Calendar = ({ navigation, route }) => {
                 .then(resData => {
 
                     // console.log("NEW DATA? ", resData)
-                     setTempItems(resData);
+                    setTempItems(resData);
 
 
                     const mappedData = resData.map((data) => {
@@ -244,20 +244,80 @@ const Calendar = ({ navigation, route }) => {
                     }}
                 >
                     <SafeAreaView style={{ flex: 1 }}>
-                        <Card style={{ backgroundColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
+                        <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
+                        {item.category === 'reminder' ?
                             <Card.Content>
                                 <View style={styles.columnContainer}>
                                     <Text style={styles.titleStyle}>{item.title}</Text>
                                     <View style={styles.rowContainer}>
-                                        <Icon name="doctor" size={20} color="white" style={{ marginRight: 5 }} />
+                                        <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
                                         <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+                                       
                                     </View>
+                                   
                                     <View style={styles.rowContainer}>
-                                        <Icon name="calendar" size={20} color="white" style={{ marginRight: 5 }} />
-                                        <Text style={styles.scheduleStyle}>{item.start}</Text>
+                                        <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
                                     </View>
                                 </View>
                             </Card.Content>
+
+                            :
+
+                            item.category === 'procedures' ?
+                            <Card.Content>
+                                <View style={styles.columnContainer}>
+                                    <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                    <View style={styles.rowContainer}>
+                                        <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                        <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
+                                       
+                                    </View>
+                                   
+                                    <View style={styles.rowContainer}>
+                                        <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                    </View>
+                                </View>
+                            </Card.Content>
+                            
+                            :
+
+                            item.category === 'consults' ?
+                            <Card.Content>
+                                <View style={styles.columnContainer}>
+                                    <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                    <View style={styles.rowContainer}>
+                                        <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                        <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
+                                       
+                                    </View>
+                                   
+                                    <View style={styles.rowContainer}>
+                                        <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                    </View>
+                                </View>
+                            </Card.Content>
+
+                            :
+
+                            <Card.Content>
+                                <View style={styles.columnContainer}>
+                                    <Text style={styles.titleStyle}>{item.title}</Text>
+                                    <View style={styles.rowContainer}>
+                                        <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+                                       
+                                    </View>
+                                   
+                                    <View style={styles.rowContainer}>
+                                        <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                        <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                    </View>
+                                </View>
+                            </Card.Content>
+                        }
                         </Card>
                     </SafeAreaView>
                 </TouchableHighlight>
@@ -299,7 +359,7 @@ const Calendar = ({ navigation, route }) => {
     const filterItems = (itemCategory) => {
 
         const newList = tempItems.filter(item => { return item.category === itemCategory });
-        console.log("new list to: ", newList)
+        // console.log("new list to: ", newList)
 
         const mappedData = newList.map((data) => {
             const date = data.date_from;
@@ -329,29 +389,19 @@ const Calendar = ({ navigation, route }) => {
         <View style={styles.container}>
             <AppBar title={"My Schedule"} showMenuIcon={false} />
             <View style={styles.typesContainer}>
-                {/* <DoubleClick
-                    singleTap={() => {
-                        filterItems("consults");
-                        console.log("single tap");
-                    }}
-                    doubleTap={() => {
-                        getItem();
-                        console.log("double tap");
-                    }}
-                    delay={200}
-                    > */}
-                    <TouchableHighlight
-                        style={{ padding: 5, borderRadius: 5 }}
-                        activeOpacity={0.6}
-                        underlayColor="#DDDDDD"
-                        onPress={() => filterItems("consults")}
-                    >
-                        <View style={styles.types}>
-                            <View style={styles.circleOrange}></View>
-                            <Text style={styles.text2}>CONSULTS</Text>
-                        </View>
-                    </TouchableHighlight>
-                {/* </DoubleClick> */}
+               
+                <TouchableHighlight
+                    style={{ padding: 5, borderRadius: 5 }}
+                    activeOpacity={0.6}
+                    underlayColor="#DDDDDD"
+                    onPress={() => filterItems("consults")}
+                >
+                    <View style={styles.types}>
+                        <View style={styles.circleOrange}></View>
+                        <Text style={styles.text2}>CONSULTS</Text>
+                    </View>
+                </TouchableHighlight>
+                
                 <TouchableHighlight
                     style={{ padding: 5, borderRadius: 5 }}
                     activeOpacity={0.6}
@@ -554,20 +604,24 @@ const styles = StyleSheet.create({
     titleStyle: {
         letterSpacing: 0.2,
         fontWeight: '800',
-        color: '#fff',
+        color: '#0E2138',
         fontSize: 18,
+        marginBottom: 10
 
     },
     tagStyle: {
-        fontWeight: '700',
+        fontWeight: '600',
         fontSize: 14,
-        color: '#fff',
+        color: '#737A87',
+        paddingLeft: 10
+
 
     },
     scheduleStyle: {
-        fontWeight: '700',
+        fontWeight: '600',
         fontSize: 14,
-        color: '#fff',
+        color: '#737A87',
+        paddingLeft: 10
 
     },
     itemEmptyContainer: {
