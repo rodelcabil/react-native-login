@@ -1,16 +1,42 @@
-import React from 'react';
-import { StyleSheet, View, Text, Button} from 'react-native';
+import React, {Component }  from 'react';
+import { StyleSheet, View, Text, Button, Image} from 'react-native';
 import AppBar from '../../ReusableComponents/AppBar';
-import ApiCalendar from 'react-google-calendar-api';
-import { gapi } from 'gapi-script'
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 import moment from 'moment';
-import Calendar from 'react-google-calendar-events-list';
+import {GoogleSignin, GoogleSigninButton} from '@react-native-community/google-signin'
 
-const Dashboard = () => {
+GoogleSignin.configure({
+  webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
+  offlineAccess: true
+})
 
-    /*const handleClick = (name) => {
-      if (name === 'sign-in') {
+class Dashboard extends Component {
+  
+  constructor(props){
+    super(props);
+    this.state = {
+      userGoogleInfo : {},
+      loaded: false
+    }
+  }
+
+  signIn = async() =>{
+    try{
+      await GoogleSignin.hasPlayServices()
+      const userInfo = await GoogleSignin.signIn();
+      this.setState({
+        userGoogleInfo: userInfo,
+        loaded: true,
+      })
+    }
+    catch(error){
+        console.log(error.message, "error");
+    }
+  }
+
+  
+   /* const handleClick = (name) => {
+      /*if (name === 'sign-in') {
         ApiCalendar.handleAuthClick()
         .then(() => {
           console.log('sign in succesful!'); 
@@ -98,29 +124,41 @@ const Dashboard = () => {
           });
   };*/
 
-  componentDidMount = () =>{
-    let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
-    fetch(postsUrl)
-        .then((response) => response.json())
-        .then((response) => {
-          console.log(response);
-          /*  var standartDataSource=new ListView.DataSource({rowHasChanged: (r1, r2)=>r1!== r2});
-            this.setState({
-                isLoading:false,
-                events:standartDataSource.cloneWithRows(response)
-            })*/
 
-        })
-} 
+//var CLIENT_ID = "909386486823-i5gupld1p74t674v4oq0bhj727ban0k7.apps.googleusercontent.com"
+//var API_KEY = "AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
+//var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
+//var SCOPES = "https://www.googleapis.com/auth/calendar.events"
 
-
-    return (
+    render() {
+      return (
         <View>
             <AppBar title={"Dashboard"} showMenuIcon={false} />
-            <Button title="SIGN IN" onPress={componentDidMount}></Button>
-            
+            <Button title="SIGN IN"></Button>
+
+            <GoogleSigninButton
+                style={{width: 222, height: 40}}
+                size={GoogleSigninButton.Size.Wide}
+                color={GoogleSigninButton.Color.Dark}
+                onPress={this.signIn}
+            />
+            {this.state.loaded?
+              <View>
+                <Text>{this.state.userGoogleInfo.user.name}</Text>
+                <Text>{this.state.userGoogleInfo.user.email}</Text>
+                <Image
+                    style={{width: 100, height: 100}}
+                    source={{uri: this.state.userGoogleInfo.user.photo}}
+                />
+                
+              </View>
+
+              : <Text>NO</Text>
+            }
+
         </View>
     );
+    }
 };
 
 const styles = StyleSheet.create({
