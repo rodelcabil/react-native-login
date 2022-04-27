@@ -24,6 +24,17 @@ var width = Dimensions.get('window').width - 20;
 
 const Calendar = ({ navigation, route }) => {
 
+    const [items, setItems] = useState({});
+    const [tempItems, setTempItems] = useState([]);
+
+    const [mergeItems, setMergeItems] = useState([]);
+
+    const [dayGet, setDay] = useState(null);
+
+    const [deviceID, setDeviceID] = useState();
+
+    const [showModal, setShowModal] = useState(false);
+
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
     const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
@@ -84,25 +95,22 @@ const Calendar = ({ navigation, route }) => {
         hideDatePickerTimeStart();
     };
 
-    const [showModal, setShowModal] = useState(false);
+    
 
-    // const [items, setItems] = useState({
+    // const [dummy, setDummy] = useState({
     //     '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
     //     '2022-04-20': [
     //         { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }, 
     //         { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'other' }
     //     ], 
     //     '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', category: 'reminder' }],
+    //     '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', category: 'others' }],
     //     '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
     //     '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', category: 'other' }],
     //     '2022-04-23': [{ event: 'Schedule Title 6', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', category: 'other' }],
     // });
 
-    const [items, setItems] = useState({});
-    const [tempItems, setTempItems] = useState([]);
-    const [dayGet, setDay] = useState(null);
-
-    const [deviceID, setDeviceID] = useState();
+    
 
     const submitSched = (title, desc, endDate, startTime, endTime, dayGet) => {
         console.log(title, desc, endDate, startTime, endTime, "Others", dayGet);
@@ -457,8 +465,8 @@ const Calendar = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <AppBar title={"My Schedule"} showMenuIcon={false} />
-            <Button title="Sync Google Calendar" onPress={componentDidMount} titleStyle={styles.text2} style={styles.buttonCont}></Button>
+            {/* <AppBar title={"My Schedule"} showMenuIcon={false} /> */}
+            {/* <Button title="Sync Google Calendar" onPress={componentDidMount} titleStyle={styles.text2} style={styles.buttonCont}></Button> */}
             <View style={styles.typesContainer}>
 
                 {/* <TouchableHighlight
@@ -716,6 +724,7 @@ const styles = StyleSheet.create({
     },
     text2: {
         fontSize: 12,
+        color: 'black'
     },
     safeAreaViewContainer: {
         padding: 20,
@@ -843,7 +852,8 @@ const styles = StyleSheet.create({
     buttonCont: {
         marginHorizontal: 5,
         marginTop: 10,
-        backgroundColor: 'green',
+        backgroundColor: '#81c784',
+        color: '#fff'
     },
     buttonDate: {
         marginHorizontal: 5,

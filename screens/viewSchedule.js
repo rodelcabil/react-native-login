@@ -5,7 +5,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import FAIcon from 'react-native-vector-icons/FontAwesome';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import Carousel from 'react-native-snap-carousel';
+import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { Dimensions } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,7 +15,7 @@ const ViewSchedule = ({ route, navigation }) => {
 
     const [carouselItem, setCarouselItem] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
-    const [patientDetails, setPatientDetails] = useState([]);
+    const [consultDetails, setConsulttDetails] = useState([]);
 
     
 
@@ -40,6 +40,7 @@ const ViewSchedule = ({ route, navigation }) => {
 
 
                     setCarouselItem(arrayImages);
+                    // setConsulttDetails(resData)
                     
                 });
         }
@@ -59,12 +60,14 @@ const ViewSchedule = ({ route, navigation }) => {
         )
     }
 
+    
+
     return (
         <View style={styles.container}>
             <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  route.params.item?.title} showMenuIcon={true} />
             <ScrollView>
                 { route.params.item?.category !== "consults" ? <></> :
-                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', height: 320}}>
+                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
                     <Carousel
                         layout={"default"}
                         //   ref={ref => carousel = ref}
@@ -73,6 +76,24 @@ const ViewSchedule = ({ route, navigation }) => {
                         itemWidth={380}
                         renderItem={renderItem}
                         onSnapToItem={index => setActiveIndex(index)} />
+                        
+                        <Pagination
+                            dotsLength={carouselItem.length}
+                            activeDotIndex={activeIndex}
+                            containerStyle={{backgroundColor: 'transparent',marginTop: -15}}
+                            dotStyle={{
+                                width: 10,
+                                height: 10,
+                                borderRadius: 5,
+                                
+                                backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                            }}
+                            inactiveDotStyle={{
+                                // Define styles for inactive dots here
+                            }}
+                            inactiveDotOpacity={0.4}
+                            inactiveDotScale={0.6}
+                            />
                 </View>
                 }
                 {/* <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
@@ -83,7 +104,7 @@ const ViewSchedule = ({ route, navigation }) => {
                         style={{
                             backgroundColor: '#fff',
                             borderRadius: 10,
-
+                            marginTop: -30
                         }}>
                         {route.params.item?.category === "reminder" ?
                             <>
@@ -133,7 +154,7 @@ const ViewSchedule = ({ route, navigation }) => {
                                                 accessibilityLabel="Learn more about this purple button"
                                                 onPress={()=>{
                                                     navigation.navigate('View Patient Details', {
-                                                        data: route.params.item?.lead_id,
+                                                        data: route.params.item,
                                                     });
                                                 }}
                                             />
@@ -264,8 +285,9 @@ const styles = StyleSheet.create({
     },
     carouselImg: {
         width: 380,
-        height: 300,
-        borderRadius: 10
+        height: 280,
+        borderRadius: 10,
+      
     },
     button: {
         borderRadius: 5,

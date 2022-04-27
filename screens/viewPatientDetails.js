@@ -12,12 +12,13 @@ import moment from 'moment';
 const ViewPatientDetails = ({ route }) => {
 
     const [patientDetails, setPatientDetails] = useState([]);
+    const [cases, setCases] = useState([]);
 
     useEffect(()=>{
         const getPatientDatails = async () => {
             const token = await AsyncStorage.getItem('token');
-            console.log(token, "token");
-            await fetch('https://beta.centaurmd.com/api/patient-details/'+ route.params.data, {
+            // console.log(token, "token");
+            await fetch('https://beta.centaurmd.com/api/patient-details/'+ route.params.data?.lead_id, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -27,8 +28,9 @@ const ViewPatientDetails = ({ route }) => {
                 .then(resData => {
                     
                     setPatientDetails(resData);
-                    
+                    setCases(resData.cases)
                 });
+
         }
 
         getPatientDatails();
@@ -71,10 +73,10 @@ const ViewPatientDetails = ({ route }) => {
                     
                     <View style={styles.historyWrapper}>
                         <Text style={styles.textHistory}>History</Text>
-                        {patientDetails.cases.map((data) => {
-                           return <View style={styles.historyContainer}>
-                                    <Text style={styles.caseTitle}>{data.notes}</Text>
-                                    <Text style={styles.caseTitle}>{data.type}</Text>
+                        {cases?.map((data, index) => {
+                           return <View key={index} style={styles.historyContainer}>
+                                    <Text style={styles.caseTitle}>{data.case_id}</Text>
+                                  
                                   </View>
                         })}
                         
@@ -129,7 +131,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         color: '#000',
         fontSize: 16,
-        fontWeight: '3=400'
+        fontWeight: '300'
     },
     historyWrapper:{
         paddingTop: 20,
