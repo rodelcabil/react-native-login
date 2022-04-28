@@ -1,4 +1,5 @@
-import React, {Component }  from 'react';
+import React, {ReactNode, SyntheticEvent} from 'react';
+import ApiCalendar from 'react-google-calendar-api';
 import { StyleSheet, View, Text, Button, Image} from 'react-native';
 import AppBar from '../../ReusableComponents/AppBar';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
@@ -6,11 +7,12 @@ import moment from 'moment';
 import {GoogleSignin, GoogleSigninButton} from '@react-native-community/google-signin'
 
 GoogleSignin.configure({
+  scopes: ['https://www.googleapis.com/auth/drive.readonly'],
   webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
   offlineAccess: true
 })
 
-class Dashboard extends Component {
+class Dashboard extends React.Component {
   
   constructor(props){
     super(props);
@@ -35,8 +37,8 @@ class Dashboard extends Component {
   }
 
   
-   /* const handleClick = (name) => {
-      /*if (name === 'sign-in') {
+     handleClick = (name) => {
+      if (name === 'sign-in') {
         ApiCalendar.handleAuthClick()
         .then(() => {
           console.log('sign in succesful!'); 
@@ -49,7 +51,7 @@ class Dashboard extends Component {
       }
     }
 
-    utcDateToString = (momentInUTC) => {
+    /*utcDateToString = (momentInUTC) => {
       let s = moment.utc(momentInUTC).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
       return s;
     };
@@ -134,7 +136,7 @@ class Dashboard extends Component {
       return (
         <View>
             <AppBar title={"Dashboard"} showMenuIcon={false} />
-            <Button title="SIGN IN"></Button>
+            <Button title="SIGN IN" onPress={this.handleClick('sign-in')}></Button>
 
             <GoogleSigninButton
                 style={{width: 222, height: 40}}
