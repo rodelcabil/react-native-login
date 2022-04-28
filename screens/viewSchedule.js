@@ -113,7 +113,7 @@ const ViewSchedule = ({ route, navigation }) => {
                         style={{
                             backgroundColor: '#fff',
                             borderRadius: 10,
-                            marginTop: -30
+                            marginTop: -10
                         }}>
                         {route.params.item?.category === "reminder" ?
                             <>

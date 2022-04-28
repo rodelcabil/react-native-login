@@ -3,6 +3,8 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import SplashScreen from 'react-native-splash-screen'
+
 
 import LoginPage from './screens/login';
 import ForgotPasswordPage from './screens/forgotPassword';
@@ -16,6 +18,11 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const App = () => {
+
+  React.useEffect(() => {
+    SplashScreen.hide();
+  }, []);
+
   return (
     <>
     <NavigationContainer>

@@ -9,7 +9,7 @@ import FAIcon5 from 'react-native-vector-icons/FontAwesome5';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-
+import LottieView from 'lottie-react-native';
 
 const ViewPatientDetails = ({ route }) => {
 
@@ -21,6 +21,8 @@ const ViewPatientDetails = ({ route }) => {
         { key: 'first', title: 'Other Information' },
         { key: 'second', title: 'Cases' },
     ]);
+
+    const [loader, setLoader] = useState(true);
 
     const layout = useWindowDimensions();
 
@@ -39,12 +41,25 @@ const ViewPatientDetails = ({ route }) => {
 
                     setPatientDetails(resData);
                     setCases(resData.cases)
+                    setLoader(false)
                 });
 
         }
 
         getPatientDatails();
     }, []);
+
+    const Loader = () =>{
+        return(
+            <View style={styles.loaderContainer}>
+                <LottieView
+                    source={require('../assets/lottie.json')}
+                    autoPlay loop
+                />
+
+            </View>
+        )
+    }
 
     const InformationRoute = () => (
         <View style={styles.tabContainer}>
@@ -121,27 +136,31 @@ const ViewPatientDetails = ({ route }) => {
     return (
         <View style={styles.container}>
             <AppBar title={"Patient Details"} showMenuIcon={true} />
-            <View style={styles.body}>
-                <View style={styles.rowContainer}>
-                    <Text style={styles.textName}>{patientDetails.first_name} {patientDetails.last_name}</Text>
+            { loader === true ?  <Loader/> :
+            <View style={styles.container}>
+                <View style={styles.body}>
+                    <View style={styles.rowContainer}>
+                        <Text style={styles.textName}>{patientDetails.first_name} {patientDetails.last_name}</Text>
+                    </View>
+                    <View style={styles.detailsContainer}>
+                        <Icon name="email" size={20} color="#da7331" />
+                        <Text style={styles.textDetails}>{patientDetails.email_address}</Text>
+                    </View>
+                    <View style={styles.detailsContainer}>
+                        <EntypoIcon name="phone" size={20} color="#da7331" />
+                        <Text style={styles.textDetails}>{patientDetails.contact_number}</Text>
+                    </View>
+                    
                 </View>
-                <View style={styles.detailsContainer}>
-                    <Icon name="email" size={20} color="#da7331" />
-                    <Text style={styles.textDetails}>{patientDetails.email_address}</Text>
-                </View>
-                <View style={styles.detailsContainer}>
-                    <EntypoIcon name="phone" size={20} color="#da7331" />
-                    <Text style={styles.textDetails}>{patientDetails.contact_number}</Text>
-                </View>
-                
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width: layout.width }}
+                    renderTabBar={renderTabBar}
+                />
             </View>
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width: layout.width }}
-                renderTabBar={renderTabBar}
-            />
+            }
         </View>
         
     )
@@ -228,6 +247,12 @@ const styles = StyleSheet.create({
     caseTitle: {
         color: '#fff',
         fontSize: 16
+    },
+    loaderContainer:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        backgroundColor: '#fff'
     }
 });
 

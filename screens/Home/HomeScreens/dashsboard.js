@@ -1,45 +1,78 @@
-import React, {ReactNode, SyntheticEvent} from 'react';
-import ApiCalendar from 'react-google-calendar-api';
+import React, {ReactNode, useEffect} from 'react';
+import ApiCalendar from 'react-google-calendar-api/src/ApiCalendar';
 import { StyleSheet, View, Text, Button, Image} from 'react-native';
 import AppBar from '../../ReusableComponents/AppBar';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 import moment from 'moment';
 import {GoogleSignin, GoogleSigninButton} from '@react-native-community/google-signin'
+const Config = require('../../../apiGoogleconfig.json');
 
-GoogleSignin.configure({
-  scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-  webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
-  offlineAccess: true
-})
-
-class Dashboard extends React.Component {
+const Dashboard = () => {
   
-  constructor(props){
-    super(props);
-    this.state = {
-      userGoogleInfo : {},
-      loaded: false
-    }
+  const sign = false;
+  const gapi = null;
+  const onLoadCallback = null;
+  const calendar = 'primary';
+
+  useEffect(()=>{
+    handleClientLoad();
+  },[]);
+
+  const initClient = () => {
+    gapi = window['gapi'];
+    gapi.client
+        .init(Config)
+        .then(() => {
+        // Listen for sign-in state changes.
+        gapi.auth2
+            .getAuthInstance()
+            .isSignedIn.listen(updateSigninStatus);
+        // Handle the initial sign-in state.
+        updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+        if (onLoadCallback) {
+            onLoadCallback();
+        }
+    })
+        .catch((e) => {
+        console.log(e);
+    });
   }
 
-  signIn = async() =>{
-    try{
-      await GoogleSignin.hasPlayServices()
-      const userInfo = await GoogleSignin.signIn();
-      this.setState({
-        userGoogleInfo: userInfo,
-        loaded: true,
-      })
+  const handleAuthClick = () => {
+    if (gapi) {
+        return gapi.auth2.getAuthInstance().signIn();
     }
-    catch(error){
-        console.log(error.message, "error");
+    else {
+        console.log('Error: this.gapi not loaded');
+        return Promise.reject(new Error('Error: this.gapi not loaded'));
     }
   }
-
   
+  const handleClientLoad = () => {
+    gapi = window['gapi'];
+    const script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/api.js';
+    document.body.appendChild(script);
+    script.onload = () => {
+        window['gapi'].load('client:auth2', initClient);
+    };
+}
+const updateSigninStatus = (isSignedIn) => {
+  sign = isSignedIn;
+}
+
+const listenSign = (callback) => {
+  if (this.gapi) {
+      this.gapi.auth2.getAuthInstance().isSignedIn.listen(callback);
+  }
+  else {
+      console.log('Error: this.gapi not loaded');
+  }
+}
+
      handleClick = (name) => {
       if (name === 'sign-in') {
-        ApiCalendar.handleAuthClick()
+         handleAuthClick()
         .then(() => {
           console.log('sign in succesful!'); 
         })
@@ -50,119 +83,17 @@ class Dashboard extends React.Component {
         ApiCalendar.handleSignoutClick();
       }
     }
+  
 
-    /*utcDateToString = (momentInUTC) => {
-      let s = moment.utc(momentInUTC).format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
-      return s;
-    };
-    
-    onClickAddtoCalendar = () => {
-      const eventConfig = {
-        title: "Title",
-        startDate: moment
-          .utc("2022-04-20 06:30:00.00")
-          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-        endDate: moment
-          .utc("2022-04-20 06:30:00.00")
-          .format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-      };
-      AddCalendarEvent.presentEventCreatingDialog(eventConfig)
-        .then(({ calendarItemIdentifier, eventIdentifier }) => {
-          if (calendarItemIdentifier != undefined && eventIdentifier != undefined) {
-            console.log("success");
-          }
-        })
-        .catch((error) => {
-          // handle error such as when user rejected permissions
-          console.warn(error);
-        });
-    };
-
-    const showCalendarEventWithId = (eventId) => {
-      if (!eventId) {
-        alert('Please Insert Event Id');
-        return;
-      }
-      const eventConfig = {
-        eventId,
-        allowsEditing: true,
-        allowsCalendarPreview: true,
-        navigationBarIOS: {
-          tintColor: 'orange',
-          backgroundColor: 'green',
-        },
-      };
-    
-      AddCalendarEvent.presentEventViewingDialog(eventConfig)
-        .then((eventInfo) => {
-          alert('eventInfo -> ' + JSON.stringify(eventInfo));
-        })
-        .catch((error) => {
-          alert('Error -> ' + error);
-        });
-    };*/
-
-    /*const getEvents = () => {
-      const CALENDAR_ID = 'camsberts26@gmail.com';
-      const API_KEY = 'AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8';
-      const beginDate = moment();
-      let url = `https://www.googleapis.com/calendar/v3/calendars/${CALENDAR_ID}/events?key=${API_KEY}&timeMin=${beginDate.toISOString()}&maxResults=50&singleEvents=true&orderBy=startTime&pageToken=${pageToken}`;
-
-      fetch(url)
-          .then((response) => response.json())
-          .then((responseJson) => {
-              this.setState({
-                  pageToken: responseJson.nextPageToken,
-                  dataSource: [...dataSource, ...responseJson.items],
-                  error: responseJson.error || null,
-              });
-              console.log(responseJson)
-          })
-          .then(() => {
-              this.getDates()
-          }) 
-          .catch(error => {
-             console.log(error);
-          });
-  };*/
-
-
-//var CLIENT_ID = "909386486823-i5gupld1p74t674v4oq0bhj727ban0k7.apps.googleusercontent.com"
-//var API_KEY = "AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
-//var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"]
-//var SCOPES = "https://www.googleapis.com/auth/calendar.events"
-
-    render() {
-      return (
+    return (
         <View>
             <AppBar title={"Dashboard"} showMenuIcon={false} />
-            <Button title="SIGN IN" onPress={this.handleClick('sign-in')}></Button>
-
-            <GoogleSigninButton
-                style={{width: 222, height: 40}}
-                size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Dark}
-                onPress={this.signIn}
-            />
-            {this.state.loaded?
-              <View>
-                <Text>{this.state.userGoogleInfo.user.name}</Text>
-                <Text>{this.state.userGoogleInfo.user.email}</Text>
-                <Image
-                    style={{width: 100, height: 100}}
-                    source={{uri: this.state.userGoogleInfo.user.photo}}
-                />
-                
-              </View>
-
-              : <Text>NO</Text>
-            }
+            <Button title="SIGN IN" onPress={handleClick('sign-in')}></Button>
 
         </View>
     );
-    }
-};
 
+}
 const styles = StyleSheet.create({
     container: {
         flex: 1,
