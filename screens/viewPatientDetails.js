@@ -13,6 +13,7 @@ import {AccordionList} from "accordion-collapse-react-native";
 import { Separator } from 'native-base';
 import { List } from 'react-native-paper';
 
+import LottieView from 'lottie-react-native';
 
 const ViewPatientDetails = ({ route }) => {
 
@@ -20,15 +21,16 @@ const ViewPatientDetails = ({ route }) => {
     // const [cases, setCases] = useState([{case_id: 1, notes: 'notes 1', type: 'type 1'}, {case_id: 2, notes: 'notes 2', type: 'type 2'}, {case_id: 3, notes: 'notes 3', type: 'type 3'}, {case_id: 4, notes: 'notes 4', type: 'type 4'} , {case_id: 5, notes: 'notes 5', type: 'type 5'} , {case_id: 6, notes: 'notes 6', type: 'type 6'}, {case_id: 7, notes: 'notes 7', type: 'type 7'}, {case_id: 9, notes: 'notes 9', type: 'type 8'}]);
     const [selectedCase, setSelectedCase] = useState();
     const [cases, setCases] = useState([]);
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
+    const [index, setIndex] = useState(0);
+    const [routes] = useState([
         { key: 'first', title: 'Information' },
         { key: 'second', title: 'Cases' },
     ]);
 
-    const [expanded, setExpanded] = React.useState(true);
+    const [expanded, setExpanded] =useState(true);
 
     const handlePress = () => setExpanded(!expanded);
+    const [loader, setLoader] = useState(true);
 
     const layout = useWindowDimensions();
 
@@ -47,12 +49,25 @@ const ViewPatientDetails = ({ route }) => {
 
                     setPatientDetails(resData);
                     setCases(resData.cases)
+                    setLoader(false)
                 });
 
         }
 
         getPatientDatails();
     }, []);
+
+    const Loader = () =>{
+        return(
+            <View style={styles.loaderContainer}>
+                <LottieView
+                    source={require('../assets/lottie.json')}
+                    autoPlay loop
+                />
+
+            </View>
+        )
+    }
 
     const InformationRoute = () => (
         <View style={styles.container}>
@@ -189,27 +204,31 @@ const ViewPatientDetails = ({ route }) => {
     return (
         <View style={styles.container}>
             <AppBar title={"Patient Details"} showMenuIcon={true} />
-            <View style={styles.body}>
-                <View style={styles.rowContainer}>
-                    <Text style={styles.textName}>{patientDetails.first_name} {patientDetails.last_name}</Text>
+            { loader === true ?  <Loader/> :
+            <View style={styles.container}>
+                <View style={styles.body}>
+                    <View style={styles.rowContainer}>
+                        <Text style={styles.textName}>{patientDetails.first_name} {patientDetails.last_name}</Text>
+                    </View>
+                    <View style={styles.detailsContainer}>
+                        <Icon name="email" size={20} color="#da7331" />
+                        <Text style={styles.textDetails}>{patientDetails.email_address}</Text>
+                    </View>
+                    <View style={styles.detailsContainer}>
+                        <EntypoIcon name="phone" size={20} color="#da7331" />
+                        <Text style={styles.textDetails}>{patientDetails.contact_number}</Text>
+                    </View>
+                    
                 </View>
-                <View style={styles.detailsContainer}>
-                    <Icon name="email" size={20} color="#da7331" />
-                    <Text style={styles.textDetails}>{patientDetails.email_address}</Text>
-                </View>
-                <View style={styles.detailsContainer}>
-                    <EntypoIcon name="phone" size={20} color="#da7331" />
-                    <Text style={styles.textDetails}>{patientDetails.contact_number}</Text>
-                </View>
-                
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width: layout.width }}
+                    renderTabBar={renderTabBar}
+                />
             </View>
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width: layout.width }}
-                renderTabBar={renderTabBar}
-            />
+            }
         </View>
         
     )
@@ -311,6 +330,12 @@ const styles = StyleSheet.create({
     caseTitle: {
         color: '#fff',
         fontSize: 16
+    },
+    loaderContainer:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        backgroundColor: '#fff'
     }
 });
 

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , ScrollView} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , ScrollView, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieView from 'lottie-react-native';
 
   //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
@@ -12,19 +13,29 @@ const LoginPage = ({ navigation }) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [gToken, setToken] = useState(null);
+  const [loader, setLoader] = useState(true);
 
- 
-  const tokenLogin = async() => {
-    const value = await AsyncStorage.getItem('token')
-    if(value !== null){
-      navigation.navigate('Home Page');
-      console.log("still logged in");
+  const [loginLoader, setLoginLoader] = useState(false);
+
+  React.useEffect(() => {
+    const tokenLogin = async() => {
+      const value = await AsyncStorage.getItem('token')
+      if(value !== null){
+        navigation.navigate('Home Page');
+        console.log("still logged in");
+      }
+      else{
+        setLoader(false);
+      }
+      setLoader(false);
     }
-  }
 
-  tokenLogin();
+    tokenLogin();
+  }, []);
+
 
   loginFunction = async () => {
+    setLoginLoader(true);
     await fetch('https://beta.centaurmd.com/api/login', {
       method: 'POST',
       headers: {
@@ -45,13 +56,27 @@ const LoginPage = ({ navigation }) => {
           navigation.navigate('Home Page');
           setEmail(null);
           setPassword(null);
+          setLoginLoader(false);
         }
         else{
-          alert(resData.message)
+          alert(resData.message);
+          setLoginLoader(false);
         }
       
       });
   };
+
+  const Loader = () =>{
+    return(
+        <View style={styles.loaderContainer}>
+            <LottieView
+                source={require('../assets/lottie.json')}
+                autoPlay loop
+            />
+
+        </View>
+    )
+  }
 
   
  /* const storeToken = async() =>{
@@ -60,6 +85,7 @@ const LoginPage = ({ navigation }) => {
 
 
   return (
+    loader === true ? <Loader/> :
     <KeyboardAvoidingView
         style={{flex: 1}}
         enabled={true}
@@ -76,62 +102,67 @@ const LoginPage = ({ navigation }) => {
               />
             </SafeAreaView>
           
-            <View style={styles.whiteContainer}>
-              <SafeAreaView >
-                <Text style={styles.textBig}>
-                 LOGIN TO YOUR ACCOUNT
-                </Text>
-              </SafeAreaView>
-              <SafeAreaView style={styles.inputSafeAreaStyle}>
+              <View style={styles.whiteContainer}>
+                      <SafeAreaView >
+                        <Text style={styles.textBig}>
+                         LOGIN TO YOUR ACCOUNT
+                        </Text>
+                      </SafeAreaView>
+                      <SafeAreaView style={styles.inputSafeAreaStyle}>
+        
+                        <View style={styles.inputContainer}>
+                          <Icon name="email-outline" size={20} color="gray" style={{ marginRight: 5 }} />
+                          <TextInput
+                            placeholder="Enter your Email"
+                            keyboardType="email-address"
+                            value={email}
+                            onChangeText={text_email => setEmail(text_email)}
+                          />
+                        </View>
+        
+                        <View style={styles.inputContainer}>
+                          <Icon name="lock-outline" size={20} color="gray" style={{ marginRight: 5 }} />
+                          <TextInput
+                            secureTextEntry
+                            placeholder="Enter your Password"
+                            value={password}
+                            onChangeText={text_password => setPassword(text_password)}
+                          />
+                        </View>
+        
+                      </SafeAreaView>
 
-                <View style={styles.inputContainer}>
-                  <Icon name="email-outline" size={20} color="gray" style={{ marginRight: 5 }} />
-                  <TextInput
-                    placeholder="Enter your Email"
-                    keyboardType="email-address"
-                    value={email}
-                    onChangeText={text_email => setEmail(text_email)}
-                  />
-                </View>
-
-                <View style={styles.inputContainer}>
-                  <Icon name="lock-outline" size={20} color="gray" style={{ marginRight: 5 }} />
-                  <TextInput
-                    secureTextEntry
-                    placeholder="Enter your Password"
-                    value={password}
-                    onChangeText={text_password => setPassword(text_password)}
-                  />
-                </View>
-
-              </SafeAreaView>
-              <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                <Button
-                  style={styles.button}
-                  title="SIGN IN"
-                  color="#28A745"
-                  accessibilityLabel="Learn more about this purple button"
-                  onPress={loginFunction}
-                />
-              </SafeAreaView>
-              <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                <Text
-                  onPress={() => {
-                    navigation.navigate('ForgotPasswordPage');
-                  }}
-                  style={styles.textSmall}>
-                  Forgot Password?
-                </Text>
-              </SafeAreaView>
-
-             
-            </View>
-
+                      { loginLoader === true ?  <ActivityIndicator size="large" animating={true}/> :
+                         <View>
+                         <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                          <Button
+                            style={styles.button}
+                            title="SIGN IN"
+                            color="#28A745"
+                            accessibilityLabel="Learn more about this purple button"
+                            onPress={loginFunction}
+                          />
+                          </SafeAreaView>
+                          <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                          <Text
+                            onPress={() => {
+                              navigation.navigate('ForgotPasswordPage');
+                            }}
+                            style={styles.textSmall}>
+                            Forgot Password?
+                          </Text>
+                        </SafeAreaView>
+                      </View>
+                      }
+        
+                     
+              </View>
           
+          
+         
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-   
    
    
   );
@@ -218,6 +249,12 @@ const styles = StyleSheet.create({
     color: 'grey',
     marginVertical: 10
   },
+  loaderContainer:{
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+    backgroundColor: '#fff'
+}
 
 });
 

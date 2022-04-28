@@ -213,8 +213,8 @@ const Calendar = ({ navigation, route }) => {
                         {},
                     );
                     setItems(reduced);
+                    setLoader(false);
                 });
-                SyncGoogleCalendar();
         }
 
         const SyncGoogleCalendar = async () =>{
@@ -248,7 +248,6 @@ const Calendar = ({ navigation, route }) => {
                   }
                 })
                 console.log(items)
-                setLoader(false);
         } 
 
         getData();
@@ -335,7 +334,7 @@ const Calendar = ({ navigation, route }) => {
             loader === true ? 
               <SkeletonLoader/>
             :
-            moment(item.date_from).format('YYYY-MM-DD') !== dayGet ? <></> :
+            moment(item.date_from).format('YYYY-MM-DD') === dayGet ? 
                 <TouchableHighlight
                     style={{ margin: 10, width: width }}
                     activeOpacity={0.6}
@@ -424,6 +423,7 @@ const Calendar = ({ navigation, route }) => {
                         </Card>
                     </SafeAreaView>
                 </TouchableHighlight>
+               : <></>
         );
     };
 
