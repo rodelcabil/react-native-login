@@ -17,7 +17,7 @@ import DoubleClick from 'react-native-double-tap';
 import { addDays, format } from 'date-fns';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import ApiCalendar from 'react-google-calendar-api';
+import { CalendarApiClient } from "google-calendar-api-client";
 
 
 var width = Dimensions.get('window').width - 20;
@@ -295,9 +295,12 @@ const Calendar = ({ navigation, route }) => {
                 const description = (responseData.items[i].description);
 
                 console.log(responseData.items[i].start.dateTime);
+                console.log(newSet[date], "dateeeeeee");
+
                 newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
                 const output = Object.assign({}, ...newSet)
                 
+     
                 const newElement = {
                     ...items, ...output
                  }
@@ -524,9 +527,7 @@ const Calendar = ({ navigation, route }) => {
                 renderDay={renderDay}
                 renderEmptyData={renderEmptyDate}
                 onDayPress={day => {
-
                     setDay(day.dateString);
-
                 }}
                 selected={Date.now()}
                 theme={{
