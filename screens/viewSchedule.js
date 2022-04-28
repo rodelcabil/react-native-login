@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -16,11 +16,13 @@ const ViewSchedule = ({ route, navigation }) => {
     const [carouselItem, setCarouselItem] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [consultDetails, setConsulttDetails] = useState([]);
+    const [imgLoading, setImgLoading] = useState(false);
 
     
 
     useEffect(()=>{
         const geConsultFormData = async () => {
+            setImgLoading(true);
             const token = await AsyncStorage.getItem('token');
             console.log(token, "token");
             await fetch('https://beta.centaurmd.com/api/consult-info/'+ route.params.item?.id, {
@@ -40,7 +42,7 @@ const ViewSchedule = ({ route, navigation }) => {
 
 
                     setCarouselItem(arrayImages);
-                    // setConsulttDetails(resData)
+                    setImgLoading(false)
                     
                 });
         }
@@ -67,7 +69,12 @@ const ViewSchedule = ({ route, navigation }) => {
             <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  route.params.item?.title} showMenuIcon={true} />
             <ScrollView>
                 { route.params.item?.category !== "consults" ? <></> :
-                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', height: 360, flexDirection: 'column'}}>
+
+
+                {imgLoading === true ?   <ActivityIndicator size="large" animating={true}/>
+                :
+                <>
                     <Carousel
                         layout={"default"}
                         //   ref={ref => carousel = ref}
@@ -76,24 +83,26 @@ const ViewSchedule = ({ route, navigation }) => {
                         itemWidth={380}
                         renderItem={renderItem}
                         onSnapToItem={index => setActiveIndex(index)} />
-                        
-                        <Pagination
-                            dotsLength={carouselItem.length}
-                            activeDotIndex={activeIndex}
-                            containerStyle={{backgroundColor: 'transparent',marginTop: -15}}
-                            dotStyle={{
-                                width: 10,
-                                height: 10,
-                                borderRadius: 5,
-                                
-                                backgroundColor: 'rgba(0, 0, 0, 0.75)'
-                            }}
-                            inactiveDotStyle={{
-                                // Define styles for inactive dots here
-                            }}
-                            inactiveDotOpacity={0.4}
-                            inactiveDotScale={0.6}
-                            />
+
+                    <Pagination
+                        dotsLength={carouselItem.length}
+                        activeDotIndex={activeIndex}
+                        containerStyle={{ backgroundColor: 'transparent', marginTop: -15 }}
+                        dotStyle={{
+                            width: 10,
+                            height: 10,
+                            borderRadius: 5,
+
+                            backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                        }}
+                        inactiveDotStyle={{
+                            // Define styles for inactive dots here
+                        }}
+                        inactiveDotOpacity={0.4}
+                        inactiveDotScale={0.6}
+                        />
+                    </>
+                            }
                 </View>
                 }
                 {/* <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
