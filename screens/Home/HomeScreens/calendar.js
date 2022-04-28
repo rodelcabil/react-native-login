@@ -3,22 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal } from 'react-native';
 import { Card, Avatar, Button } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
-import AppBar from '../../ReusableComponents/AppBar';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import DeviceInfo from 'react-native-device-info';
-import { FloatingAction } from "react-native-floating-action";
 import { Dimensions } from "react-native";
 import DoubleClick from 'react-native-double-tap';
-import { addDays, format } from 'date-fns';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { CalendarApiClient } from "google-calendar-api-client";
-
+import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 
 var width = Dimensions.get('window').width - 20;
 
@@ -26,15 +21,10 @@ const Calendar = ({ navigation, route }) => {
 
     const [items, setItems] = useState({});
     const [tempItems, setTempItems] = useState([]);
-
     const [mergeItems, setMergeItems] = useState([]);
-
     const [dayGet, setDay] = useState(null);
-
     const [deviceID, setDeviceID] = useState();
-
     const [showModal, setShowModal] = useState(false);
-
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
     const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
@@ -184,6 +174,7 @@ const Calendar = ({ navigation, route }) => {
         console.log("Items: ",items);
     },[]);*/
 
+    const [loader, setLoader] = useState(true);
     useEffect(() => {
         const getDeviceID = () => {
             var uniqueID = DeviceInfo.getUniqueId;
@@ -201,11 +192,8 @@ const Calendar = ({ navigation, route }) => {
                 },
             }).then(res => res.json())
                 .then(resData => {
-
                     // console.log("NEW DATA? ", resData)
                     setTempItems(resData);
-
-
                     const mappedData = resData.map((data) => {
                         const date = data.date_from;
 
@@ -224,16 +212,48 @@ const Calendar = ({ navigation, route }) => {
                         },
                         {},
                     );
-
-
                     setItems(reduced);
-
-
                 });
+                SyncGoogleCalendar();
         }
-        console.log("ITEMS: ", items)
-        getData()
+
+        const SyncGoogleCalendar = async () =>{
+            const newSet = [];
+            let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
+            await fetch(postsUrl)
+                .then((response) => response.json())
+                .then((responseData) => {
+                  console.log(responseData);
+                  console.log(responseData.items[0].start.dateTime);
+                  for (let i = 0; i < responseData.items.length; i++) {
+                    const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
+                    const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
+                    const dateEnd = moment(responseData.items[i].end.dateTime).format("YYYY-MM-DD");
+                    const timeEnd = moment(responseData.items[i].end.dateTime).format("HH:mma");
+                    const title = (responseData.items[i].summary);
+                    const description = (responseData.items[i].description);
+    
+                    console.log(responseData.items[i].start.dateTime);
+                    console.log(newSet[date], "dateeeeeee");
+    
+                    newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
+                    const output = Object.assign({}, ...newSet)
+                    
+         
+                    const newElement = {
+                        ...items, ...output
+                     }
+                     setItems(newElement);
+                     console.log(output, "NEW SETTTTTTTTTTTTTTT");
+                  }
+                })
+                console.log(items)
+                setLoader(false);
+        } 
+
+        getData();
         getDeviceID()
+        console.log("ITEMS: ", items)
         console.log("Device ID", deviceID);
         console.log("Items: ", items);
     }, []);
@@ -278,41 +298,43 @@ const Calendar = ({ navigation, route }) => {
 
             });
     }
-    componentDidMount = () =>{
-        const newSet = [];
-        let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
-        fetch(postsUrl)
-            .then((response) => response.json())
-            .then((responseData) => {
-              console.log(responseData);
-              console.log(responseData.items[0].start.dateTime);
-              for (let i = 0; i < responseData.items.length; i++) {
-                const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
-                const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
-                const dateEnd = moment(responseData.items[i].end.dateTime).format("YYYY-MM-DD");
-                const timeEnd = moment(responseData.items[i].end.dateTime).format("HH:mma");
-                const title = (responseData.items[i].summary);
-                const description = (responseData.items[i].description);
 
-                console.log(responseData.items[i].start.dateTime);
-                console.log(newSet[date], "dateeeeeee");
-
-                newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
-                const output = Object.assign({}, ...newSet)
-                
-     
-                const newElement = {
-                    ...items, ...output
-                 }
-                 setItems(newElement);
-                 console.log(output, "NEW SETTTTTTTTTTTTTTT");
-              }
-            })
-            console.log(items)
-    } 
-
+    const SkeletonLoader = () => {
+        return(
+            <SkeletonPlaceholder >
+            <SkeletonPlaceholder
+                speed={1500}
+                backgroundColor={"#dddddd"}
+                highlightColor={"#e7e7e7"}>
+                <View
+                style={styles.skeltonMainView}
+                />
+            </SkeletonPlaceholder>
+            <SkeletonPlaceholder
+                speed={1500}
+                backgroundColor={"#dddddd"}
+                highlightColor={"#e7e7e7"}>
+                <View
+                style={styles.skeltonMainView}
+                />
+            </SkeletonPlaceholder>
+            <SkeletonPlaceholder
+                speed={1500}
+                backgroundColor={"#dddddd"}
+                highlightColor={"#e7e7e7"}>
+                <View
+                style={styles.skeltonMainView}
+                />
+            </SkeletonPlaceholder>
+            <View></View>
+        </SkeletonPlaceholder>
+        )
+    }
     const renderDay = (day, item) => {
         return (
+            loader === true ? 
+              <SkeletonLoader/>
+            :
             moment(item.date_from).format('YYYY-MM-DD') !== dayGet ? <></> :
                 <TouchableHighlight
                     style={{ margin: 10, width: width }}
@@ -405,9 +427,11 @@ const Calendar = ({ navigation, route }) => {
         );
     };
 
-
     const renderEmptyDate = () => {
         return (
+            loader === true ? 
+             <SkeletonLoader/>
+            :
             <View style={styles.itemEmptyContainer}>
                 <Image
                     style={styles.logoImg}
@@ -417,7 +441,6 @@ const Calendar = ({ navigation, route }) => {
             </View>
         );
     }
-
 
     function toTimestamp(strDate) {
         var datum = Date.parse(strDate);
@@ -878,6 +901,19 @@ const styles = StyleSheet.create({
         padding: 5,
         color: 'white',
     },
+      skeltonMainView: {
+        margin: 10,
+        borderWidth: 0,
+        elevation: 5,
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        borderRadius: 5,
+        alignSelf: "center",
+        width: Dimensions.get('window').width-20,
+        height: Dimensions.get('window').height / 6,
+        borderRadius: 20,
+        // height: globals.screenHeight * 0.24,
+      },
 });
 
 export default Calendar;
