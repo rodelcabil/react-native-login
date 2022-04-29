@@ -30,21 +30,21 @@ export default class ChatClientClass extends React.Component {
     this.handleSendMessage = this.onSendMessage.bind(this); // (9)
   }
 
-//   handleJoin(name) { // (4)
-//     const messages = this.state.messages.slice();
-//     messages.push({action: 'join', name: name});
-//     this.setState({
-//       messages: messages
-//     });
-//   }
+  handleJoin(name) { // (4)
+    const messages = this.state.messages.slice();
+    messages.push({action: 'join', name: name});
+    this.setState({
+      messages: messages
+    });
+  }
   
-//   handlePart(name) { // (5)
-//     const messages = this.state.messages.slice();
-//     messages.push({action: 'part', name: name});
-//     this.setState({
-//       messages: messages
-//     });
-//   }
+  handlePart(name) { // (5)
+    const messages = this.state.messages.slice();
+    messages.push({action: 'part', name: name});
+    this.setState({
+      messages: messages
+    });
+  }
   
   handleMessage(message) { // (6)
     const messages = this.state.messages.slice();

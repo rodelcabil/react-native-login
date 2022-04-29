@@ -9,7 +9,7 @@ import FAIcon5 from 'react-native-vector-icons/FontAwesome5';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import {AccordionList} from "accordion-collapse-react-native";
+import { AccordionList } from "accordion-collapse-react-native";
 import { Separator } from 'native-base';
 import { List } from 'react-native-paper';
 
@@ -27,7 +27,7 @@ const ViewPatientDetails = ({ route }) => {
         { key: 'second', title: 'Cases' },
     ]);
 
-    const [expanded, setExpanded] =useState(true);
+    const [expanded, setExpanded] = useState(true);
 
     const handlePress = () => setExpanded(!expanded);
     const [loader, setLoader] = useState(true);
@@ -57,8 +57,8 @@ const ViewPatientDetails = ({ route }) => {
         getPatientDatails();
     }, []);
 
-    const Loader = () =>{
-        return(
+    const Loader = () => {
+        return (
             <View style={styles.loaderContainer}>
                 <LottieView
                     source={require('../assets/lottie.json')}
@@ -71,10 +71,10 @@ const ViewPatientDetails = ({ route }) => {
 
     const InformationRoute = () => (
         <View style={styles.container}>
-            
+
             <ScrollView>
                 <View style={styles.body}>
-                    
+
                     <View style={styles.detailsColumnContainer}>
                         {/* <FAIcon5 name="birthday-cake" size={20} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>BIRTHDAY</Text>
@@ -88,33 +88,33 @@ const ViewPatientDetails = ({ route }) => {
                     <View style={styles.detailsColumnContainer}>
                         {/* <Icon name="weight" size={20} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>WEIGHT</Text>
-                        <Text style={styles.textColDetails}>{patientDetails.weight}</Text>
+                        <Text style={styles.textColDetails}>{patientDetails.weight} lbs </Text>
                     </View>
                     <View style={styles.detailsColumnContainer}>
                         {/* <EntypoIcon name="location-pin" size={23} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>LOCATION</Text>
                         <Text style={styles.textColDetails}>{patientDetails.city}, {patientDetails.state}, {patientDetails.country}</Text>
-                    </View>    
+                    </View>
                     <View style={styles.detailsColumnContainer}>
                         {/* <EntypoIcon name="location-pin" size={23} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>SURGEON</Text>
                         <Text style={styles.textColDetails}>{patientDetails.surgeon}</Text>
-                    </View> 
+                    </View>
                     <View style={styles.detailsColumnContainer}>
                         {/* <EntypoIcon name="location-pin" size={23} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>ETHNICITY</Text>
                         <Text style={styles.textColDetails}>{patientDetails.ethnicity}</Text>
-                    </View>  
+                    </View>
                     <View style={styles.detailsColumnContainer}>
                         {/* <EntypoIcon name="location-pin" size={23} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>PREFFERED METHOD</Text>
                         <Text style={styles.textColDetails}>{patientDetails.preferred_method}</Text>
-                    </View>     
+                    </View>
                     <View style={styles.detailsColumnContainer}>
                         {/* <EntypoIcon name="location-pin" size={23} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>HOW DID YOU HEAR US?</Text>
                         <Text style={styles.textColDetails}>{patientDetails.how_did_hear}</Text>
-                    </View>                    
+                    </View>
                     <View style={styles.detailsColumnContainer}>
                         {/* <EntypoIcon name="location-pin" size={23} color="#da7331" /> */}
                         <Text style={styles.textBigDetails}>COMMENTS</Text>
@@ -132,32 +132,32 @@ const ViewPatientDetails = ({ route }) => {
 
 
 
-    const header = (item) =>{
-        return(
+    const header = (item) => {
+        return (
             <View >
-                <Separator  style={{backgroundColor: '#da7331', height: 50, paddingHorizontal: 10, borderWidth: 0.6, borderColor:'#e3e3e3', marginTop: 2, borderRadius: 5}}>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Text style={{color: '#fff', fontSize: 16, paddingVertical: 10}}>{item.case_id}</Text>
+                <Separator style={{ backgroundColor: '#da7331', height: 50, paddingHorizontal: 10, borderWidth: 0.6, borderColor: '#e3e3e3', marginTop: 2, borderRadius: 5 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Text style={{ color: '#fff', fontSize: 16, paddingVertical: 10 }}>{item.case_id}</Text>
                         {/* <EntypoIcon name={selectedCase !== item.case_id ? "chevron-down" : "chevron-up"}  size={23} color="#da7331" /> */}
                     </View>
                 </Separator>
             </View>
-           
-           
+
+
         );
     }
 
-    const accordionBody =(item)=>{
+    const accordionBody = (item) => {
         return (
             <>
-                <View style={{paddingVertical:12, backgroundColor: '#fff', borderBottomWidth: 2, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor:'#e3e3e3', marginTop: -2}}>
-                    <View style={{padding:10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom:10, borderRadius: 6, borderColor:'#e3e3e3'}}>
-                        <Text style={{color: 'black', fontSize: 16}}>{item.type}</Text>
-                        <Text style={{fontSize: 14, color: 'black'}}>{item.notes}</Text>
+                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 2, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2 }}>
+                    <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
+                        <Text style={{ color: 'black', fontSize: 16 }}>{item.type}</Text>
+                        <Text style={{ fontSize: 14, color: 'black' }}>{item.notes}</Text>
                     </View>
-                    <View style={{padding:10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, borderRadius: 6, borderColor:'#e3e3e3'}}>
-                        <Text style={{color: 'black', fontSize: 16}}>MESSAGE BOARD</Text>
-                       
+                    <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
+                        <Text style={{ color: 'black', fontSize: 16 }}>MESSAGE BOARD</Text>
+
                     </View>
                 </View>
                 {/* <View style={{paddingVertical:12, backgroundColor: '#fff', borderBottomWidth: 2, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor:'#e3e3e3', marginTop: -2}}>
@@ -166,7 +166,8 @@ const ViewPatientDetails = ({ route }) => {
             </>
         );
     }
-    
+
+
     const SecondRoute = () => (
         <View style={styles.casesContainer} >
             <AccordionList
@@ -174,14 +175,14 @@ const ViewPatientDetails = ({ route }) => {
                 header={header}
                 body={accordionBody}
                 keyExtractor={item => `${item.case_id}`}
-                
+
             />
         </View>
     );
 
-    
 
-    
+
+
     const renderScene = SceneMap({
         first: InformationRoute,
         second: SecondRoute,
@@ -189,48 +190,48 @@ const ViewPatientDetails = ({ route }) => {
 
     const renderTabBar = props => (
         <TabBar
-          {...props}
-          indicatorStyle={{ backgroundColor: '#da7331' }}
-          style={{ backgroundColor: '#fff',  }}
-          renderLabel={({ route}) => (
+            {...props}
+            indicatorStyle={{ backgroundColor: '#da7331' }}
+            style={{ backgroundColor: '#fff', }}
+            renderLabel={({ route }) => (
                 <Text style={{ color: 'black', margin: 8, textTransform: 'uppercase' }}>
-                {route.title}
+                    {route.title}
                 </Text>
             )}
         />
-      );
+    );
 
 
     return (
         <View style={styles.container}>
             <AppBar title={"Patient Details"} showMenuIcon={true} />
-            { loader === true ?  <Loader/> :
-            <View style={styles.container}>
-                <View style={styles.body}>
-                    <View style={styles.rowContainer}>
-                        <Text style={styles.textName}>{patientDetails.first_name} {patientDetails.last_name}</Text>
+            {loader === true ? <Loader /> :
+                <>
+                    <View style={styles.body}>
+                        <View style={styles.rowContainer}>
+                            <Text style={styles.textName}>{patientDetails.first_name} {patientDetails.last_name}</Text>
+                        </View>
+                        <View style={styles.detailsContainer}>
+                            <Icon name="email" size={20} color="#da7331" />
+                            <Text style={styles.textDetails}>{patientDetails.email_address}</Text>
+                        </View>
+                        <View style={styles.detailsContainer}>
+                            <EntypoIcon name="phone" size={20} color="#da7331" />
+                            <Text style={styles.textDetails}>{patientDetails.contact_number}</Text>
+                        </View>
+
                     </View>
-                    <View style={styles.detailsContainer}>
-                        <Icon name="email" size={20} color="#da7331" />
-                        <Text style={styles.textDetails}>{patientDetails.email_address}</Text>
-                    </View>
-                    <View style={styles.detailsContainer}>
-                        <EntypoIcon name="phone" size={20} color="#da7331" />
-                        <Text style={styles.textDetails}>{patientDetails.contact_number}</Text>
-                    </View>
-                    
-                </View>
-                <TabView
-                    navigationState={{ index, routes }}
-                    renderScene={renderScene}
-                    onIndexChange={setIndex}
-                    initialLayout={{ width: layout.width }}
-                    renderTabBar={renderTabBar}
-                />
-            </View>
+                    <TabView
+                        navigationState={{ index, routes }}
+                        renderScene={renderScene}
+                        onIndexChange={setIndex}
+                        initialLayout={{ width: layout.width }}
+                        renderTabBar={renderTabBar}
+                    />
+                </>
             }
         </View>
-        
+
     )
 }
 
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
         fontFamily: "Poppins",
         padding: 10
     },
-    
+
     body: {
         padding: 20,
         flexDirection: 'column'
@@ -297,13 +298,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '400'
     },
-    textColDetails:{
-        
+    textColDetails: {
+
         color: '#000',
         fontSize: 18,
         fontWeight: '400'
     },
-    textBigDetails:{
+    textBigDetails: {
         color: '#737A87',
         fontSize: 13,
         fontWeight: '400',
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16
     },
-    loaderContainer:{
+    loaderContainer: {
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,

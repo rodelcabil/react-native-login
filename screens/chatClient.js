@@ -18,7 +18,7 @@ const ChatClient = ({ name }) => {
             handlePart();
         });
         chatChannel.bind('message', (data) => {
-            handleMessage(data.message);
+            handleMessage('Rodel',data.message);
         });
     });
 
@@ -43,20 +43,21 @@ const ChatClient = ({ name }) => {
     }
 
 
-    const handleMessage = (message) => {
+    const handleMessage = (name, message) => {
+        console.log("send message")
         const my_messages = messages.slice();
-        messages.push({ action: 'message', name: 'Rodel', message: message });
+        messages.push({ action: 'message', name: name, message: message });
         setMessages(my_messages);
     }
 
     const handleJoin =()=> { // (4)
-        const messages = this.state.messages.slice();
+        const my_messages = this.state.messages.slice();
         messages.push({ action: 'join', name: name });
         setMessages(my_messages);
     }
 
     const handlePart =()=> { // (5)
-        const messages = this.state.messages.slice();
+        const my_messages = this.state.messages.slice();
         messages.push({ action: 'part', name: name });
         setMessages(my_messages);
     }
@@ -75,7 +76,7 @@ const ChatClient = ({ name }) => {
        
         console.log('message: ', text);
         console.log('name: ', name)
-
+     
     }
 
     const handleSendMessage = (text) => {
