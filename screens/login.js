@@ -16,20 +16,19 @@ const LoginPage = ({ navigation }) => {
   const [loader, setLoader] = useState(true);
 
   const [loginLoader, setLoginLoader] = useState(false);
-
-  React.useEffect(() => {
-    const tokenLogin = () => {
-      const value =  AsyncStorage.getItem('token')
-      if(value !== null){
-        navigation.replace('Home Page');
-        console.log("still logged in");
-      }
-      else{
-        setLoader(false);
-      }
+  const tokenLogin = async() => {
+    const value = await AsyncStorage.getItem('token')
+    if(value !== null){
+      navigation.replace('Home Page');
+      console.log("still logged in");
+    }
+    else{
       setLoader(false);
     }
+    setLoader(false);
+  }
 
+  React.useEffect(() => {
     tokenLogin();
   }, []);
 

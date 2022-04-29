@@ -1,4 +1,4 @@
-package com.app.newarchitecture;
+package com.app.centaurmd.newarchitecture;
 
 import android.app.Application;
 import androidx.annotation.NonNull;
@@ -19,7 +19,7 @@ import com.facebook.react.fabric.CoreComponentsRegistry;
 import com.facebook.react.fabric.EmptyReactNativeConfig;
 import com.facebook.react.fabric.FabricJSIModuleProvider;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.app.BuildConfig;
+import com.app.centaurmd.BuildConfig;
 import com.app.newarchitecture.components.MainComponentsRegistry;
 import com.app.newarchitecture.modules.MainApplicationTurboModuleManagerDelegate;
 import java.util.ArrayList;

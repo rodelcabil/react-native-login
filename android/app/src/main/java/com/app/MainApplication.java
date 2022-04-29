@@ -1,4 +1,4 @@
-package com.app;
+package com.app.centaurmd;
 
 import android.app.Application;
 import android.content.Context;
@@ -10,7 +10,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
-import com.app.newarchitecture.MainApplicationReactNativeHost;
+import com.app.centaurmd.newarchitecture.MainApplicationReactNativeHost;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.dieam.reactnativepushnotification.ReactNativePushNotificationPackage;
