@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal } from 'react-native';
-import { Card, Avatar, Button } from 'react-native-paper';
+import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button } from 'react-native';
+import { Card, Avatar } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
 import Icon2 from 'react-native-vector-icons/Ionicons';
@@ -175,6 +175,7 @@ const Calendar = ({ navigation, route }) => {
     },[]);*/
 
     const [loader, setLoader] = useState(true);
+
     useEffect(() => {
         const getDeviceID = () => {
             var uniqueID = DeviceInfo.getUniqueId;
@@ -217,39 +218,6 @@ const Calendar = ({ navigation, route }) => {
                 });
         }
 
-        const SyncGoogleCalendar = async () =>{
-            const newSet = [];
-            let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
-            await fetch(postsUrl)
-                .then((response) => response.json())
-                .then((responseData) => {
-                  console.log(responseData);
-                  console.log(responseData.items[0].start.dateTime);
-                  for (let i = 0; i < responseData.items.length; i++) {
-                    const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
-                    const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
-                    const dateEnd = moment(responseData.items[i].end.dateTime).format("YYYY-MM-DD");
-                    const timeEnd = moment(responseData.items[i].end.dateTime).format("HH:mma");
-                    const title = (responseData.items[i].summary);
-                    const description = (responseData.items[i].description);
-    
-                    console.log(responseData.items[i].start.dateTime);
-                    console.log(newSet[date], "dateeeeeee");
-    
-                    newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
-                    const output = Object.assign({}, ...newSet)
-                    
-         
-                    const newElement = {
-                        ...items, ...output
-                     }
-                     setItems(newElement);
-                     console.log(output, "NEW SETTTTTTTTTTTTTTT");
-                  }
-                })
-                console.log(items)
-        } 
-
         getData();
         getDeviceID()
         console.log("ITEMS: ", items)
@@ -257,6 +225,42 @@ const Calendar = ({ navigation, route }) => {
         console.log("Items: ", items);
     }, []);
 
+
+    const SyncGoogleCalendar = async () =>{
+        setLoader(true)
+        const newSet = [];
+        let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
+        await fetch(postsUrl)
+            .then((response) => response.json())
+            .then((responseData) => {
+              console.log(responseData);
+              console.log(responseData.items[0].start.dateTime);
+              for (let i = 0; i < responseData.items.length; i++) {
+                const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
+                const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
+                const dateEnd = moment(responseData.items[i].end.dateTime).format("YYYY-MM-DD");
+                const timeEnd = moment(responseData.items[i].end.dateTime).format("HH:mma");
+                const title = (responseData.items[i].summary);
+                const description = (responseData.items[i].description);
+
+                console.log(responseData.items[i].start.dateTime);
+                console.log(newSet[date], "dateeeeeee");
+
+                newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
+                const output = Object.assign({}, ...newSet)
+                
+     
+                const newElement = {
+                    ...items, ...output
+                 }
+                 setItems(newElement);
+                 console.log(output, "NEW SETTTTTTTTTTTTTTT");
+              }
+              setLoader(false)
+              alert('Successful Sync');
+            })
+            console.log(items)
+    } 
 
     const getAllSchedules = async () => {
         setLoader(true);
@@ -338,6 +342,7 @@ const Calendar = ({ navigation, route }) => {
         </SkeletonPlaceholder>
         )
     }
+
     const renderDay = (day, item) => {
         return (
             loader === true ? 
@@ -501,7 +506,7 @@ const Calendar = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             {/* <AppBar title={"My Schedule"} showMenuIcon={false} /> */}
-            {/* <Button title="Sync Google Calendar" onPress={componentDidMount} titleStyle={styles.text2} style={styles.buttonCont}></Button> */}
+            <Button title="Sync New Added Item in Google Calendar" onPress={SyncGoogleCalendar} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
             <View style={styles.typesContainer}>
 
                 {/* <TouchableHighlight
@@ -570,9 +575,10 @@ const Calendar = ({ navigation, route }) => {
 
             <TouchableOpacity
                 activeOpacity={0.7}
-                onPress={() => {
-                    setShowModal(!showModal)
-                }}
+                onPress={
+                    //setShowModal(!showModal)
+                    clickHandler
+                }
                 style={styles.touchableOpacityStyle}>
                 <Image
                     source={require('../../../assets/addIcon.png')}
@@ -586,9 +592,6 @@ const Calendar = ({ navigation, route }) => {
                 animationType={'slide'}
                 transparent={false}
                 visible={showModal}
-                onRequestClose={() => {
-
-                }}
             >
 
                 <View style={styles.container}>

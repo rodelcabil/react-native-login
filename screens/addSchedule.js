@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, TextInput, Button, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, SafeAreaView, Text, TextInput, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
-import * as Animatable from 'react-native-animatable';
-import Calendar from './Home/HomeScreens/calendar';
+import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
+import axios from 'axios';
 
-const AddSchedule = ({ route }) => {
-    const submitSched = (title, desc, endDate, startTime, endTime, dateSelected) => {
-        console.log(title, desc, endDate, startTime, endTime, "Others", dateSelected);
-
-    };
+const AddSchedule = ({ route, navigation }) => {
 
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
     const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
@@ -28,6 +24,124 @@ const AddSchedule = ({ route }) => {
 
     const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
 
+    const [user, setUser] = useState({});
+
+    useEffect(()=>{
+      GoogleSignin.configure({
+        scopes: [
+          "profile",
+          "email",
+          "https://www.googleapis.com/auth/calendar.events"
+        ],
+        webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
+        offlineAccess: true,
+        forceCodeForRefreshToken: true,
+      });
+      isSignedIn()
+    },[])
+  
+    const signIn = async () => {
+      try{
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        //console.log('due_______' , userInfo)
+        setUser(userInfo)
+      }
+      catch(error){
+        console.log('Message______', error.message);
+        if(error.code === statusCodes.SIGN_IN_CANCELLED){
+          console.log('User Cancelled the Login Flow.');
+        }
+        else if(error.code === statusCodes.IN_PROGRESS){
+          console.log('Signing In.');
+        }
+        else if(error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE){
+          console.log('Play Services not Available.');
+        }
+        else{
+          console.log('Some other error message.');
+        }
+      }
+    }
+  
+    const isSignedIn = async () => {
+        const isSignedIn = await GoogleSignin.isSignedIn();
+        if(!!isSignedIn){
+          getCurrentUserInfo();
+        }
+        else{
+          console.log('Please Login..');
+        }
+    }
+  
+    const getCurrentUserInfo = async () => {
+      try{
+        const userInfo = await GoogleSignin.signInSilently();
+       // console.log('edit______', user);
+        setUser(userInfo);
+      }
+      catch(error){
+        if(error.code === statusCodes.SIGN_IN_REQUIRED){
+          alert('User has not signed in yet');
+          console.log('User has not signed in yet');
+        }
+        else{
+          alert('Somethign went wrong');
+          console.log('Somethign went wrong');
+        }
+      }
+    }
+  
+    const signOut = async () => {
+      try{
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+        setUser({});
+      }
+      catch(error){
+        console.log('Error');
+      }
+    }
+  
+    const create = async () => {
+      const userInfoToken = await GoogleSignin.getTokens();
+      const token = userInfoToken.accessToken;
+      const email = user.user.email;
+
+      const resp = await axios.post(
+        `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
+        {
+          start: {
+           // dateTime: `${startSplitted[0]}T${startSplitted[1]}:00.0Z`
+            dateTime: `${route.params.getdate}T${startTime}:00`, //`2019-04-04T09:30:00.0z`
+            timeZone: "Asia/Manila",
+          },
+          end: {
+            // dateTime: `${endSplitted[0]}T${endSplitted[1]}:00.0Z`
+            //`20019-4-04T09:30:00.0z`
+            dateTime: `${endDate}T${endTime}:00`,
+            timeZone: "Asia/Manila",
+          },
+          summary: title,
+          description: desc,
+        }
+      );
+  
+      //console.log(resp.data);
+  
+      if (resp.status === 200) {
+        navigation.goBack();
+        alert("Added Successfully");
+      } else {
+        alert("Error, please try again");
+      }
+    }
+
+    const submitSched = (title, desc, endDate, startTime, endTime, dateSelected) => {
+        console.log(title, desc, endDate, startTime, endTime, "Others", dateSelected);
+         !user.idToken ? signIn() : create()
+
+    };
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -55,7 +169,7 @@ const AddSchedule = ({ route }) => {
     const handleConfirmTime = (time) => {
         var convTime = moment(time).format("HH:mm")
         setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-        setStartTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
+        setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
         hideDatePickerTime();
     };
 
@@ -70,7 +184,7 @@ const AddSchedule = ({ route }) => {
     const handleConfirmTimeStart = (time) => {
         var convTime = moment(time).format("HH:mm")
         setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-        setEndTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
+        setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
         hideDatePickerTimeStart();
     };
 
