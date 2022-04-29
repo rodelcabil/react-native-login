@@ -5,8 +5,8 @@ import { View, Text, TextInput, StyleSheet } from 'react-native'
 import ChatView from './chatView';
 
 const ChatClient = ({ name }) => {
-    // const [messages, setMessages] = useState([{name: 'rodel', action: 'message', message: 'hello'}]);
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState([{name: 'rodel', action: 'message', message: 'hello'}, {name: 'Jim', action: 'message', message: 'hi'}]);
+    // const [messages, setMessages] = useState([]);
 
     const pusher = new Pusher(pusherConfig.key, pusherConfig);
     const chatChannel = pusher.subscribe('chat_channel');
@@ -23,7 +23,7 @@ const ChatClient = ({ name }) => {
     });
 
     useEffect(() => {
-        console.log("MESSAGE: ", messages)
+        // console.log("MESSAGE: ", messages)
         componentDidMount();
         componentWillUnmount();
     }, [messages])
@@ -41,7 +41,6 @@ const ChatClient = ({ name }) => {
         });
 
     }
-
 
     const handleMessage = (name, message) => {
         console.log("send message")

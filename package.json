@@ -23,6 +23,7 @@
     "accordion-collapse-react-native": "^1.1.0",
     "axios": "^0.26.1",
     "date-fns": "^2.28.0",
+    "deprecated-react-native-prop-types": "^2.2.0",
     "install": "^0.13.0",
     "lottie-react-native": "^5.0.1",
     "moment": "^2.29.3",

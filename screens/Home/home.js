@@ -49,7 +49,7 @@ const Home = () => {
                         <Icon name="chat" color={color} size={size} />
                     ),
                 }} >
-                  {props => <ChatClientClass name="Rodel"/> }
+                  {props => <ChatClient name="Rodel"/> }
                 
             </Tab.Screen>
              <Tab.Screen 

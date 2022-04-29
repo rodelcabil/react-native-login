@@ -81,11 +81,12 @@ const ViewSchedule = ({ route, navigation }) => {
         <View style={styles.container}>
             <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  route.params.item?.title} showMenuIcon={true} />
             <ScrollView>
+            <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
                 { route.params.item?.category !== "consults" ? <></> :
-                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', height: 360, flexDirection: 'column'}}>
+               
+                <View style={{ height: 340, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
 
-
-                {imgLoading === true ? <Loader />
+                {imgLoading === true ? <ActivityIndicator size="large" animating={true}/>
                 :
                 <>
                     <Carousel
@@ -116,8 +117,10 @@ const ViewSchedule = ({ route, navigation }) => {
                         />
                     </>
                             }
+                            </View>
+                        }
                 </View>
-                }
+               
                 {/* <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
                     <Text style={styles.textDetailsHeader}>Details</Text>
                 </SafeAreaView> */}

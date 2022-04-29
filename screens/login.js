@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , ScrollView, ActivityIndicator} from 'react-native';
+import { StyleSheet, View, Image, TextInput, TextPropTypes, SafeAreaView, Button, KeyboardAvoidingView , ScrollView, ActivityIndicator,} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,8 +18,8 @@ const LoginPage = ({ navigation }) => {
   const [loginLoader, setLoginLoader] = useState(false);
 
   React.useEffect(() => {
-    const tokenLogin = async() => {
-      const value = await AsyncStorage.getItem('token')
+    const tokenLogin = () => {
+      const value =  AsyncStorage.getItem('token')
       if(value !== null){
         navigation.replace('Home Page');
         console.log("still logged in");
