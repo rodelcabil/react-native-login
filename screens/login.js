@@ -21,7 +21,7 @@ const LoginPage = ({ navigation }) => {
     const tokenLogin = async() => {
       const value = await AsyncStorage.getItem('token')
       if(value !== null){
-        navigation.navigate('Home Page');
+        navigation.replace('Home Page');
         console.log("still logged in");
       }
       else{

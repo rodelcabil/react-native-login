@@ -495,9 +495,7 @@ const Calendar = ({ navigation, route }) => {
 
         console.log("filtered: ", reduced)
         setItems(reduced);
-        if(items === reduced){
-            setLoader(false);
-        }
+        setLoader(false);
     };
 
     return (
