@@ -86,6 +86,7 @@ const LoginPage = ({ navigation }) => {
 
   return (
     loader === true ? <Loader/> :
+    loginLoader === true ?  <Loader/> :
     <KeyboardAvoidingView
         style={{flex: 1}}
         enabled={true}
@@ -132,8 +133,6 @@ const LoginPage = ({ navigation }) => {
         
                       </SafeAreaView>
 
-                      { loginLoader === true ?  <ActivityIndicator size="large" animating={true}/> :
-                         <View>
                          <SafeAreaView style={styles.buttonSafeAreaStyle}>
                           <Button
                             style={styles.button}
@@ -152,8 +151,6 @@ const LoginPage = ({ navigation }) => {
                             Forgot Password?
                           </Text>
                         </SafeAreaView>
-                      </View>
-                      }
         
                      
               </View>

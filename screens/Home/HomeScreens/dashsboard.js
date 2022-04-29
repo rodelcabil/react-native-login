@@ -16,6 +16,7 @@ const Dashboard = () => {
 
   useEffect(()=>{
     handleClientLoad();
+    initClient();
   },[]);
 
   const initClient = () => {

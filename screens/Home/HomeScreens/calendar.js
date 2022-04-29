@@ -259,6 +259,7 @@ const Calendar = ({ navigation, route }) => {
 
 
     const getAllSchedules = async () => {
+        setLoader(true);
         const token = await AsyncStorage.getItem('token');
         // console.log(token, "token");
         await fetch('https://beta.centaurmd.com/api/schedules', {
@@ -293,7 +294,7 @@ const Calendar = ({ navigation, route }) => {
                     {},
                 );
                 setItems(reduced);
-
+                setLoader(false);
 
             });
     }
@@ -301,6 +302,14 @@ const Calendar = ({ navigation, route }) => {
     const SkeletonLoader = () => {
         return(
             <SkeletonPlaceholder >
+            <SkeletonPlaceholder
+                speed={1500}
+                backgroundColor={"#dddddd"}
+                highlightColor={"#e7e7e7"}>
+                <View
+                style={styles.skeltonMainView}
+                />
+            </SkeletonPlaceholder>
             <SkeletonPlaceholder
                 speed={1500}
                 backgroundColor={"#dddddd"}
@@ -334,7 +343,7 @@ const Calendar = ({ navigation, route }) => {
             loader === true ? 
               <SkeletonLoader/>
             :
-            moment(item.date_from).format('YYYY-MM-DD') === dayGet ? 
+            moment(item.date_from).format('YYYY-MM-DD') === ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ? 
                 <TouchableHighlight
                     style={{ margin: 10, width: width }}
                     activeOpacity={0.6}
@@ -461,10 +470,10 @@ const Calendar = ({ navigation, route }) => {
 
 
     const filterItems = (itemCategory) => {
+        setLoader(true);
 
         const newList = tempItems.filter(item => { return item.category === itemCategory });
         // console.log("new list to: ", newList)
-
         const mappedData = newList.map((data) => {
             const date = data.date_from;
 
@@ -485,8 +494,10 @@ const Calendar = ({ navigation, route }) => {
         );
 
         console.log("filtered: ", reduced)
-
         setItems(reduced);
+        if(items === reduced){
+            setLoader(false);
+        }
     };
 
     return (
