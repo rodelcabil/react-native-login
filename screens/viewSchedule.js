@@ -8,6 +8,7 @@ import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { Dimensions } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LottieView from 'lottie-react-native';
 
 var width = Dimensions.get('window').width;
 const ViewSchedule = ({ route, navigation }) => {
@@ -16,7 +17,7 @@ const ViewSchedule = ({ route, navigation }) => {
     const [carouselItem, setCarouselItem] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [consultDetails, setConsulttDetails] = useState([]);
-    const [imgLoading, setImgLoading] = useState(false);
+    const [imgLoading, setImgLoading] = useState(true);
 
     
 
@@ -50,6 +51,18 @@ const ViewSchedule = ({ route, navigation }) => {
         geConsultFormData();
     }, []);
 
+    const Loader = () =>{
+        return(
+            <View style={styles.loaderContainer}>
+                <LottieView
+                    source={require('../assets/lottie.json')}
+                    autoPlay loop
+                />
+    
+            </View>
+        )
+      }
+
     const renderItem = ({ item, index }) => {
         return (
             <Image
@@ -72,7 +85,7 @@ const ViewSchedule = ({ route, navigation }) => {
                 <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', height: 360, flexDirection: 'column'}}>
 
 
-                {imgLoading === true ?   <ActivityIndicator size="large" animating={true}/>
+                {imgLoading === true ? <Loader />
                 :
                 <>
                     <Carousel
@@ -113,7 +126,7 @@ const ViewSchedule = ({ route, navigation }) => {
                         style={{
                             backgroundColor: '#fff',
                             borderRadius: 10,
-                            marginTop: -10
+                            marginTop: -30
                         }}>
                         {route.params.item?.category === "reminder" ?
                             <>
@@ -253,6 +266,7 @@ const styles = StyleSheet.create({
     },
     columnContainer: {
         flexDirection: 'column',
+       
 
     },
     rowContainer: {
@@ -302,6 +316,11 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         
       },
+    loaderContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff'
+    }
 });
 
 export default ViewSchedule;
