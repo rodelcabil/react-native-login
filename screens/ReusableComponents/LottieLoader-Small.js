@@ -17,7 +17,7 @@ const LoaderSmall = () =>{
 
 const styles = StyleSheet.create({
     loaderContainer: {
-        height: 110,
+        height: 100,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#fff'

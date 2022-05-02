@@ -7,8 +7,7 @@ import LoaderFullScreen from './ReusableComponents/LottieLoader-FullScreen';
 import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 
   //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
-
-
+  
 const LoginPage = ({ navigation }) => {
   
   const [email, setEmail] = useState(null);

@@ -17,8 +17,21 @@ const AppBar = ({title, showMenuIcon}) => {
 
     const logout = async() =>{
         await AsyncStorage.removeItem('token')
+        signOut();
         navigation.replace('LoginPage')
     }
+
+    const signOut = async () => {
+        try{
+          await GoogleSignin.revokeAccess();
+          await GoogleSignin.signOut();
+          setUser({});
+          alert("Sign in Successfully");
+        }
+        catch(error){
+          console.log('Error');
+        }
+      }
 
     getUserInfo = async () => {
         const token = await AsyncStorage.getItem('token');

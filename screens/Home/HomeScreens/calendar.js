@@ -4,7 +4,6 @@ import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, Toucha
 import { Card, Avatar } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
-import AppBar from '../../ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,10 +13,10 @@ import { Dimensions } from "react-native";
 import DoubleClick from 'react-native-double-tap';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 import axios from 'axios';
 import SkeletonLoaderCard from '../../ReusableComponents/SkeletonLoader'
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
 var width = Dimensions.get('window').width - 20;
 
@@ -160,18 +159,7 @@ const Calendar = ({ navigation, route }) => {
         }
       }
     
-      const signOut = async () => {
-        try{
-          await GoogleSignin.revokeAccess();
-          await GoogleSignin.signOut();
-          setUser({});
-          alert("Sign in Successfully");
-        }
-        catch(error){
-          console.log('Error');
-        }
-      }
-    
+
     const SyncGoogleCalendar = async () =>{
         setLoader(true)
         const newSet = [];
@@ -282,7 +270,7 @@ const Calendar = ({ navigation, route }) => {
 
                                         <View style={styles.rowContainer}>
                                             <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                            <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                            <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                         </View>
                                     </View>
                                 </Card.Content>
@@ -301,7 +289,7 @@ const Calendar = ({ navigation, route }) => {
 
                                             <View style={styles.rowContainer}>
                                                 <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                                <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                             </View>
                                         </View>
                                     </Card.Content>
@@ -320,7 +308,7 @@ const Calendar = ({ navigation, route }) => {
 
                                                 <View style={styles.rowContainer}>
                                                     <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
-                                                    <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                                    <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                 </View>
                                             </View>
                                         </Card.Content>
@@ -338,7 +326,7 @@ const Calendar = ({ navigation, route }) => {
 
                                                 <View style={styles.rowContainer}>
                                                     <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                                    <Text style={styles.scheduleStyle}>{item.time_from} - {item.time_to}</Text>
+                                                    <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                 </View>
                                             </View>
                                         </Card.Content>
@@ -427,6 +415,8 @@ const Calendar = ({ navigation, route }) => {
     
         const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
 
+        const [addLoader, setAddLoader] = useState(false);
+
         const showDatePicker = () => {
             setDatePickerVisibility(true);
         };
@@ -474,11 +464,14 @@ const Calendar = ({ navigation, route }) => {
 
 
         const create = async () => {
+            setAddLoader(true);
             const userInfoToken = await GoogleSignin.getTokens();
             const token = userInfoToken.accessToken;
             const email = user.user.email;
             const getDaySelecte = dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet;
       
+            console.log(token, email, getDaySelecte, startTime);
+            console.log(endDate, endTime, title, desc);
             const resp = await axios.post(
               `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
               {
@@ -510,6 +503,7 @@ const Calendar = ({ navigation, route }) => {
                  setItems(newElement);*/
                  SyncGoogleCalendar();
                  setShowModal(false);
+                 setAddLoader(false);
                  alert("Added Successfully");
             } else {
               alert("Error, please try again");
@@ -519,90 +513,91 @@ const Calendar = ({ navigation, route }) => {
 
         return(
             <View style={styles.container}>         
-            <View style={styles.dateContainer}>
-            <Icon2 name="arrow-back" size={30} color="white"  onPress={() =>setShowModal(false)}/>
-                <Image
-                    style={styles.logoImg2}
-                    source={require('../../../assets/calendar.png')}
-                />
-                 <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet} </Text>
+                <View style={styles.dateContainer}>
+                <Icon2 name="arrow-back" size={30} color="white"  onPress={() =>setShowModal(false)}/>
+                    <Image
+                        style={styles.logoImg2}
+                        source={require('../../../assets/calendar.png')}
+                    />
+                    <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet} </Text>
+                </View>
+                <ScrollView style={styles.safeAreaViewContainerAdd}>
+                    <SafeAreaView style={styles.safeAreaViewContainerAdd}>
+                        <Form onButtonPress={() => !user.idToken ? signIn() : create()}
+                            buttonStyle={styles.buttonCont}
+                        >
+                            <FormItem
+                                label="Title"
+                                isRequired
+                                value={title}
+                                style={styles.inputContainer}
+                                onChangeText={titleInp => setTitle(titleInp)}
+                                asterik />
+
+                            <FormItem
+                                label="Description"
+                                isRequired
+                                value={desc}
+                                style={styles.inputContainer}
+                                onChangeText={descript => setDesc(descript)}
+                                asterik />
+
+                            <Label text="End Date" isRequired asterik />
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePicker}
+                            >
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerVisible}
+                                        mode="date"
+                                        value={endDate}
+                                        onConfirm={handleConfirm}
+                                        onCancel={hideDatePicker}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+
+                            <Label text="Start Time" isRequired asterik />
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePickerTimeStart}
+                            >
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerVisibleStart}
+                                        mode="time"
+                                        value={startTime}
+                                        onConfirm={handleConfirmTimeStart}
+                                        onCancel={hideDatePickerTimeStart}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+
+                            <Label text="End Time" isRequired asterik />
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePickerTime}
+                            >
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerTimeVisible}
+                                        mode="time"
+                                        value={endTime}
+                                        onConfirm={handleConfirmTime}
+                                        onCancel={hideDatePickerTime}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                        </Form>
+                        {addLoader === true? 
+                            <LoaderSmall/> : <></>}
+                    </SafeAreaView>
+                </ScrollView>
             </View>
-            <ScrollView style={styles.safeAreaViewContainer}>
-                <SafeAreaView style={styles.safeAreaViewContainer}>
-                    <Form onButtonPress={() => !user.idToken ? signIn() : create()}
-                        buttonStyle={styles.buttonCont}
-                    >
-                        <FormItem
-                            label="Title"
-                            isRequired
-                            value={title}
-                            style={styles.inputContainer}
-                            onChangeText={titleInp => setTitle(titleInp)}
-                            asterik />
-
-                        <FormItem
-                            label="Description"
-                            isRequired
-                            value={desc}
-                            style={styles.inputContainer}
-                            onChangeText={descript => setDesc(descript)}
-                            asterik />
-
-                        <Label text="End Date" isRequired asterik />
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePicker}
-                        >
-                            <View style={styles.inputContainer2}>
-                                <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                                <DateTimePickerModal
-                                    isVisible={isDatePickerVisible}
-                                    mode="date"
-                                    value={endDate}
-                                    onConfirm={handleConfirm}
-                                    onCancel={hideDatePicker}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-                        <Label text="Start Time" isRequired asterik />
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePickerTimeStart}
-                        >
-                            <View style={styles.inputContainer2}>
-                                <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                                <DateTimePickerModal
-                                    isVisible={isDatePickerVisibleStart}
-                                    mode="time"
-                                    value={startTime}
-                                    onConfirm={handleConfirmTimeStart}
-                                    onCancel={hideDatePickerTimeStart}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-                        <Label text="End Time" isRequired asterik />
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePickerTime}
-                        >
-                            <View style={styles.inputContainer2}>
-                                <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                                <DateTimePickerModal
-                                    isVisible={isDatePickerTimeVisible}
-                                    mode="time"
-                                    value={endTime}
-                                    onConfirm={handleConfirmTime}
-                                    onCancel={hideDatePickerTime}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-                    </Form>
-                </SafeAreaView>
-            </ScrollView>
-        </View>
         );
     }
 
@@ -833,7 +828,11 @@ const styles = StyleSheet.create({
 
 
     //MODAL DESIGN
-    
+    safeAreaViewContainerAdd: {
+        padding: 15,
+        flex: 1,
+        backgroundColor: '#fff'
+    },
     dateContainer: {
         flexDirection: 'row',
         height: 80,
