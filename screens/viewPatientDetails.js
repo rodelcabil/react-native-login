@@ -11,9 +11,18 @@ import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { AccordionList } from "accordion-collapse-react-native";
 import { Separator } from 'native-base';
-import { List } from 'react-native-paper';
-
+import { List,DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import LottieView from 'lottie-react-native';
+
+const theme = {
+    ...DefaultTheme,
+    roundness: 2,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: '#da7331',
+      accent: '#f1c40f',
+    },
+  };
 
 const ViewPatientDetails = ({ route }) => {
 
@@ -67,8 +76,8 @@ const ViewPatientDetails = ({ route }) => {
             //     caseID.push(cases[i].id)
             // }
             // console.log('CASE ID: ', caseID)
-    
-            await fetch('https://beta.centaurmd.com/api/patient/case/' + route.params.data?.id , {
+
+            await fetch('https://beta.centaurmd.com/api/patient/case/' + route.params.data?.id, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -76,12 +85,12 @@ const ViewPatientDetails = ({ route }) => {
                 },
             }).then(res => res.json())
                 .then(resData => {
-    
+
                     setMessageBoard(resData)
                     setMessageHtml(JSON.parse(resData.message_html))
-    
+
                 });
-    
+
         }
 
         console.log('message board: ', messageBoard)
@@ -91,7 +100,7 @@ const ViewPatientDetails = ({ route }) => {
     }, []);
 
 
-   
+
 
 
 
@@ -170,7 +179,6 @@ const ViewPatientDetails = ({ route }) => {
     );
 
 
-
     const header = (item) => {
         return (
             <View >
@@ -244,19 +252,58 @@ const ViewPatientDetails = ({ route }) => {
         );
     }
 
-
-
-
-
     const CasesRoute = () => (
         <View style={styles.casesContainer} >
-            <AccordionList
-                list={cases}
-                header={header}
-                body={accordionBody}
-                keyExtractor={item => `${item.case_id}`}
+           
+                <PaperProvider theme={theme}>
+                    {/* <AccordionList
+                        list={cases}
+                        header={header}
+                        body={accordionBody}
+                        keyExtractor={item => `${item.case_id}`}
 
-            />
+                    /> */}
+                    {
+                        cases.map((cases, index) => {
+                            return  <ScrollView>
+                                <List.Accordion
+                                key={index}
+                                title={cases.case_id}
+                                style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5 }}
+                            >
+                                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2 }}>
+                                    <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
+                                        <Text style={{ color: 'black', fontSize: 16 }}>{cases.type}</Text>
+                                        <Text style={{ fontSize: 14, color: 'black' }}>{cases.notes}</Text>
+                                    </View>
+                                    <View style={{ padding: 10}}>
+                                    {
+                                        messageBoard.map((mb, index) => {
+                                            return <><List.Accordion
+                                            key={index}
+                                            title={mb.subject}
+                                            style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5}}>
+                                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2 }}>
+                                                <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
+                                                    <Text style={{ color: 'black', fontSize: 16 }}>{mb.message}</Text>
+
+                                                </View>
+                                            </View>
+                                            </List.Accordion>
+                                            <View style={{ marginBottom: 5}}/>
+                                            </>
+                                        })
+                                    }
+                                        
+                                    </View>
+                                </View>
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5}}/>
+                            </ScrollView>
+                        })
+                    }
+                </PaperProvider>
+           
         </View>
     );
 
