@@ -12,7 +12,7 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { AccordionList } from "accordion-collapse-react-native";
 import { Separator } from 'native-base';
 import { List,DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
-import LottieView from 'lottie-react-native';
+import LoaderFullScreen from './ReusableComponents/LottieLoader-FullScreen';
 
 const theme = {
     ...DefaultTheme,
@@ -98,24 +98,6 @@ const ViewPatientDetails = ({ route }) => {
         messageBoardDatails();
 
     }, []);
-
-
-
-
-
-
-
-    const Loader = () => {
-        return (
-            <View style={styles.loaderContainer}>
-                <LottieView
-                    source={require('../assets/lottie.json')}
-                    autoPlay loop
-                />
-
-            </View>
-        )
-    }
 
     const InformationRoute = () => (
         <View style={styles.container}>
@@ -332,7 +314,7 @@ const ViewPatientDetails = ({ route }) => {
     return (
         <View style={styles.container}>
             <AppBar title={"Patient Details"} showMenuIcon={true} />
-            {loader === true ? <Loader /> :
+            {loader === true ? <LoaderFullScreen /> :
                 <>
                     <View style={styles.body}>
                         <View style={styles.rowContainer}>
@@ -459,12 +441,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16
     },
-    loaderContainer: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1,
-        backgroundColor: '#fff'
-    }
 });
 
 export default ViewPatientDetails

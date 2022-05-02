@@ -3,7 +3,8 @@ import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, Keyboar
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LottieView from 'lottie-react-native';
+import LoaderFullScreen from './ReusableComponents/LottieLoader-FullScreen';
+import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 
   //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
@@ -14,10 +15,10 @@ const LoginPage = ({ navigation }) => {
   const [password, setPassword] = useState(null);
   const [gToken, setToken] = useState(null);
   const [loader, setLoader] = useState(true);
-
   const [loginLoader, setLoginLoader] = useState(false);
-  const tokenLogin =  () => {
-    const value =  AsyncStorage.getItem('token')
+  
+  const tokenLogin =  async () => {
+    const value = await AsyncStorage.getItem('token')
     if(value !== null){
       navigation.replace('Home Page');
       console.log("still logged in");
@@ -33,9 +34,9 @@ const LoginPage = ({ navigation }) => {
   }, []);
 
 
-  loginFunction =  () => {
+  loginFunction =  async () => {
     setLoginLoader(true);
-     fetch('https://beta.centaurmd.com/api/login', {
+     await fetch('https://beta.centaurmd.com/api/login', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -52,7 +53,7 @@ const LoginPage = ({ navigation }) => {
             await AsyncStorage.setItem('token', resData.token);
           };
           storeToken();
-          navigation.navigate('Home Page');
+          navigation.replace('Home Page');
           setEmail(null);
           setPassword(null);
           setLoginLoader(false);
@@ -65,27 +66,8 @@ const LoginPage = ({ navigation }) => {
       });
   };
 
-  const Loader = () =>{
-    return(
-        <View style={styles.loaderContainer}>
-            <LottieView
-                source={require('../assets/lottie.json')}
-                autoPlay loop
-            />
-
-        </View>
-    )
-  }
-
-  
- /* const storeToken = async() =>{
-    await AsyncStorage.setItem('token', token);
-  };*/
-
-
   return (
-    loader === true ? <Loader/> :
-    loginLoader === true ?  <Loader/> :
+    loader === true ? <LoaderFullScreen/> :
     <KeyboardAvoidingView
         style={{flex: 1}}
         enabled={true}
@@ -132,26 +114,30 @@ const LoginPage = ({ navigation }) => {
         
                       </SafeAreaView>
 
-                         <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                          <Button
-                            style={styles.button}
-                            title="SIGN IN"
-                            color="#28A745"
-                            accessibilityLabel="Learn more about this purple button"
-                            onPress={loginFunction}
-                          />
-                          </SafeAreaView>
+                        { loginLoader === true ? <View style={{height: "30%"}}>
+                          <LoaderSmall/>
+                          </View> :
+                          <View>
                           <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                          <Text
-                            onPress={() => {
-                              navigation.navigate('ForgotPasswordPage');
-                            }}
-                            style={styles.textSmall}>
-                            Forgot Password?
-                          </Text>
-                        </SafeAreaView>
-        
-                     
+                              <Button
+                                style={styles.button}
+                                title="SIGN IN"
+                                color="#28A745"
+                                accessibilityLabel="Learn more about this purple button"
+                                onPress={loginFunction}
+                              />
+                            </SafeAreaView>
+                            <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                              <Text
+                                onPress={() => {
+                                  navigation.navigate('ForgotPasswordPage');
+                                }}
+                                style={styles.textSmall}>
+                                Forgot Password?
+                              </Text>
+                          </SafeAreaView>
+                          </View>
+                        }
               </View>
           
           
@@ -245,13 +231,6 @@ const styles = StyleSheet.create({
     color: 'grey',
     marginVertical: 10
   },
-  loaderContainer:{
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: '#fff'
-}
-
 });
 
 export default LoginPage;

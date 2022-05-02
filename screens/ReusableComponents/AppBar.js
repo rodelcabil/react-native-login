@@ -17,7 +17,7 @@ const AppBar = ({title, showMenuIcon}) => {
 
     const logout = async() =>{
         await AsyncStorage.removeItem('token')
-        navigation.navigate('LoginPage')
+        navigation.replace('LoginPage')
     }
 
     getUserInfo = async () => {

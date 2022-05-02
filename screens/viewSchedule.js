@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator, TouchableHighlight } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -8,20 +8,26 @@ import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { Dimensions } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import LottieView from 'lottie-react-native';
+import axios from "axios";
+import Dialog, {
+  DialogFooter,
+  DialogButton,
+  DialogContent
+} from "react-native-popup-dialog";
+import { set } from "date-fns";
 
 var width = Dimensions.get('window').width;
-const ViewSchedule = ({ route, navigation }) => {
-
-
+const ViewSchedule = ({ route, navigation, }) => {
     const [carouselItem, setCarouselItem] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [consultDetails, setConsulttDetails] = useState([]);
     const [imgLoading, setImgLoading] = useState(true);
 
-    
-
     useEffect(()=>{
+        console.log(route.params.accessToken, " ACCESS TOKEN");
+        console.log(route.params.email, " EMAIL");
+        console.log(route.params.item?.googleEventId, " ID");
+
         const geConsultFormData = async () => {
             setImgLoading(true);
             const token = await AsyncStorage.getItem('token');
@@ -51,18 +57,6 @@ const ViewSchedule = ({ route, navigation }) => {
         geConsultFormData();
     }, []);
 
-    const Loader = () =>{
-        return(
-            <View style={styles.loaderContainer}>
-                <LottieView
-                    source={require('../assets/lottie.json')}
-                    autoPlay loop
-                />
-    
-            </View>
-        )
-      }
-
     const renderItem = ({ item, index }) => {
         return (
             <Image
@@ -75,7 +69,16 @@ const ViewSchedule = ({ route, navigation }) => {
         )
     }
 
-    
+    const [dialogBox, setDialogBox] = useState(false);
+
+    const deleteEvent = async () => {
+        const resp = await axios.delete(
+          `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events/${route.params.item?.googleEventId}?access_token=${route.params.accessToken}`
+        );
+        setDialogBox(false);
+        navigation.goBack();
+
+      }
 
     return (
         <View style={styles.container}>
@@ -238,6 +241,41 @@ const ViewSchedule = ({ route, navigation }) => {
                                                 <Icon name="calendar" size={23} color="#81c784" />
                                                 <Text style={styles.scheduleStyle}>{route.params.item?.time_from} - {route.params.item?.time_to}</Text>
                                             </View>
+
+                                            <TouchableHighlight onPress={()=>{}}>
+                                                    <View style={styles.editBtn}>
+                                                        <Icon name="lock-outline" size={20} color="white" style={{ marginRight: 5 }} />
+                                                        <Text style={styles.textFunc}>EDIT</Text>
+                                                    </View>
+                                                </TouchableHighlight>
+
+                                                <TouchableHighlight onPress={() => setDialogBox(true)}>
+                                                    <View style={styles.delBtn}>
+                                                        <Icon name="lock-outline" size={20} color="white" style={{ marginRight: 5 }} />
+                                                        <Text style={styles.textFunc}>DELETE</Text>
+                                                    </View>
+                                                </TouchableHighlight>
+
+                                                <Dialog
+                                                    visible={dialogBox}
+                                                    width={400}
+                                                    footer={
+                                                    <DialogFooter>
+                                                        <DialogButton
+                                                        text="CANCEL"
+                                                        onPress={() => {
+                                                            setDialogBox(false);
+                                                        }}
+                                                        />
+                                                        <DialogButton text="OK" onPress={deleteEvent} />
+                                                    </DialogFooter>
+                                                    }
+                                                >
+                                                    <DialogContent>
+                                                    <Text>Are you sure?</Text>
+                                                    </DialogContent>
+                                                </Dialog>
+
                                         </View>
                                     </>
                         }
@@ -247,6 +285,8 @@ const ViewSchedule = ({ route, navigation }) => {
         </View>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -320,11 +360,29 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         
       },
-    loaderContainer: {
+    editBtn: {
+        marginTop: 10,
+        marginBottom: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff'
-    }
+        flexDirection: 'row',
+        borderRadius: 5,
+        backgroundColor: "#4482b8",
+        padding: 10,
+    },
+    textFunc:{
+        fontSize: 15,
+        fontWeight: "bold",
+        color: 'white'
+    },
+    delBtn: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+        borderRadius: 5,
+        backgroundColor: "#d4534a",
+        padding: 10,
+    },
 });
 
 export default ViewSchedule;

@@ -131,6 +131,7 @@ const AddSchedule = ({ route, navigation }) => {
   
       if (resp.status === 200) {
         navigation.goBack();
+        signOut();
         alert("Added Successfully");
       } else {
         alert("Error, please try again");

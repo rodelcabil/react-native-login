@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button, ScrollView } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
-import Icon2 from 'react-native-vector-icons/Ionicons';
+import AppBar from '../../ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon2 from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import DeviceInfo from 'react-native-device-info';
@@ -14,78 +15,20 @@ import DoubleClick from 'react-native-double-tap';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
+import axios from 'axios';
+import SkeletonLoaderCard from '../../ReusableComponents/SkeletonLoader'
 
 var width = Dimensions.get('window').width - 20;
 
 const Calendar = ({ navigation, route }) => {
-
     const [items, setItems] = useState({});
     const [tempItems, setTempItems] = useState([]);
     const [mergeItems, setMergeItems] = useState([]);
     const [dayGet, setDay] = useState(null);
     const [deviceID, setDeviceID] = useState();
     const [showModal, setShowModal] = useState(false);
-    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-    const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
-    const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
-
-    const [title, setTitle] = useState(null);
-    const [desc, setDesc] = useState(null);
-    const [endDate, setEndDate] = useState(null);
-    const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
-
-    const [datePickerTitle, setdatePickerTitle] = useState(null);
-    const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
-
-    const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
-
-    const showDatePicker = () => {
-        setDatePickerVisibility(true);
-    };
-
-    const hideDatePicker = () => {
-        setDatePickerVisibility(false);
-    };
-
-    const handleConfirm = (date) => {
-        //console.warn("A date has been picked: ", date);
-        setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
-        setEndDate(moment(date).format("YYYY-MM-DD"));
-        hideDatePicker();
-    };
-
-    const showDatePickerTime = () => {
-        setDatePickerTimeVisibility(true);
-    };
-
-    const hideDatePickerTime = () => {
-        setDatePickerTimeVisibility(false);
-    };
-
-    const handleConfirmTime = (time) => {
-        var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-        setStartTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
-        hideDatePickerTime();
-    };
-
-    const showDatePickerTimeStart = () => {
-        setDatePickerVisibilityStart(true);
-    };
-
-    const hideDatePickerTimeStart = () => {
-        setDatePickerVisibilityStart(false);
-    };
-
-    const handleConfirmTimeStart = (time) => {
-        var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-        setEndTime(moment(convTime, ["HH.mm"]).format("hh:mm"));
-        hideDatePickerTimeStart();
-    };
-
-    
+    const [user, setUser] = useState({});
 
     const [dummy, setDummy] = useState({
         '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
@@ -101,82 +44,22 @@ const Calendar = ({ navigation, route }) => {
     });
 
     
-
-    const submitSched = (title, desc, endDate, startTime, endTime, dayGet) => {
-        console.log(title, desc, endDate, startTime, endTime, "Others", dayGet);
-        const convDate = moment(dayGet).format('YYYY-MM-DD');
-
-        const newSet = {};
-        Object.keys(items).forEach((key) =>{
-            console.log(items[convDate] === convDate );
-            if(items[key] === convDate ){
-                newSet[convDate] =  {[convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }]} 
-                 setItems(newSet);
-                 console.log("dsadasdas11");
-            }
-            else{
-                const newElement = {
-                    ...items,
-                    [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }] 
-                 }
-                 setItems(newElement);
-                 
-                 console.log("dsadasdas22");
-            }
-        })
-
-        console.log(items);
-    
-        /*
-                        const newElement = {
-                    ...items,
-                    [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others" }] 
-                 }
-                 setItems(newElement);
-                 
-                 console.log("dsadasdas22"); */
-    
-    };
-
-    /*useEffect(()=>{
-        const getDeviceID = () => {
-            var uniqueID = DeviceInfo.getUniqueId;
-            setDeviceID(uniqueID); 
-        }
-
-        const getData = async () =>{
-            const token = await AsyncStorage.getItem('token');
-            // console.log(token, "token");
-            await fetch('https://beta.centaurmd.com/api/schedules', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + token,
-            },
-            }).then(res => res.json())
-            .then(resData => {
-                console.log(resData);
-                const newItem = {};
-                Object.keys(resData).forEach((key) =>{
-                    const dateget = moment(resData[key].start).format("YYYY-MM-DD");
-                    newItem[dateget] = [resData[key]];
-                })
-
-        console.log("Items: ",items);
-
-                setItems(newItem);
-            });
-        }
-        
-        getData()
-        getDeviceID()
-        console.log("Device ID", deviceID);
-        console.log("Items: ",items);
-    },[]);*/
-
     const [loader, setLoader] = useState(true);
 
     useEffect(() => {
+        GoogleSignin.configure({
+            scopes: [
+              "profile",
+              "email",
+              "https://www.googleapis.com/auth/calendar.events"
+            ],
+            webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
+            offlineAccess: true,
+            forceCodeForRefreshToken: true,
+          });
+          isSignedIn()
+
+
         const getDeviceID = () => {
             var uniqueID = DeviceInfo.getUniqueId;
             setDeviceID(uniqueID);
@@ -225,16 +108,78 @@ const Calendar = ({ navigation, route }) => {
         console.log("Items: ", items);
     }, []);
 
-
+    const signIn = async () => {
+        try{
+          await GoogleSignin.hasPlayServices();
+          const userInfo = await GoogleSignin.signIn();
+          //console.log('due_______' , userInfo)
+          setUser(userInfo)
+        }
+        catch(error){
+          console.log('Message______', error.message);
+          if(error.code === statusCodes.SIGN_IN_CANCELLED){
+            console.log('User Cancelled the Login Flow.');
+          }
+          else if(error.code === statusCodes.IN_PROGRESS){
+            console.log('Signing In.');
+          }
+          else if(error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE){
+            console.log('Play Services not Available.');
+          }
+          else{
+            console.log('Some other error message.');
+          }
+        }
+      }
+    
+      const isSignedIn = async () => {
+          const isSignedIn = await GoogleSignin.isSignedIn();
+          if(!!isSignedIn){
+            getCurrentUserInfo();
+          }
+          else{
+            console.log('Please Login..');
+          }
+      }
+    
+      const getCurrentUserInfo = async () => {
+        try{
+          const userInfo = await GoogleSignin.signInSilently();
+         // console.log('edit______', user);
+          setUser(userInfo);
+        }
+        catch(error){
+          if(error.code === statusCodes.SIGN_IN_REQUIRED){
+            alert('User has not signed in yet');
+            console.log('User has not signed in yet');
+          }
+          else{
+            alert('Somethign went wrong');
+            console.log('Somethign went wrong');
+          }
+        }
+      }
+    
+      const signOut = async () => {
+        try{
+          await GoogleSignin.revokeAccess();
+          await GoogleSignin.signOut();
+          setUser({});
+          alert("Sign in Successfully");
+        }
+        catch(error){
+          console.log('Error');
+        }
+      }
+    
     const SyncGoogleCalendar = async () =>{
         setLoader(true)
         const newSet = [];
-        let postsUrl = "https://www.googleapis.com/calendar/v3/calendars/camsberts26@gmail.com/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8"
+        let postsUrl = `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8`
         await fetch(postsUrl)
             .then((response) => response.json())
             .then((responseData) => {
               console.log(responseData);
-              console.log(responseData.items[0].start.dateTime);
               for (let i = 0; i < responseData.items.length; i++) {
                 const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
                 const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
@@ -244,18 +189,16 @@ const Calendar = ({ navigation, route }) => {
                 const description = (responseData.items[i].description);
 
                 console.log(responseData.items[i].start.dateTime);
-                console.log(newSet[date], "dateeeeeee");
 
-                newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others" }] })
-                const output = Object.assign({}, ...newSet)
-                
-     
-                const newElement = {
-                    ...items, ...output
-                 }
-                 setItems(newElement);
-                 console.log(output, "NEW SETTTTTTTTTTTTTTT");
+                newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
+                googleEventId: responseData.items[i].id, googleCalendar: true }] })
               }
+              const output = Object.assign({}, ...newSet)
+              const newElement = {
+                  ...items, ...output
+               }
+               setItems(newElement);
+               console.log(output, "NEW SETTTTTTTTTTTTTTT");
               setLoader(false)
               alert('Successful Sync');
             })
@@ -303,59 +246,25 @@ const Calendar = ({ navigation, route }) => {
             });
     }
 
-    const SkeletonLoader = () => {
-        return(
-            <SkeletonPlaceholder >
-            <SkeletonPlaceholder
-                speed={1500}
-                backgroundColor={"#dddddd"}
-                highlightColor={"#e7e7e7"}>
-                <View
-                style={styles.skeltonMainView}
-                />
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder
-                speed={1500}
-                backgroundColor={"#dddddd"}
-                highlightColor={"#e7e7e7"}>
-                <View
-                style={styles.skeltonMainView}
-                />
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder
-                speed={1500}
-                backgroundColor={"#dddddd"}
-                highlightColor={"#e7e7e7"}>
-                <View
-                style={styles.skeltonMainView}
-                />
-            </SkeletonPlaceholder>
-            <SkeletonPlaceholder
-                speed={1500}
-                backgroundColor={"#dddddd"}
-                highlightColor={"#e7e7e7"}>
-                <View
-                style={styles.skeltonMainView}
-                />
-            </SkeletonPlaceholder>
-            <View></View>
-        </SkeletonPlaceholder>
-        )
-    }
-
     const renderDay = (day, item) => {
         return (
             loader === true ? 
-              <SkeletonLoader/>
+              <SkeletonLoaderCard/>
             :
             moment(item.date_from).format('YYYY-MM-DD') === ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ? 
                 <TouchableHighlight
                     style={{ margin: 10, width: width }}
                     activeOpacity={0.6}
                     underlayColor="#DDDDDD"
-                    onPress={() => {
+                    onPress={ async () => {
+                        const accToken = await GoogleSignin.getTokens();
+                        console.log("access token : ", accToken.accessToken);
+                        console.log("email : ", user.user.email);
+
                         navigation.navigate('View Schedule', {
                             item: item,
+                            accessToken: accToken.accessToken,
+                            email: user.user.email,
                         });
                     }}
                 >
@@ -444,7 +353,7 @@ const Calendar = ({ navigation, route }) => {
     const renderEmptyDate = () => {
         return (
             loader === true ? 
-             <SkeletonLoader/>
+             <SkeletonLoaderCard/>
             :
             <View style={styles.itemEmptyContainer}>
                 <Image
@@ -472,7 +381,6 @@ const Calendar = ({ navigation, route }) => {
     const clickHandler = () => {
         navigation.navigate('Add Schedule', { getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet })
     };
-
 
     const filterItems = (itemCategory) => {
         setLoader(true);
@@ -503,10 +411,209 @@ const Calendar = ({ navigation, route }) => {
         setLoader(false);
     };
 
+    const AddSchedModal = () => {
+        const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+        const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
+        const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
+    
+        const [title, setTitle] = useState(null);
+        const [desc, setDesc] = useState(null);
+        const [endDate, setEndDate] = useState(null);
+        const [startTime, setStartTime] = useState(null);
+        const [endTime, setEndTime] = useState(null);
+    
+        const [datePickerTitle, setdatePickerTitle] = useState(null);
+        const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
+    
+        const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
+
+        const showDatePicker = () => {
+            setDatePickerVisibility(true);
+        };
+
+        const hideDatePicker = () => {
+            setDatePickerVisibility(false);
+        };
+
+        const handleConfirm = (date) => {
+            //console.warn("A date has been picked: ", date);
+            setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
+            setEndDate(moment(date).format("YYYY-MM-DD"));
+            hideDatePicker();
+        };
+
+        const showDatePickerTime = () => {
+            setDatePickerTimeVisibility(true);
+        };
+
+        const hideDatePickerTime = () => {
+            setDatePickerTimeVisibility(false);
+        };
+
+        const handleConfirmTime = (time) => {
+            var convTime = moment(time).format("HH:mm")
+            setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
+            setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
+            hideDatePickerTime();
+        };
+
+        const showDatePickerTimeStart = () => {
+            setDatePickerVisibilityStart(true);
+        };
+
+        const hideDatePickerTimeStart = () => {
+            setDatePickerVisibilityStart(false);
+        };
+
+        const handleConfirmTimeStart = (time) => {
+            var convTime = moment(time).format("HH:mm")
+            setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
+            setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
+            hideDatePickerTimeStart();
+        };
+
+
+        const create = async () => {
+            const userInfoToken = await GoogleSignin.getTokens();
+            const token = userInfoToken.accessToken;
+            const email = user.user.email;
+            const getDaySelecte = dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet;
+      
+            const resp = await axios.post(
+              `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
+              {
+                start: {
+                 // dateTime: `${startSplitted[0]}T${startSplitted[1]}:00.0Z`
+                  dateTime: `${getDaySelecte}T${startTime}:00`, //`2019-04-04T09:30:00.0z`
+                  timeZone: "Asia/Manila",
+                },
+                end: {
+                  // dateTime: `${endSplitted[0]}T${endSplitted[1]}:00.0Z`
+                  //`20019-4-04T09:30:00.0z`
+                  dateTime: `${endDate}T${endTime}:00`,
+                  timeZone: "Asia/Manila",
+                },
+                summary: title,
+                description: desc,
+              }
+            );
+        
+            //console.log(resp.data);
+        
+            if (resp.status === 200) {
+               /* const convDate = moment(dayGet).format('YYYY-MM-DD');
+                const newElement = {
+                    ...items,
+                    [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others",
+                    googleEventId: responseData.items[i].id, googleCalendar: true }] 
+                 }
+                 setItems(newElement);*/
+                 SyncGoogleCalendar();
+                 setShowModal(false);
+                 alert("Added Successfully");
+            } else {
+              alert("Error, please try again");
+            }
+          }
+
+
+        return(
+            <View style={styles.container}>         
+            <View style={styles.dateContainer}>
+            <Icon2 name="arrow-back" size={30} color="white"  onPress={() =>setShowModal(false)}/>
+                <Image
+                    style={styles.logoImg2}
+                    source={require('../../../assets/calendar.png')}
+                />
+                 <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet} </Text>
+            </View>
+            <ScrollView style={styles.safeAreaViewContainer}>
+                <SafeAreaView style={styles.safeAreaViewContainer}>
+                    <Form onButtonPress={() => !user.idToken ? signIn() : create()}
+                        buttonStyle={styles.buttonCont}
+                    >
+                        <FormItem
+                            label="Title"
+                            isRequired
+                            value={title}
+                            style={styles.inputContainer}
+                            onChangeText={titleInp => setTitle(titleInp)}
+                            asterik />
+
+                        <FormItem
+                            label="Description"
+                            isRequired
+                            value={desc}
+                            style={styles.inputContainer}
+                            onChangeText={descript => setDesc(descript)}
+                            asterik />
+
+                        <Label text="End Date" isRequired asterik />
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={showDatePicker}
+                        >
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisible}
+                                    mode="date"
+                                    value={endDate}
+                                    onConfirm={handleConfirm}
+                                    onCancel={hideDatePicker}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                        <Label text="Start Time" isRequired asterik />
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={showDatePickerTimeStart}
+                        >
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerVisibleStart}
+                                    mode="time"
+                                    value={startTime}
+                                    onConfirm={handleConfirmTimeStart}
+                                    onCancel={hideDatePickerTimeStart}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                        <Label text="End Time" isRequired asterik />
+                        <TouchableOpacity
+                            activeOpacity={0.7}
+                            onPress={showDatePickerTime}
+                        >
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                                <DateTimePickerModal
+                                    isVisible={isDatePickerTimeVisible}
+                                    mode="time"
+                                    value={endTime}
+                                    onConfirm={handleConfirmTime}
+                                    onCancel={hideDatePickerTime}
+                                />
+                            </View>
+                        </TouchableOpacity>
+
+                    </Form>
+                </SafeAreaView>
+            </ScrollView>
+        </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             {/* <AppBar title={"My Schedule"} showMenuIcon={false} /> */}
-            <Button title="Sync New Added Item in Google Calendar" onPress={SyncGoogleCalendar} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
+            {user === null ?
+             <Button title="Sign In Google" onPress={signIn} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
+             :
+            < Button title="Sync Google CalendarS" onPress={SyncGoogleCalendar} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
+            }
             <View style={styles.typesContainer}>
 
                 {/* <TouchableHighlight
@@ -566,7 +673,7 @@ const Calendar = ({ navigation, route }) => {
                 onDayPress={day => {
                     setDay(day.dateString);
                 }}
-                selected={'2022-04-26'}
+                selected={Date.now()}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
                 }}
@@ -576,8 +683,8 @@ const Calendar = ({ navigation, route }) => {
             <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={
-                    //setShowModal(!showModal)
-                    clickHandler
+                    ()=>setShowModal(true)
+                    //clickHandler
                 }
                 style={styles.touchableOpacityStyle}>
                 <Image
@@ -586,108 +693,12 @@ const Calendar = ({ navigation, route }) => {
                 />
             </TouchableOpacity>
 
-            
-
             <Modal
                 animationType={'slide'}
                 transparent={false}
                 visible={showModal}
             >
-
-                <View style={styles.container}>
-                    <SafeAreaView>
-                        <View style={styles.headerWrapper}>
-
-                            <View style={{ flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto' }}>
-                                <Icon2 name="arrow-back" size={30} color="black" onPress={() => { setShowModal(!showModal) }} />
-                                <Text style={{ marginLeft: 10, fontSize: 16, color: 'black' }}>Add Personal Schedule</Text>
-                            </View>
-
-                        </View>
-                    </SafeAreaView>
-
-                    <View style={styles.dateContainer}>
-                        <Image
-                            style={styles.logoImg2}
-                            source={require('../../../assets/calendar.png')}
-                        />
-                        <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet}</Text>
-                    </View>
-
-                    <SafeAreaView style={styles.safeAreaViewContainer}>
-                        <Form onButtonPress={() => submitSched(title, desc, endDate, startTime, endTime, dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet)}
-                            buttonStyle={styles.buttonCont}
-                        >
-                            <FormItem
-                                label="Title"
-                                isRequired
-                                value={title}
-                                style={styles.inputContainer}
-                                onChangeText={titleInp => setTitle(titleInp)}
-                                asterik />
-
-                            <FormItem
-                                label="Description"
-                                isRequired
-                                value={desc}
-                                style={styles.inputContainer}
-                                onChangeText={descript => setDesc(descript)}
-                                asterik />
-
-                            <Label text="End Date" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePicker}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.text3}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerVisible}
-                                        mode="date"
-                                        value={endDate}
-                                        onConfirm={handleConfirm}
-                                        onCancel={hideDatePicker}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-
-                            <Label text="Start Time" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePickerTimeStart}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.text3}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerVisibleStart}
-                                        mode="time"
-                                        value={startTime}
-                                        onConfirm={handleConfirmTimeStart}
-                                        onCancel={hideDatePickerTimeStart}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-
-                            <Label text="End Time" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePickerTime}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.text3}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerTimeVisible}
-                                        mode="time"
-                                        value={endTime}
-                                        onConfirm={handleConfirmTime}
-                                        onCancel={hideDatePickerTime}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-
-                        </Form>
-                    </SafeAreaView>
-                </View>
+                <AddSchedModal/>
             </Modal>
 
         </View>
@@ -700,17 +711,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         fontFamily: "Roboto",
-
-
-    },
-    itemContainer: {
-        marginTop: 17,
-        marginRight: 10,
-        backgroundColor: '#fff',
-        padding: 10,
-        borderRadius: 5,
-    },
-    cardContainer: {
 
     },
     columnContainer: {
@@ -763,7 +763,7 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     safeAreaViewContainer: {
-        padding: 20,
+        padding: 10,
         flex: 1,
         backgroundColor: '#F2F4F5'
     },
@@ -774,7 +774,6 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     circleOrange: {
-
         marginRight: 10,
         height: 20,
         width: 20,
@@ -782,7 +781,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#da7331",
     },
     circleGY: {
-
         marginRight: 10,
         height: 20,
         width: 20,
@@ -790,7 +788,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffc000",
     },
     circleBlue: {
-
         marginRight: 10,
         height: 20,
         width: 20,
@@ -798,7 +795,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#3a87ad",
     },
     circleLG: {
-
         marginRight: 10,
         height: 20,
         width: 20,
@@ -834,21 +830,10 @@ const styles = StyleSheet.create({
         height: 50,
         //backgroundColor:'black'
     },
-    headerWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 20,
-        paddingTop: 10,
-        paddingBottom: 10,
-        alignItems: 'center',
-    },
-    text3: {
-        fontSize: 15,
-        fontWeight: '400',
-        alignSelf: 'center',
-        marginHorizontal: 15,
-    },
 
+
+    //MODAL DESIGN
+    
     dateContainer: {
         flexDirection: 'row',
         height: 80,
@@ -860,6 +845,12 @@ const styles = StyleSheet.create({
     datetimeCont: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+    },
+
+    textPicker: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        fontWeight: 'bold'
     },
 
     inputContainer: {
@@ -884,12 +875,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         flexDirection: 'row',
         marginBottom: 20,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     buttonCont: {
         marginHorizontal: 5,
         marginTop: 10,
-        backgroundColor: '#81c784',
-        color: '#fff'
+        backgroundColor: 'green'
     },
     buttonDate: {
         marginHorizontal: 5,
@@ -899,6 +891,7 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 10,
+        marginLeft: 10,
         resizeMode: 'contain',
     },
     errorMsg: {
