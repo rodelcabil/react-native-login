@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView, TouchableWithoutFeedback, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView, useWindowDimensions, Pressable } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,8 +18,8 @@ import LottieView from 'lottie-react-native';
 const ViewPatientDetails = ({ route }) => {
 
     const [patientDetails, setPatientDetails] = useState([]);
-    const [cases, setCases] = useState([{case_id: 1, notes: 'notes 1', type: 'type 1'}, {case_id: 2, notes: 'notes 2', type: 'type 2'}, {case_id: 3, notes: 'notes 3', type: 'type 3'}, {case_id: 4, notes: 'notes 4', type: 'type 4'} , {case_id: 5, notes: 'notes 5', type: 'type 5'} , {case_id: 6, notes: 'notes 6', type: 'type 6'}, {case_id: 7, notes: 'notes 7', type: 'type 7'}, {case_id: 9, notes: 'notes 9', type: 'type 8'}]);
-    // const [cases, setCases] = useState();
+    // const [cases, setCases] = useState([{case_id: 1, notes: 'notes 1', type: 'type 1'}, {case_id: 2, notes: 'notes 2', type: 'type 2'}, {case_id: 3, notes: 'notes 3', type: 'type 3'}, {case_id: 4, notes: 'notes 4', type: 'type 4'} , {case_id: 5, notes: 'notes 5', type: 'type 5'} , {case_id: 6, notes: 'notes 6', type: 'type 6'}, {case_id: 7, notes: 'notes 7', type: 'type 7'}, {case_id: 9, notes: 'notes 9', type: 'type 8'}]);
+    const [cases, setCases] = useState();
     const [messageBoard, setMessageBoard] = useState([]);
     const [messageHtml, setMessageHtml] = useState([]);
     const [index, setIndex] = useState(0);
@@ -54,42 +54,47 @@ const ViewPatientDetails = ({ route }) => {
                     setLoader(false)
                 });
 
-              
+
 
         }
 
-        // const messageBoardDatails = async () => {
-        //     const token = await AsyncStorage.getItem('token');
-        //     let caseID = [];
-        //     for(var i = 0; i< cases.length; i++){
-        //         caseID.push(cases[i].id)
-        //     }
-        //     console.log('CASE ID: ',caseID)
 
-        //     await fetch('https://beta.centaurmd.com/api/patient/case/' + caseID, {
-        //         method: 'GET',
-        //         headers: {
-        //             'Accept': 'application/json',
-        //             'Authorization': 'Bearer ' + token,
-        //         },
-        //     }).then(res => res.json())
-        //         .then(resData => {
-                 
-        //             console.log('MESSAGE BOARD: ',resData)
-        //             setMessageBoard(resData)
-        //             // setMessageHtml(JSON.parse(resData.message_html))
-                  
-        //         });
 
-        // }
-
+        const messageBoardDatails = async () => {
+            const token = await AsyncStorage.getItem('token');
+            let caseID = [];
+            // for (var i = 0; i < cases.length; i++) {
+            //     caseID.push(cases[i].id)
+            // }
+            // console.log('CASE ID: ', caseID)
     
-       
+            await fetch('https://beta.centaurmd.com/api/patient/case/' + route.params.data?.id , {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                },
+            }).then(res => res.json())
+                .then(resData => {
+    
+                    setMessageBoard(resData)
+                    setMessageHtml(JSON.parse(resData.message_html))
+    
+                });
+    
+        }
 
+        console.log('message board: ', messageBoard)
         getPatientDatails();
-        // messageBoardDatails();
-      
+        messageBoardDatails();
+
     }, []);
+
+
+   
+
+
+
 
     const Loader = () => {
         return (
@@ -169,12 +174,12 @@ const ViewPatientDetails = ({ route }) => {
     const header = (item) => {
         return (
             <View >
-                <Separator style={{ backgroundColor: '#da7331', height: 50, paddingHorizontal: 10, borderWidth: 0.6, borderColor: '#e3e3e3', marginTop: 2, borderRadius: 5 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Separator style={{ backgroundColor: '#da7331', height: 50, paddingHorizontal: 10, borderWidth: 0.6, borderColor: '#e3e3e3', marginTop: 2, borderRadius: 5 }} >
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }} >
                         <Text style={{ color: '#fff', fontSize: 16, paddingVertical: 10 }}>{item.case_id}</Text>
-                        {/* <EntypoIcon name={selectedCase !== item.case_id ? "chevron-down" : "chevron-up"}  size={23} color="#da7331" /> */}
                     </View>
                 </Separator>
+
             </View>
 
 
@@ -190,13 +195,15 @@ const ViewPatientDetails = ({ route }) => {
                         <Text style={{ color: 'black', fontSize: 16 }}>{item.type}</Text>
                         <Text style={{ fontSize: 14, color: 'black' }}>{item.notes}</Text>
                     </View>
-                    <AccordionList
-                        list={messageBoard}
-                        header={messageBoardAccordionHeader}
-                        body={messageBoardAccordionBody}
-                        keyExtractor={item => `${item.id}`}
+                    <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
+                        <AccordionList
+                            list={messageBoard}
+                            header={messageBoardAccordionHeader}
+                            body={messageBoardAccordionBody}
+                            keyExtractor={item => `${item.id}`}
 
-                    />
+                        />
+                    </View>
                 </View>
                 {/* <View style={{paddingVertical:12, backgroundColor: '#fff', borderBottomWidth: 2, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor:'#e3e3e3', marginTop: -2}}>
                    
@@ -225,7 +232,7 @@ const ViewPatientDetails = ({ route }) => {
             <>
                 <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 2, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2 }}>
                     <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
-                        <Text style={{ color: 'black', fontSize: 16 }}>{item.message_html}</Text>
+                        <Text style={{ color: 'black', fontSize: 16 }}>{item.message}</Text>
 
                     </View>
 
@@ -241,7 +248,7 @@ const ViewPatientDetails = ({ route }) => {
 
 
 
-    const SecondRoute = () => (
+    const CasesRoute = () => (
         <View style={styles.casesContainer} >
             <AccordionList
                 list={cases}
@@ -258,7 +265,7 @@ const ViewPatientDetails = ({ route }) => {
 
     const renderScene = SceneMap({
         first: InformationRoute,
-        second: SecondRoute,
+        second: CasesRoute,
     });
 
     const renderTabBar = props => (

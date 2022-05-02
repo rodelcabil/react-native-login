@@ -180,6 +180,7 @@ const ViewSchedule = ({ route, navigation }) => {
                                                 onPress={()=>{
                                                     navigation.navigate('View Patient Details', {
                                                         data: route.params.item,
+                                                      
                                                     });
                                                 }}
                                             />

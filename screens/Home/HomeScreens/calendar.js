@@ -566,7 +566,7 @@ const Calendar = ({ navigation, route }) => {
                 onDayPress={day => {
                     setDay(day.dateString);
                 }}
-                selected={Date.now()}
+                selected={'2022-04-26'}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
                 }}
