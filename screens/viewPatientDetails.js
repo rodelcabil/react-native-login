@@ -13,7 +13,7 @@ import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { AccordionList } from "accordion-collapse-react-native";
 import { Separator } from 'native-base';
-import { List,DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
+import { List,DefaultTheme, Provider as PaperProvider, Avatar } from 'react-native-paper';
 import LoaderFullScreen from './ReusableComponents/LottieLoader-FullScreen';
 import LottieView from 'lottie-react-native';
 import { id } from 'date-fns/locale';
@@ -62,7 +62,7 @@ const ViewPatientDetails = ({ route }) => {
     // const [cases, setCases] = useState([{case_id: 1, notes: 'notes 1', type: 'type 1'}, {case_id: 2, notes: 'notes 2', type: 'type 2'}, {case_id: 3, notes: 'notes 3', type: 'type 3'}, {case_id: 4, notes: 'notes 4', type: 'type 4'} , {case_id: 5, notes: 'notes 5', type: 'type 5'} , {case_id: 6, notes: 'notes 6', type: 'type 6'}, {case_id: 7, notes: 'notes 7', type: 'type 7'}, {case_id: 9, notes: 'notes 9', type: 'type 8'}]);
     const [cases, setCases] = useState();
     const [messageBoard, setMessageBoard] = useState([]);
-    const [messageHtml, setMessageHtml] = useState([]);
+    const [chatList, setChatList] = useState([]);
     const [theme, setTheme] = useState(black_theme);
     const [index, setIndex] = useState(0);
     const [routes] = useState([
@@ -119,18 +119,16 @@ const ViewPatientDetails = ({ route }) => {
                     );
 
                     const filteredMessageBoard = decodedHtml.filter(item => item.category !== "logs");
-
-                    console.log("DECODED: ",filteredMessageBoard[filteredMessageBoard.length - 1])
-
                     setMessageBoard(filteredMessageBoard)
 
+                    const chatList = resData.filter(item => item.session_id === resData[0].session_id);
+                    console.log("CHAT LIST: ",chatList)
 
-
+                    setChatList(chatList);
 
                 });
 
         }
-        // console.log('message board: ', messageBoard)
         getPatientDatails();
         messageBoardDatails();
 
@@ -237,10 +235,8 @@ const ItemLogo =({iconFolder,name, color})=>{
                     return <ScrollView key={index}>
                         <PaperProvider theme={theme}>
                             <List.Accordion
-                                key={index}
                                 title={cases.case_id}
                                 style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, backgroundColor: '#D9DEDF'}}
-                                expanded="true"
                             >
 
                                 <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2 }}>
@@ -254,14 +250,53 @@ const ItemLogo =({iconFolder,name, color})=>{
                                         {
                                             messageBoard.map((mb, index) => {
                                                 return <>
-
                                                 {
+                                                    
+                                                    mb.subject === "Live Chat" &&  mb.category === "chat" ?
+                                                    <>
+                                                    <List.Accordion
+                                                        key={index}
+                                                        title={mb.subject}
+                                                        left={props => <ItemLogo iconFolder="IonIcon" name="chatbox-sharp" color="#5EA93D"/>}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
+                                                        descriptionStyle={{color: '#fff'}}
+                                                        style={{borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
+                                                        <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                                            <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#D9DEDF', marginHorizontal: 10,  borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
+                                                                <View style={{flex: 1, padding: 5}}>
+                                                                    {
+                                                                        mb?.status === "label" ? <Text style={{textAlign: 'center', fontSize: 14, marginBottom: 10}}>{mb?.message}</Text>
+                                                                        :
+                                                                        mb?.user_id === null ? <View style={{flex: 1, padding: 5, flexDirection:'column', alignItems: 'flex-start', marginBottom: 10}}>
+                                                                                                    <Text style={{fontSize: 14, marginBottom: 5}}><Icon name='calendar-month-outline' size={14}/>&nbsp;{moment(mb?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' size={14}/>&nbsp;{moment(mb?.date).format('LT') }</Text>
+                                                                                                    <View style={{backgroundColor: '#5EA93D', padding: 10, width: 300, borderTopRightRadius: 5, borderTopLeftRadius: 5, borderBottomRightRadius: 5}}>
+                                                                                                        <Text style={{fontSize: 14, color: '#fff'}}>{mb?.message}</Text>
+                                                                                                    </View>
+                                                                                                </View>
+                                                                        :
+                                                                        mb?.user_id !== null ? <View style={{flex: 1, padding: 5, flexDirection:'column', alignItems: 'flex-end', marginBottom: 10}}>
+                                                                                                    <Text style={{fontSize: 14, marginBottom: 5}}><Icon name='calendar-month-outline' size={14}/>&nbsp;{moment(mb?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' size={14}/>&nbsp;{moment(mb?.date).format('LT') }</Text>
+                                                                                                    <View style={{backgroundColor: '#3a87ad', padding: 10, width: 300, borderTopRightRadius: 5, borderTopLeftRadius: 5, borderBottomLeftRadius: 5}}>
+                                                                                                        <Text style={{fontSize: 14, color: '#fff'}}>{mb?.message}</Text>
+                                                                                                    </View>
+                                                                                                </View>
+                                                                        : 
+                                                                        <></>
+                                                                    }
+                                                                </View> 
+                                                            </View>
+                                                        </View>
+                                                    </List.Accordion>
+                                                    <View style={{ marginBottom: 5 }} />
+                                                    </>
+                                                    :
                                                     mb.subject === "Set Reminder" &&  mb.category === "logs" ?
                                                     <>
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="EntypoIcon" name="bell" color="#2A2B2F"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -317,7 +352,7 @@ const ItemLogo =({iconFolder,name, color})=>{
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
-                                                        style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#2A2B2F', }}>
+                                                        style={{ borderWidth: 1,  flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#2A2B2F', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                                 <View style={{flexDirection: 'column', flex: 1}}>
