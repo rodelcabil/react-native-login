@@ -4,8 +4,8 @@ import AppBar from './ReusableComponents/AppBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import FAIcon from 'react-native-vector-icons/FontAwesome';
-import FAIcon5 from 'react-native-vector-icons/FontAwesome5';
+import OcticonIcon from 'react-native-vector-icons/Octicons';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import FontistoIcon from 'react-native-vector-icons/Fontisto';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -194,7 +194,12 @@ const ViewPatientDetails = ({ route }) => {
         </View>
     );
 
-
+const itemDescription = (item) =>{
+    return <View style={{flexDirection:'column'}}>
+            <Text style={{fontSize: 12, color: '#fff'}}><OcticonIcon name='person' color='#fff'/>&nbsp;Rodel Cabil</Text>
+            <Text style={{fontSize: 12, color: '#fff'}}><Icon name='calendar-month-outline' color='#fff'/>&nbsp;{moment(item?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' color='#fff'/>&nbsp;{moment(item?.date).format('LT') }</Text>
+        </View>
+}
 
 
     const CasesRoute = () => (
@@ -231,59 +236,44 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#2A2B2F', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Title:</Text>
+                                                            <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Description:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message_html?.title}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date From:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Description:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.description}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time To:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.date_from).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date To:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time To:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.date_to).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Reschedule:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_to}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.title}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.description}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{moment(mb.message_html?.date_from).format('ll')}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{moment(mb.message_html?.date_to).format('ll')}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.reschedule}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Reschedule:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.reschedule}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -298,59 +288,44 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#2A2B2F', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Title:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Description:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message?.title}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date From:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Description:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.description}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time To:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_from).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date To:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time To:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_to).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Reschedule:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_to}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: 'black', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.title}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.description}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{moment(mb.message?.date_from).format('ll')}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{moment(mb.message?.date_to).format('ll')}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.reschedule}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Reschedule:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.reschedule}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -365,35 +340,28 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Title:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Notes:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message_html?.title}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Assigned to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Notes:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.notes}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.title}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.notes}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.assigned_to}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Assigned to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.assigned_to}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -408,35 +376,28 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Title:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Notes:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message?.title}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Assigned to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Notes:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.notes}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.title}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.notes}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.assigned_to}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Assigned to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.assigned_to}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -451,65 +412,48 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: 'black', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date From:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time from:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date From:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.date_from).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.date_to).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Surgeon:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Surgeon:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.surgeon}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Proceures:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Procedure Deccription:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedures:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.procedures}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: 'black', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.date_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.date_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.surgeon}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.procedures}&nbsp;</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.procedure_description}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedure Deccription:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.procedure_description}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -524,65 +468,48 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date From:</Text>
+                                                            <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time from:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date From:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_from).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_to).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Surgeon:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Surgeon:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.surgeon}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Proceures:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Procedure Deccription:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedures:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.procedures}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.date_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.date_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.surgeon}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.procedures}&nbsp;</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.procedure_description}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedure Deccription:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.procedure_description}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -597,65 +524,48 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date From:</Text>
+                                                               <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time from:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date From:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.date_from).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.date_to).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Surgeon:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Surgeon:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.surgeon}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Proceures:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Procedure Description:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedures:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.procedures}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.date_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.date_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.surgeon}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.procedures}&nbsp;</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.procedure_description}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedure Deccription:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.procedure_description}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -670,65 +580,48 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date From:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time from:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date From:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_from).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Date to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time to:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_to).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Surgeon:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Surgeon:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.surgeon}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Proceures:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Procedure Description:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedures:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.procedures}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.date_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.date_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.surgeon}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.procedures}&nbsp;</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.procedure_description}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedure Deccription:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.procedure_description}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -743,144 +636,101 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>First name:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Last name:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.first_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Birthday:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Last name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.last_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Gender:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Birthday:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.birthday).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Height:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Gender:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.gender}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Weight:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Height:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.height}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Country:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Weight:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.weight}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>State:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Country:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.country}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>City:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>State:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.state}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Contact number:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>City:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.city}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Email address:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Contact number:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.contact_number}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Preffered method:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Email address:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.email_address}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Ethnicity:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Preffered method:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.preferred_method}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Surgeon:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Ethnicity:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.ethnicity}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Surgeon:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.surgeon}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>How did hear:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Procedures:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>How did hear:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.how_did_hear}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Past surgery:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedures:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.procedures}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time frame:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Past surgery:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.past_surgery}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Comments:</Text>
+
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time frame:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_frame}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Reschedule:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Comments:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.comments}</Text>
                                                                     </View>
-                                                                   
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.first_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.last_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.birthday}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.gender}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.height}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.weight}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.country}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.state}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.city}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.contact_number}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>{mb.message?.email_address}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}} >
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.preferred_method}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.ethnicity}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.surgeon}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.how_did_hear}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.procedures}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.past_surgery}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.time_frame}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.comments}:</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.reschedule}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Reschedule:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.reschedule}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -895,144 +745,101 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>First name:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Last name:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.first_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Birthday:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Last name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.last_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Gender:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Birthday:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message_html?.birthday).format('ll')}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Height:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Gender:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.gender}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Weight:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Height:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.height}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Country:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Weight:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.weight}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>State:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Country:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.country}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>City:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>State:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.state}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Contact number:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>City:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.city}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Email address:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Contact number:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.contact_number}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Preffered method:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Email address:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.email_address}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Ethnicity:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Preffered method:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.preferred_method}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Surgeon:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Ethnicity:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.ethnicity}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Surgeon:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.surgeon}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>How did hear:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Procedures:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>How did hear:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.how_did_hear}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Past surgery:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Procedures:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.procedures}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Time frame:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Past surgery:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.past_surgery}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Comments:</Text>
+
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time frame:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.time_frame}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Reschedule:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Comments:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.comments}</Text>
                                                                     </View>
-                                                                   
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.first_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.last_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.birthday}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.gender}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.height}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.weight}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.country}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.state}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.city}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.contact_number}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>{mb.message_html?.email_address}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}} >
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.preferred_method}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.ethnicity}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.surgeon}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.how_did_hear}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.procedures}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.past_surgery}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.time_frame}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.comments}:</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.reschedule}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Reschedule:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.reschedule}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -1047,29 +854,24 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Type:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Notes:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Type:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message?.type}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message?.type}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.notes}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Notes:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.notes}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -1084,29 +886,24 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#3a87ad', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#e3e3e3', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Type:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Notes:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Type:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message_html?.type}</Text>
                                                                     </View>
-                                                                    
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#e3e3e3', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb?.message_html?.type}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.notes}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Notes:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.notes}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -1121,70 +918,52 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#e3e3e3', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>First Name:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Last Name:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First Name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.first_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Email address:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Last Name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.last_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Contact number:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Email address:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.email_address}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Message:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Contact number:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.contact_number}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Message:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.message}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Newsletter:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Source:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Newsletter:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.newsletter}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Linkform:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Source:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.source}</Text>
                                                                     </View>
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#e3e3e3', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.first_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.last_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.email_address}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.contact_number}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.message}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.newsletter}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.source}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message_html?.linkform}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Linkform:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message_html?.linkform}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
@@ -1199,70 +978,52 @@ const ViewPatientDetails = ({ route }) => {
                                                         key={index}
                                                         title={mb.subject}
                                                         left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
-                                                        description="Rodel Cabil"
-                                                        titleStyle={{color: '#fff'}}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
                                                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', width: 120,}}>
-                                                                    <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5 }}>FIELD NAME</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>First Name:</Text>
+                                                                <View style={{flexDirection: 'column', flex: 1}}>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Last Name:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First Name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.first_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Email address:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Last Name:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.last_name}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>Contact number:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Email address:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.email_address}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Message:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Contact number:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.contact_number}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Location:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Message:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.message}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Newsletter:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Location:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.location}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Source:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Newsletter:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.newsletter}</Text>
                                                                     </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>Linkform:</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Source:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.source}</Text>
                                                                     </View>
-                                                                </View>
-                                                                <View style={{flexDirection: 'column', width: 210, }}>
-                                                                    <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold',backgroundColor: '#D9DEDF', padding: 5 }}>FIELD VALUE</Text>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.first_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.last_name}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>{mb.message?.email_address}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>{mb.message?.contact_number}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.message}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.location}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.newsletter}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }}>{mb.message?.source}</Text>
-                                                                    </View>
-                                                                    <View style={{padding: 10, borderBottomWidth: 1, borderColor: '#D9DEDF'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, paddingVertical: 5 }} numberOfLines={1}>{mb.message?.linkform}</Text>
+                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Linkform:</Text>
+                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.linkform}</Text>
                                                                     </View>
                                                                 </View>
                                                             </View>
