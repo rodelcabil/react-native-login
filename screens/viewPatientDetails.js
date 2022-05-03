@@ -6,7 +6,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import OcticonIcon from 'react-native-vector-icons/Octicons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import FontistoIcon from 'react-native-vector-icons/Fontisto';
+import FAIcon from 'react-native-vector-icons/FontAwesome';
+import FAIcon5 from 'react-native-vector-icons/FontAwesome5';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { AccordionList } from "accordion-collapse-react-native";
@@ -198,7 +200,31 @@ const itemDescription = (item) =>{
     return <View style={{flexDirection:'column'}}>
             <Text style={{fontSize: 12, color: '#fff'}}><OcticonIcon name='person' color='#fff'/>&nbsp;Rodel Cabil</Text>
             <Text style={{fontSize: 12, color: '#fff'}}><Icon name='calendar-month-outline' color='#fff'/>&nbsp;{moment(item?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' color='#fff'/>&nbsp;{moment(item?.date).format('LT') }</Text>
-        </View>
+            </View>
+}
+
+
+const ItemLogo =({iconFolder,name, color})=>{
+    return  <View style={{ backgroundColor: '#fff', borderRadius: 200, marginRight: 5, height: 50, width: 50, justifyContent: 'center', alignItems: 'center'}}>
+                {
+                    iconFolder === "FAIcon" ? <FAIcon name={name} color={color} size={25}/> 
+                    :
+                    iconFolder === "Icon" ? <Icon name={name} color={color} size={25}/> 
+                    :
+                    iconFolder === "EntypoIcon" ? <EntypoIcon name={name} color={color} size={25}/> 
+                    :
+                    iconFolder === "OcticonIcon" ? <OcticonIcon name={name} color={color} size={25}/> 
+                    :
+                    iconFolder === "IonIcon" ? <IonIcon name={name} color={color} size={25}/> 
+                    :
+                    iconFolder === "FAIcon5" ? <FAIcon5 name={name} color={color} size={25}/> 
+                    :
+                    iconFolder === "MaterialIcon" ? <MaterialIcon name={name} color={color} size={25}/> 
+                    :
+                    <FAIcon name={name} color={color} size={25}/>
+                }
+                
+            </View>
 }
 
 
@@ -244,8 +270,8 @@ const itemDescription = (item) =>{
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                             <View style={{flexDirection: 'column', flex: 1}}>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
                                                                         <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
@@ -287,7 +313,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="EntypoIcon" name="bell" color="#2A2B2F"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -296,8 +322,8 @@ const itemDescription = (item) =>{
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                                 <View style={{flexDirection: 'column', flex: 1}}>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
                                                                         <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
@@ -339,7 +365,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="FAIcon" name="address-book-o"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -375,7 +401,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="FAIcon" name="address-book-o" color="#3a87ad"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -411,7 +437,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="FAIcon5" name="procedures"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -467,7 +493,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="FAIcon5" name="procedures" color="#3a87ad"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -523,7 +549,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="MaterialIcon" name="book-online" color="#3a87ad"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -579,7 +605,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="MaterialIcon" name="book-online" color="#3a87ad"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -635,7 +661,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="FAIcon5" name="info-circle" color="#5EA93D"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -644,8 +670,8 @@ const itemDescription = (item) =>{
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                                 <View style={{flexDirection: 'column', flex: 1}}>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
                                                                         <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First name:</Text>
@@ -744,7 +770,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="FAIcon5" name="info-circle" color="#5EA93D"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -753,8 +779,8 @@ const itemDescription = (item) =>{
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                                 <View style={{flexDirection: 'column', flex: 1}}>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
                                                                         <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First name:</Text>
@@ -853,7 +879,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="IonIcon" name="document-text-sharp" color="#3a87ad"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -885,7 +911,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="IonIcon" name="document-text-sharp" color="#3a87ad"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -917,7 +943,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="Icon" name="email-newsletter" color="#5EA93D"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -926,8 +952,8 @@ const itemDescription = (item) =>{
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                                 <View style={{flexDirection: 'column', flex: 1}}>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
                                                                         <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First Name:</Text>
@@ -977,7 +1003,7 @@ const itemDescription = (item) =>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" color='#fff'/>}
+                                                        left={props => <ItemLogo iconFolder="Icon" name="email-newsletter" color="#5EA93D"/>}
                                                         description={itemDescription(mb)}
                                                         titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
                                                         descriptionStyle={{color: '#fff'}}
@@ -986,8 +1012,8 @@ const itemDescription = (item) =>{
                                                             <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
                                                                 <View style={{flexDirection: 'column', flex: 1}}>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#3a87ad', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                        <Text style={{ color: '#5EA93D', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                     </View>
                                                                     <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
                                                                         <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>First Name:</Text>
