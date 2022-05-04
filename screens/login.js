@@ -15,6 +15,7 @@ const LoginPage = ({ navigation }) => {
   const [gToken, setToken] = useState(null);
   const [loader, setLoader] = useState(true);
   const [loginLoader, setLoginLoader] = useState(false);
+  const [userDetails, setUserDetails] = useState(false);
   
   const tokenLogin =  async () => {
     const value = await AsyncStorage.getItem('token')
@@ -42,15 +43,19 @@ const LoginPage = ({ navigation }) => {
       body: JSON.stringify({ "email_address": email, "password": password }),
     }).then(res => res.json())
       .then(resData => {
-        console.log("Token",resData.token);
-
+        // console.log("Token",resData.token);
+        console.log("ACCOUNT DETAILS: ",resData)
         if(resData.status === 'success' && (email !== '' || password !== '')){
           setToken(resData.token);
+         
           const storeToken = async() =>{
             await AsyncStorage.setItem('token', resData.token);
           };
+          navigation.navigate('Home Page', {
+            details: resData.user ,
+          });
+         
           storeToken();
-          navigation.replace('Home Page');
           setEmail(null);
           setPassword(null);
           setLoginLoader(false);

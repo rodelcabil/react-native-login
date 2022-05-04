@@ -12,7 +12,9 @@ import Home from './screens/Home/home';
 import ViewSchedule from './screens/viewSchedule';
 import AddSchedule from './screens/addSchedule';
 import ViewPatientDetails from './screens/viewPatientDetails';
-
+import Account from './screens/account';
+import APICalls from './screens/apiPage';
+import Settings from './screens/Home/HomeScreens/settings';
 
 const Stack = createNativeStackNavigator(); 
 const Tab = createBottomTabNavigator();
@@ -58,6 +60,25 @@ const App = () => {
           component={ViewPatientDetails}
           options={{headerShown: false}}
         />
+
+        <Stack.Screen
+          name="Account"
+          component={Account}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name="Settings"
+          component={Settings}
+          options={{headerShown: false}}
+        />
+
+        <Stack.Screen
+          name="API"
+          component={APICalls}
+          options={{headerShown: false}}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
     </>
