@@ -11,12 +11,8 @@ import FAIcon5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import { AccordionList } from "accordion-collapse-react-native";
-import { Separator } from 'native-base';
-import { List,DefaultTheme, Provider as PaperProvider, Avatar } from 'react-native-paper';
+import { List,DefaultTheme, Provider as PaperProvider, S } from 'react-native-paper';
 import LoaderFullScreen from './ReusableComponents/LottieLoader-FullScreen';
-import LottieView from 'lottie-react-native';
-import { id } from 'date-fns/locale';
 
 const black_theme = {
     ...DefaultTheme,
@@ -60,6 +56,7 @@ const ViewPatientDetails = ({ route }) => {
 
     const [patientDetails, setPatientDetails] = useState([]);
     // const [cases, setCases] = useState([{case_id: 1, notes: 'notes 1', type: 'type 1'}, {case_id: 2, notes: 'notes 2', type: 'type 2'}, {case_id: 3, notes: 'notes 3', type: 'type 3'}, {case_id: 4, notes: 'notes 4', type: 'type 4'} , {case_id: 5, notes: 'notes 5', type: 'type 5'} , {case_id: 6, notes: 'notes 6', type: 'type 6'}, {case_id: 7, notes: 'notes 7', type: 'type 7'}, {case_id: 9, notes: 'notes 9', type: 'type 8'}]);
+    const [list, setList] = useState([{case_id: 1, notes: 'notes 1', type: 'type 1'}, {case_id: 2, notes: 'notes 1', type: 'type 2'}, {case_id: 3, notes: 'notes 3', type: 'type 3'}, {case_id: 4, notes: 'notes 3', type: 'type 4'} , {case_id: 5, notes: 'notes 5', type: 'type 5'} , {case_id: 6, notes: 'notes 6', type: 'type 6'}, {case_id: 7, notes: 'notes 7', type: 'type 7'}, {case_id: 9, notes: 'notes 9', type: 'type 8'}]);
     const [cases, setCases] = useState();
     const [messageBoard, setMessageBoard] = useState([]);
     const [chatList, setChatList] = useState([]);
@@ -115,16 +112,13 @@ const ViewPatientDetails = ({ route }) => {
                 .then(resData => {
 
                     const decodedHtml = resData.map(obj =>
-                        obj.category === "logs"  ? { ...obj, message_html: JSON.parse(obj.message_html) } : obj.category === "action" || obj.category === "email" ? { ...obj, message: JSON.parse(obj.message) } : obj
+                        obj.category === "logs"  ? { ...obj, message_html: JSON.parse(obj.message_html) } : obj.category === "action" || obj.category === "chat" || obj.category === "email" ? { ...obj, message: JSON.parse(obj.message) } : obj
                     );
 
                     const filteredMessageBoard = decodedHtml.filter(item => item.category !== "logs");
                     setMessageBoard(filteredMessageBoard)
 
-                    const chatList = resData.filter(item => item.session_id === resData[0].session_id);
-                    console.log("CHAT LIST: ",chatList)
-
-                    setChatList(chatList);
+                    console.log('MESSAGE BOARD: ', filteredMessageBoard)
 
                 });
 
@@ -240,57 +234,18 @@ const ItemLogo =({iconFolder,name, color})=>{
                             >
 
                                 <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2 }}>
-                                    <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
+                                    {/* <View style={{ padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
                                         <Text style={{ color: 'black', fontSize: 16 }}>{cases.type}</Text>
                                         <Text style={{ fontSize: 14, color: 'black' }}>{cases.notes}</Text>
-                                    </View>
+                                    </View> */}
 
                                     <View style={{ padding: 10 }}>
-                                        <Text style={{ color: 'black', fontSize: 16, marginBottom: 10}}>Message board</Text>
+                                        
                                         {
                                             messageBoard.map((mb, index) => {
                                                 return <>
                                                 {
-                                                    
-                                                    mb.subject === "Live Chat" &&  mb.category === "chat" ?
-                                                    <>
-                                                    <List.Accordion
-                                                        key={index}
-                                                        title={mb.subject}
-                                                        left={props => <ItemLogo iconFolder="IonIcon" name="chatbox-sharp" color="#5EA93D"/>}
-                                                        description={itemDescription(mb)}
-                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
-                                                        descriptionStyle={{color: '#fff'}}
-                                                        style={{borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
-                                                        <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                                            <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#D9DEDF', marginHorizontal: 10,  borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flex: 1, padding: 5}}>
-                                                                    {
-                                                                        mb?.status === "label" ? <Text style={{textAlign: 'center', fontSize: 14, marginBottom: 10}}>{mb?.message}</Text>
-                                                                        :
-                                                                        mb?.user_id === null ? <View style={{flex: 1, padding: 5, flexDirection:'column', alignItems: 'flex-start', marginBottom: 10}}>
-                                                                                                    <Text style={{fontSize: 14, marginBottom: 5}}><Icon name='calendar-month-outline' size={14}/>&nbsp;{moment(mb?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' size={14}/>&nbsp;{moment(mb?.date).format('LT') }</Text>
-                                                                                                    <View style={{backgroundColor: '#5EA93D', padding: 10, width: 300, borderTopRightRadius: 5, borderTopLeftRadius: 5, borderBottomRightRadius: 5}}>
-                                                                                                        <Text style={{fontSize: 14, color: '#fff'}}>{mb?.message}</Text>
-                                                                                                    </View>
-                                                                                                </View>
-                                                                        :
-                                                                        mb?.user_id !== null ? <View style={{flex: 1, padding: 5, flexDirection:'column', alignItems: 'flex-end', marginBottom: 10}}>
-                                                                                                    <Text style={{fontSize: 14, marginBottom: 5}}><Icon name='calendar-month-outline' size={14}/>&nbsp;{moment(mb?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' size={14}/>&nbsp;{moment(mb?.date).format('LT') }</Text>
-                                                                                                    <View style={{backgroundColor: '#3a87ad', padding: 10, width: 300, borderTopRightRadius: 5, borderTopLeftRadius: 5, borderBottomLeftRadius: 5}}>
-                                                                                                        <Text style={{fontSize: 14, color: '#fff'}}>{mb?.message}</Text>
-                                                                                                    </View>
-                                                                                                </View>
-                                                                        : 
-                                                                        <></>
-                                                                    }
-                                                                </View> 
-                                                            </View>
-                                                        </View>
-                                                    </List.Accordion>
-                                                    <View style={{ marginBottom: 5 }} />
-                                                    </>
-                                                    :
+                                                
                                                     mb.subject === "Set Reminder" &&  mb.category === "logs" ?
                                                     <>
                                                     <List.Accordion
@@ -345,54 +300,54 @@ const ItemLogo =({iconFolder,name, color})=>{
                                                     :
                                                     mb.subject === "Set Reminder" &&  mb.category === "action" ?
                                                     <>
-                                                    <List.Accordion
-                                                        key={index}
-                                                        title={mb.subject}
-                                                        left={props => <ItemLogo iconFolder="EntypoIcon" name="bell" color="#2A2B2F"/>}
-                                                        description={itemDescription(mb)}
-                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
-                                                        descriptionStyle={{color: '#fff'}}
-                                                        style={{ borderWidth: 1,  flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#2A2B2F', }}>
-                                                        <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                                            <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
-                                                                <View style={{flexDirection: 'column', flex: 1}}>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
-                                                                        <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message?.title}</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Description:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.description}</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date from:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_from).format('ll')}</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_to).format('ll')}</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_to}</Text>
-                                                                    </View>
-                                                                    <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Reschedule:</Text>
-                                                                        <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.reschedule}</Text>
+                                                        <List.Accordion
+                                                            key={index}
+                                                            title={mb.subject}
+                                                            left={props => <ItemLogo iconFolder="EntypoIcon" name="bell" color="#2A2B2F"/>}
+                                                            description={itemDescription(mb)}
+                                                            titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
+                                                            descriptionStyle={{color: '#fff'}}
+                                                            style={{ borderWidth: 1,  flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#2A2B2F', }}>
+                                                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                                                <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#fff', marginHorizontal: 10, marginBottom: 10, borderRadius: 6, flexDirection:'row', justifyContent:'space-between' }}>
+                                                                    <View style={{flexDirection: 'column', flex: 1}}>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 120 }}>FIELD NAME</Text>
+                                                                            <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Title:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb?.message?.title}</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Description:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.description}</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date from:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_from).format('ll')}</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time from:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_from}</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Date to:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{moment(mb.message?.date_to).format('ll')}</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Time to:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.time_to}</Text>
+                                                                        </View>
+                                                                        <View style={{flexDirection: 'row', justifyContent:'space-between'}}>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>Reschedule:</Text>
+                                                                            <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210,  borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10,}}>{mb.message?.reschedule}</Text>
+                                                                        </View>
                                                                     </View>
                                                                 </View>
                                                             </View>
-                                                        </View>
-                                                    </List.Accordion>
-                                                    <View style={{ marginBottom: 5 }} />
+                                                        </List.Accordion>
+                                                        <View style={{ marginBottom: 5 }} />
                                                     </>
                                                     :
                                                     mb.subject === "Assign Case" &&  mb.category === "logs" ?
@@ -1097,12 +1052,39 @@ const ItemLogo =({iconFolder,name, color})=>{
                                                     <List.Accordion
                                                         key={index}
                                                         title={mb.subject}
-                                                        left={props => <List.Icon {...props} icon="folder" />}
-                                                        description="Rodel Cabil"
-                                                        style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left' }}>
+                                                        left={props => <ItemLogo iconFolder="IonIcon" name="chatbox-sharp" color="#5EA93D"/>}
+                                                        description={itemDescription(mb)}
+                                                        titleStyle={{color: '#fff', fontWeight: 'bold', textTransform: 'uppercase'}}
+                                                        descriptionStyle={{color: '#fff'}}
+                                                        style={{borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left',backgroundColor: '#5EA93D', }}>
                                                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                                            <View style={{ marginLeft: -55, padding: 10, backgroundColor: '#fff', borderWidth: 1, marginHorizontal: 10, marginBottom: 10, borderRadius: 6, borderColor: '#e3e3e3' }}>
-                                                                <Text style={{ color: 'black', fontSize: 16 }}>{mb.message_html === null ? "null" : mb.message_html.first_name}</Text>
+                                                            <View style={{ marginLeft: -55, padding: 5, backgroundColor: '#D9DEDF', marginHorizontal: 10,  borderRadius: 6, flexDirection:'column', justifyContent:'space-between' }}>
+                                                                {
+                                                                    mb?.message.map((chat, index)=>{
+                                                                        return <View key={index} style={{flex: 1, padding: 5}}>
+                                                                    {
+                                                                                chat?.category === "label" ? <Text style={{textAlign: 'center', fontSize: 14, marginBottom: 5}}>{chat?.message}</Text>
+                                                                                :
+                                                                                chat?.user_id === null ? <View style={{flex: 1, padding: 5, flexDirection:'column', alignItems: 'flex-start', marginBottom: 5}}>
+                                                                                                            <Text style={{fontSize: 14, marginBottom: 5}}><Icon name='calendar-month-outline' size={14}/>&nbsp;{moment(chat?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' size={14}/>&nbsp;{moment(chat?.date).format('LT') }</Text>
+                                                                                                            <View style={{backgroundColor: '#5EA93D', padding: 10, width: 300, borderTopRightRadius: 5, borderTopLeftRadius: 5, borderBottomRightRadius: 5}}>
+                                                                                                                <Text style={{fontSize: 14, color: '#fff'}}>{chat?.message}</Text>
+                                                                                                            </View>
+                                                                                                        </View>
+                                                                                :
+                                                                                chat?.user_id !== null ? <View style={{flex: 1, padding: 5, flexDirection:'column', alignItems: 'flex-end', marginBottom: 5}}>
+                                                                                                            <Text style={{fontSize: 14, marginBottom: 5}}><Icon name='calendar-month-outline' size={14}/>&nbsp;{moment(chat?.date).format('L')}&nbsp;<IonIcon name='md-time-outline' size={14}/>&nbsp;{moment(chat?.date).format('LT') }</Text>
+                                                                                                            <View style={{backgroundColor: '#3a87ad', padding: 10, width: 300, borderTopRightRadius: 5, borderTopLeftRadius: 5, borderBottomLeftRadius: 5}}>
+                                                                                                                <Text style={{fontSize: 14, color: '#fff'}}>{chat?.message}</Text>
+                                                                                                            </View>
+                                                                                                        </View>
+                                                                                : 
+                                                                                <></>
+                                                                            }
+                                                                        </View> 
+                                                                    })
+                                                                }
+                                                                
                                                             </View>
                                                         </View>
                                                     </List.Accordion>
@@ -1150,7 +1132,7 @@ const ItemLogo =({iconFolder,name, color})=>{
 
     return (
         <View style={styles.container}>
-            <AppBar title={"Patient Details"} showMenuIcon={true} />
+            <AppBar title="Patient Details" showMenuIcon={true} />
             {loader === true ? <LoaderFullScreen /> :
                 <>
                     <View style={styles.body}>

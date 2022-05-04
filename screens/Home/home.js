@@ -11,11 +11,18 @@ import Dashboard from './HomeScreens/dashsboard';
 import Group from './HomeScreens/group';
 import ChatClientClass from '../ChatClientClass';
 import ChatClient from '../chatClient';
-
+import Settings from './HomeScreens/settings';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Tab = createBottomTabNavigator();
 
-const Home = () => {
+const Home = ({route}) => {
+    // const {details } = route.params
+    // AsyncStorage.setItem('userDetails', JSON.stringify(details))
+    // const getUserDetails = AsyncStorage.getItem('userDetails');
+    // // const parsedData = JSON.parse(getUserDetails);
+    // console.log("HOME -  DEATILS: ", getUserDetails)
+
     return (
      
         <Tab.Navigator  initialRouteName="Calendar">
@@ -54,14 +61,16 @@ const Home = () => {
             </Tab.Screen>
              <Tab.Screen 
                 name="Settings" 
-                component={Group} 
+                component={Settings} 
                 options={{
                     headerShown:false,
                     tabBarLabel: 'Settings',
                     tabBarIcon: ({ color, size }) => (
                         <IonIcon name="settings" color={color} size={size} />
                     ),
-                }}/>
+                }}>
+                 {/* {props => <Settings details={getUserDetails}/> } */}
+                </Tab.Screen>
             <Tab.Screen 
                 name="Help" 
                 component={Group} 
