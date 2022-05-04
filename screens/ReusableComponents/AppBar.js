@@ -5,10 +5,9 @@ import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, Keyboar
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 
 const AppBar = ({title, showMenuIcon}) => {
-
-
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
@@ -23,13 +22,13 @@ const AppBar = ({title, showMenuIcon}) => {
 
     const signOut = async () => {
         try{
+          await AsyncStorage.removeItem('token')
           await GoogleSignin.revokeAccess();
           await GoogleSignin.signOut();
-          setUser({});
-          alert("Sign in Successfully");
+          navigation.replace('LoginPage')
         }
         catch(error){
-          console.log('Error');
+          console.log('Error', error);
         }
       }
 
@@ -100,7 +99,7 @@ const AppBar = ({title, showMenuIcon}) => {
                     </View>
                     <MenuItem onPress={hideMenu}>Settings</MenuItem>
                     <MenuDivider />
-                    <MenuItem onPress={logout}><Text style={styles.textLogOut}>Log Out</Text></MenuItem>
+                    <MenuItem onPress={signOut}><Text style={styles.textLogOut}>Log Out</Text></MenuItem>
                 </Menu>
                 </View>
             </SafeAreaView>

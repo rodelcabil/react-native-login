@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button, ScrollView, Animated} from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
@@ -21,6 +21,8 @@ import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 var width = Dimensions.get('window').width - 20;
 
 const Calendar = ({ navigation, route }) => {
+    const [checkSignIn, setCheckSignIn] = useState(false);
+ 
     const [items, setItems] = useState({});
     const [tempItems, setTempItems] = useState([]);
     const [mergeItems, setMergeItems] = useState([]);
@@ -44,60 +46,105 @@ const Calendar = ({ navigation, route }) => {
 
     
     const [loader, setLoader] = useState(true);
+    GoogleSignin.configure({
+        scopes: [
+          "profile",
+          "email",
+          "https://www.googleapis.com/auth/calendar.events"
+        ],
+        webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
+        offlineAccess: true,
+        forceCodeForRefreshToken: true,
+      });
+      
+    const getDeviceID = () => {
+        var uniqueID = DeviceInfo.getUniqueId;
+        setDeviceID(uniqueID);
+    }
+
 
     useEffect(() => {
-        GoogleSignin.configure({
-            scopes: [
-              "profile",
-              "email",
-              "https://www.googleapis.com/auth/calendar.events"
-            ],
-            webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
-            offlineAccess: true,
-            forceCodeForRefreshToken: true,
-          });
-          isSignedIn()
-
-
-        const getDeviceID = () => {
-            var uniqueID = DeviceInfo.getUniqueId;
-            setDeviceID(uniqueID);
-        }
-
+        isSignedIn()
+        console.log(checkSignIn)
         const getData = async () => {
             const token = await AsyncStorage.getItem('token');
-            // console.log(token, "token");
-            await fetch('https://beta.centaurmd.com/api/schedules', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': 'Bearer ' + token,
-                },
-            }).then(res => res.json())
-                .then(resData => {
-                    // console.log("NEW DATA? ", resData)
-                    setTempItems(resData);
-                    const mappedData = resData.map((data) => {
+            const arrTemp = {};
+            await axios.get(
+                `https://beta.centaurmd.com/api/schedules`,
+                { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + token, },
+                }).then(response => {
+                    setTempItems(response.data);
+                    console.log(response.data);
+                    const mappedData = response.data.map((data) => {
                         const date = data.date_from;
-
                         return {
                             ...data,
                             date: moment(date).format('YYYY-MM-DD')
                         };
                     });
 
-                    const reduced = mappedData.reduce(
-                        (acc, currentItem) => {
-                            const { date, ...coolItem } = currentItem;
-                            acc[date] = [coolItem];
 
-                            return acc;
+                    mappedData.map(
+                        (currentItem) => {
+                            const { date, ...coolItem } = currentItem;
+                            if (!arrTemp[date]) {
+                                arrTemp[date] = [];
+                            }
+                            arrTemp[date].push(coolItem);
                         },
-                        {},
                     );
-                    setItems(reduced);
-                    setLoader(false);
-                });
+
+    
+                        const SyncGoogleCalendar = async (setAlert) =>{
+                            const isSignedIn = await GoogleSignin.isSignedIn();
+                            if(!!isSignedIn){
+                                const userInfo = await GoogleSignin.signInSilently();
+                                const userInfoToken = await GoogleSignin.getTokens();
+                                const token = userInfoToken.accessToken;
+                    
+                                const resp = await axios.get(
+                                    `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
+                                );
+                    
+                                for (let i = 0; i < resp.data.items.length; i++) {
+                                    const date = moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD");
+                                    const timeStart = moment(resp.data.items[i].start.dateTime).format("HH:mma");
+                                    const dateEnd = moment(resp.data.items[i].end.dateTime).format("YYYY-MM-DD");
+                                    const timeEnd = moment(resp.data.items[i].end.dateTime).format("HH:mma");
+                                    const title = (resp.data.items[i].summary);
+                                    const description = (resp.data.items[i].description);
+            
+                                    if (!arrTemp[date]) {
+                                        arrTemp[date] = [];
+                                    }
+                                    arrTemp[date].push({ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
+                                    googleEventId: resp.data.items[i].id, googleCalendar: true });
+                                    console.log(items, 'added from gcalendar');
+                                   //newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
+    //                                googleEventId: resp.data.items[i].id, googleCalendar: true }] })
+                                  }
+                                // const output = Object.assign({}, ...newSet)
+    
+    
+                                 // const newElement = {
+                                 //     ...reduced,
+                                 //    ...output
+                                 // }
+                                   setItems(arrTemp);
+                                   setLoader(false);
+                                   if(setAlert === true){
+                                     alert('Successful Sync');
+                                  }
+                            }
+                            else{
+                                alert('Google Account not Connected');
+                                setItems(arrTemp);
+                                setLoader(false)
+                            }
+                        } 
+                        SyncGoogleCalendar(true);
+                }
+            );
         }
 
         getData();
@@ -111,8 +158,10 @@ const Calendar = ({ navigation, route }) => {
         try{
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
-          //console.log('due_______' , userInfo)
           setUser(userInfo)
+          setCheckSignIn(true);
+          setLoader(true);
+          SyncGoogleCalendar(true);
         }
         catch(error){
           console.log('Message______', error.message);
@@ -135,8 +184,10 @@ const Calendar = ({ navigation, route }) => {
           const isSignedIn = await GoogleSignin.isSignedIn();
           if(!!isSignedIn){
             getCurrentUserInfo();
+            setCheckSignIn(true);
           }
           else{
+            setCheckSignIn(false);
             console.log('Please Login..');
           }
       }
@@ -146,8 +197,10 @@ const Calendar = ({ navigation, route }) => {
           const userInfo = await GoogleSignin.signInSilently();
          // console.log('edit______', user);
           setUser(userInfo);
+          setCheckSignIn(true);
         }
         catch(error){
+            setCheckSignIn(false);
           if(error.code === statusCodes.SIGN_IN_REQUIRED){
             alert('User has not signed in yet');
             console.log('User has not signed in yet');
@@ -159,39 +212,41 @@ const Calendar = ({ navigation, route }) => {
         }
       }
     
+      const SyncGoogleCalendar = async (setAlert) =>{
+        const arrTemp = items;
+        const isSignedIn = await GoogleSignin.isSignedIn();
+        if(!!isSignedIn){
+            const userInfo = await GoogleSignin.signInSilently();
+            const userInfoToken = await GoogleSignin.getTokens();
+            const token = userInfoToken.accessToken;
 
-    const SyncGoogleCalendar = async () =>{
-        setLoader(true)
-        const newSet = [];
-        let postsUrl = `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?key=AIzaSyCDHOhDOJglv7VRLP37-yskTXqjNflfej8`
-        await fetch(postsUrl)
-            .then((response) => response.json())
-            .then((responseData) => {
-              console.log(responseData);
-              for (let i = 0; i < responseData.items.length; i++) {
-                const date = moment(responseData.items[i].start.dateTime).format("YYYY-MM-DD");
-                const timeStart = moment(responseData.items[i].start.dateTime).format("HH:mma");
-                const dateEnd = moment(responseData.items[i].end.dateTime).format("YYYY-MM-DD");
-                const timeEnd = moment(responseData.items[i].end.dateTime).format("HH:mma");
-                const title = (responseData.items[i].summary);
-                const description = (responseData.items[i].description);
+            const resp = await axios.get(
+                `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
+            );
 
-                console.log(responseData.items[i].start.dateTime);
+            for (let i = 0; i < resp.data.items.length; i++) {
+                const date = moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD");
+                const timeStart = moment(resp.data.items[i].start.dateTime).format("HH:mma");
+                const dateEnd = moment(resp.data.items[i].end.dateTime).format("YYYY-MM-DD");
+                const timeEnd = moment(resp.data.items[i].end.dateTime).format("HH:mma");
+                const title = (resp.data.items[i].summary);
+                const description = (resp.data.items[i].description);
 
-                newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
-                googleEventId: responseData.items[i].id, googleCalendar: true }] })
+                if (!arrTemp[date]) {
+                    arrTemp[date] = [];
+                }
+                arrTemp[date].push({ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
+                googleEventId: resp.data.items[i].id, googleCalendar: true });
               }
-              const output = Object.assign({}, ...newSet)
-              const newElement = {
-                  ...items, ...output
-               }
-               setItems(newElement);
-               console.log(output, "NEW SETTTTTTTTTTTTTTT");
-              setLoader(false)
-              alert('Successful Sync');
-            })
-            console.log(items)
-    } 
+              setItems(arrTemp); 
+              setLoader(false);
+        }
+        else{
+            alert('Google Account not Connected');
+            setItems(arrTemp);
+            setLoader(false)
+        }
+        } 
 
     const getAllSchedules = async () => {
         setLoader(true);
@@ -246,9 +301,6 @@ const Calendar = ({ navigation, route }) => {
                     underlayColor="#DDDDDD"
                     onPress={ async () => {
                         const accToken = await GoogleSignin.getTokens();
-                        console.log("access token : ", accToken.accessToken);
-                        console.log("email : ", user.user.email);
-
                         navigation.navigate('View Schedule', {
                             item: item,
                             accessToken: accToken.accessToken,
@@ -372,7 +424,6 @@ const Calendar = ({ navigation, route }) => {
 
     const filterItems = (itemCategory) => {
         setLoader(true);
-
         const newList = tempItems.filter(item => { return item.category === itemCategory });
         // console.log("new list to: ", newList)
         const mappedData = newList.map((data) => {
@@ -398,6 +449,66 @@ const Calendar = ({ navigation, route }) => {
         setItems(reduced);
         setLoader(false);
     };
+
+
+    const [visible, setVisible] = useState(false);
+
+    const ModalPoup = ({visible, children}) => {
+        const [showModal, setShowModal] = React.useState(visible);
+        const scaleValue = React.useRef(new Animated.Value(0)).current;
+        React.useEffect(() => {
+          toggleModal();
+        }, [visible]);
+        const toggleModal = () => {
+          if (visible) {
+            setShowModal(true);
+            Animated.spring(scaleValue, {
+              toValue: 1,
+              duration: 300,
+              useNativeDriver: true,
+            }).start();
+          } else {
+            setTimeout(() => setShowModal(false), 200);
+            Animated.timing(scaleValue, {
+              toValue: 0,
+              duration: 300,
+              useNativeDriver: true,
+            }).start();
+          }
+        };
+        return (
+          <Modal transparent visible={showModal}>
+            <View style={styles.modalBackGround}>
+              <Animated.View
+                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+                {children}
+              </Animated.View>
+            </View>
+          </Modal>
+        );
+      };
+
+    const DialogBox = () =>{
+        return(
+            <ModalPoup visible={visible}>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={require('../../../assets/calendar.png')}
+                style={{height: 150, width: 150, marginVertical: 10}}
+              />
+            </View>
+    
+            <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+               Added Successfully
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <View style={styles.header}>
+                <Button title='close' onPress={() => setVisible(false)}/>
+              </View>
+            </View>
+          </ModalPoup>
+        );
+    }
 
     const AddSchedModal = () => {
         const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -476,13 +587,10 @@ const Calendar = ({ navigation, route }) => {
               `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
               {
                 start: {
-                 // dateTime: `${startSplitted[0]}T${startSplitted[1]}:00.0Z`
-                  dateTime: `${getDaySelecte}T${startTime}:00`, //`2019-04-04T09:30:00.0z`
+                  dateTime: `${getDaySelecte}T${startTime}:00`,
                   timeZone: "Asia/Manila",
                 },
                 end: {
-                  // dateTime: `${endSplitted[0]}T${endSplitted[1]}:00.0Z`
-                  //`20019-4-04T09:30:00.0z`
                   dateTime: `${endDate}T${endTime}:00`,
                   timeZone: "Asia/Manila",
                 },
@@ -491,20 +599,13 @@ const Calendar = ({ navigation, route }) => {
               }
             );
         
-            //console.log(resp.data);
+            //console.log(resp.data);   
         
             if (resp.status === 200) {
-               /* const convDate = moment(dayGet).format('YYYY-MM-DD');
-                const newElement = {
-                    ...items,
-                    [convDate] : [{ title: title, description: desc, date_from: dayGet, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others",
-                    googleEventId: responseData.items[i].id, googleCalendar: true }] 
-                 }
-                 setItems(newElement);*/
-                 SyncGoogleCalendar();
+                 SyncGoogleCalendar(false);
                  setShowModal(false);
                  setAddLoader(false);
-                 alert("Added Successfully");
+                 setVisible(true);
             } else {
               alert("Error, please try again");
             }
@@ -604,13 +705,14 @@ const Calendar = ({ navigation, route }) => {
     return (
         <View style={styles.container}>
             {/* <AppBar title={"My Schedule"} showMenuIcon={false} /> */}
-            {user === null ?
+            {checkSignIn === false ?
              <Button title="Sign In Google" onPress={signIn} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
              :
-            < Button title="Sync Google CalendarS" onPress={SyncGoogleCalendar} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
+            // <Button title="Sync Google Calendar" onPress={ SyncGoogleCalendar} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
+            <></>
             }
             <View style={styles.typesContainer}>
-
+                <DialogBox/>
                 {/* <TouchableHighlight
                     style={{ padding: 5, borderRadius: 5 }}
                     activeOpacity={0.6}
@@ -917,6 +1019,27 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height / 6,
         borderRadius: 20,
         // height: globals.screenHeight * 0.24,
+      },
+
+      //DIALOG BOX
+      modalBackGround: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalContainer: {
+        width: '80%',
+        backgroundColor: 'white',
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+        borderRadius: 20,
+        elevation: 20,
+      },
+      header: {
+        width: '100%',
+        height: 40,
+        justifyContent: 'center',
       },
 });
 
