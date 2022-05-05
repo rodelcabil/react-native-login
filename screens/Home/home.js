@@ -22,6 +22,7 @@ const Home = ({route}) => {
     // const getUserDetails = AsyncStorage.getItem('userDetails');
     // // const parsedData = JSON.parse(getUserDetails);
     const [userDetails, setUserDetails] = React.useState([])
+    const [token, setToken] = React.useState()
 
     React.useEffect(()=>{
         const getUserDetails = async () =>{
@@ -30,10 +31,16 @@ const Home = ({route}) => {
                setUserDetails(JSON.parse(value))
                console.log("HOME - USER DETAILS: ", value)
             }
-           
+        }
+        const getToken = async () => {
+            const token = await AsyncStorage.getItem('token');
+            if(token !== null){
+                setToken(token)
+             }
         }
 
         getUserDetails();
+        getToken();
     },[])
 
     return (
@@ -51,6 +58,7 @@ const Home = ({route}) => {
             <Tab.Screen 
                 name="Calendar" 
                 component={Calendar} 
+                initialParams={{token: route.params.token}}
                 options={{
                     headerShown:false,
                     tabBarLabel: 'My Calendar',

@@ -43,7 +43,9 @@ const LoginPage = ({ navigation }) => {
   const tokenLogin = async () => {
     const value = await AsyncStorage.getItem('token')
     if (value !== null) {
-      navigation.replace('Home Page');
+      navigation.replace('Home Page', {
+        token: value,
+      });
       console.log("still logged in");
     }
     else {
@@ -51,7 +53,6 @@ const LoginPage = ({ navigation }) => {
     }
     setLoader(false);
   }
-
 
   loginFunction = async () => {
     setLoginLoader(true);
@@ -77,6 +78,7 @@ const LoginPage = ({ navigation }) => {
           };
           navigation.navigate('Home Page', {
             details: resData.user,
+            token: resData.token,
           });
           const userDetails = async () => {
             await AsyncStorage.setItem('userDetails', JSON.stringify(resData.user));

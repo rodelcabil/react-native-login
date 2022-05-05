@@ -79,13 +79,12 @@ export function Calendar ({ navigation, route }) {
     }, [isFocused]);
 
     const getData = async () => {
-        setItems({});
-        setLoader(true)
         const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token; 
         const arrTemp = {};
         await axios.get(
             `https://beta.centaurmd.com/api/schedules`,
-            { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + token, },
+            { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
             }).then(response => {
                 setTempItems(response.data);
                 const mappedData = response.data.map((data) => {
@@ -106,8 +105,6 @@ export function Calendar ({ navigation, route }) {
                         arrTemp[date].push(coolItem);
                     },
                 );
-
-
                     const SyncGoogleCalendar = async (setAlert) =>{
                         const isSignedIn = await GoogleSignin.isSignedIn();
                         if(!!isSignedIn){
@@ -149,7 +146,7 @@ export function Calendar ({ navigation, route }) {
                             }
                         }
                         else{
-                            alert('Google Account not Connected');
+                          //  alert('Google Account not Connected');
                             setItems(arrTemp);
                             setLoader(false)
                         }
