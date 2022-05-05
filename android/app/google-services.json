@@ -7,35 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:909386486823:android:89d31cbff34ec5da946a02",
-        "android_client_info": {
-          "package_name": "com.app"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyC2IHAMemORPdNLibn0VRSct321HHDjh5Q"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:909386486823:android:fdad688f2f952185946a02",
         "android_client_info": {
           "package_name": "com.app.centaurmd"
@@ -43,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "909386486823-6q2n4pp9r1d70ues74dresaejklnf86s.apps.googleusercontent.com",
+          "client_id": "909386486823-sa1j1qiqtesps32mmn8vdala6bapfast.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.app.centaurmd",

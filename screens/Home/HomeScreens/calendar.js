@@ -70,7 +70,6 @@ export function Calendar ({ navigation, route }) {
     }, []);
 
     useEffect(() => {
-        setItems({});
         getData();
         getDeviceID()
         console.log("ITEMS: ", items)
@@ -80,6 +79,7 @@ export function Calendar ({ navigation, route }) {
     }, [isFocused]);
 
     const getData = async () => {
+        setItems({});
         setLoader(true)
         const token = await AsyncStorage.getItem('token');
         const arrTemp = {};

@@ -23,6 +23,7 @@ const AppBar = ({title, showMenuIcon}) => {
     const signOut = async () => {
         try{
           await AsyncStorage.removeItem('token')
+          await AsyncStorage.removeItem('userDetails');
           const isSignedIn = await GoogleSignin.isSignedIn();
           if(!isSignedIn){
             navigation.replace('LoginPage')

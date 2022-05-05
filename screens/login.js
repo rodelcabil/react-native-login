@@ -24,6 +24,7 @@ const LoginPage = ({ navigation }) => {
     
     getBaseURL();
     setBaseURL();
+    tokenLogin();
   },[])
 
   const getBaseURL = async () => {
@@ -50,11 +51,6 @@ const LoginPage = ({ navigation }) => {
     }
     setLoader(false);
   }
-
-  useEffect(() =>{
-    tokenLogin();
-  })
-
 
 
   loginFunction = async () => {
