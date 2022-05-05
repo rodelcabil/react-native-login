@@ -24,18 +24,18 @@ const Account = ({ route }) => {
     useEffect(() => {
         const getUserDetails = async () => { 
             const value = await AsyncStorage.getItem('userDetails')
-
             const data = JSON.parse(value)
             setUserDetails(data)
-           
+            setFirstName(data?.first_name)
+            setDiplayName(data?.name)
+            setLastName(data?.last_name)
+            setEmail(data?.email_address)
+            setUserName(data?.username)
             // console.log("ACCOUNT - USER DETAILS: ", userDetails)
         }
-        setFirstName(userDetails.first_name)
-        setDiplayName(userDetails.name)
-        setLastName(userDetails.last_name)
-        setEmail(userDetails.email_address)
-        setUserName(userDetails.username)
         getUserDetails();
+        
+        
     },[])
 
 
