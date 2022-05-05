@@ -5,10 +5,11 @@ import AntdIcon from 'react-native-vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Settings = ({details, navigation, route}) =>{
+    
   
     return(
         <View style={styles.container}>
-            <TouchableOpacity onPress={()=> navigation.navigate('Account')}>
+            <TouchableOpacity onPress={()=> navigation.navigate('Account',{userDetails: route.params.details})}>
                 <View style={styles.itemContainer}>
                     <View style={styles.itemWrapper}>
                         <Icon name='account-cog' size={25} style={styles.itemIcon} />

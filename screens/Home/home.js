@@ -21,7 +21,20 @@ const Home = ({route}) => {
     // AsyncStorage.setItem('userDetails', JSON.stringify(details))
     // const getUserDetails = AsyncStorage.getItem('userDetails');
     // // const parsedData = JSON.parse(getUserDetails);
-    // console.log("HOME -  DEATILS: ", getUserDetails)
+    const [userDetails, setUserDetails] = React.useState([])
+
+    React.useEffect(()=>{
+        const getUserDetails = async () =>{
+            const value = await AsyncStorage.getItem('userDetails')
+            if(value !== null){
+               setUserDetails(JSON.parse(value))
+               console.log("HOME - USER DETAILS: ", value)
+            }
+           
+        }
+
+        getUserDetails();
+    },[])
 
     return (
      
@@ -62,6 +75,7 @@ const Home = ({route}) => {
              <Tab.Screen 
                 name="Settings" 
                 component={Settings} 
+                initialParams={{details: userDetails}}
                 options={{
                     headerShown:false,
                     tabBarLabel: 'Settings',
@@ -69,7 +83,7 @@ const Home = ({route}) => {
                         <IonIcon name="settings" color={color} size={size} />
                     ),
                 }}>
-                 {/* {props => <Settings details={getUserDetails}/> } */}
+                 {/* {props => <Settings details={userDetails}/> } */}
                 </Tab.Screen>
             <Tab.Screen 
                 name="Help" 

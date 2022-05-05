@@ -1,9 +1,11 @@
-import { es } from 'date-fns/locale';
-import React from 'react'
+
+import React, {useEffect, useState} from 'react'
 import { View, StyleSheet, Text, TextInput } from 'react-native'
 import AppBar from './ReusableComponents/AppBar';
 import { List, DefaultTheme, Provider as PaperProvider, S } from 'react-native-paper';
-
+import DropDownPicker from 'react-native-dropdown-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {    Snackbar } from 'react-native-paper';
 const black_theme = {
     ...DefaultTheme,
     roundness: 2,
@@ -15,6 +17,48 @@ const black_theme = {
 };
 
 const APICalls = () => {
+
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState();
+    const [items, setItems] = useState([
+        { label: 'Live', value: 'centaurmd.com' },
+        { label: 'Beta', value: 'beta.centaurmd.com' },
+       
+    ]);
+
+    const [visible, setVisible] = useState(false);
+
+    const onToggleSnackBar = () => setVisible(!visible);
+
+    const onDismissSnackBar = () => setVisible(false);
+
+
+    const setBaseURL = async (url) => {
+        await AsyncStorage.setItem('BASE_URL', url);
+        
+    };
+        
+    
+
+    useEffect(()=>{
+       
+       
+        const getBaseURL = async() =>{
+            const url = await AsyncStorage.getItem('BASE_URL')
+            if(url !== null){
+                setValue(url)
+                console.log("BASE URL: ", url)
+            }
+            
+        }
+
+      
+        
+        getBaseURL()
+        console.log("VALUE: ", value)
+       
+    },[])
+
     return (
         <PaperProvider theme={black_theme}>
             <View style={styles.container}>
@@ -63,8 +107,44 @@ const APICalls = () => {
                         </View>
                     </List.Accordion>
                     <View style={{ marginBottom: 5 }} />
+                    <List.Accordion
+                        title="Centaurmd"
+                        style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', }}>
+                        <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                            <View style={styles.inputWrapper}>
+                                <Text style={styles.inputTitle}>URL</Text>
+                                <DropDownPicker
+                                    open={open}
+                                    value={value}
+                                    items={items}
+                                    setOpen={setOpen}
+                                    setValue={setValue}
+                                    setItems={setItems}
+                                    onChangeValue={(value) => {
+                                        console.log("ON CHANGE: ",value);
+                                        setBaseURL(value === 'beta.centaurmd.com' ? value : 'beta.centaurmd.com')
+                                        // setValue(value === 'beta.centaurmd.com' ? value : 'beta.centaurmd.com')
+                                        onToggleSnackBar();
+                                    }}
+                                />
 
+                            </View>
+                        </View>
+                    </List.Accordion>
+                    <View style={{ marginBottom: 5 }} />
+                   
                 </View>
+                <Snackbar
+                        visible={visible}
+                        onDismiss={onDismissSnackBar}
+                        action={{
+                        label: 'Close',
+                        onPress: () => {
+                            // Do something
+                        },
+                        }}>
+                        {value === 'beta.centaurmd.com' ? 'URL value: ' +value : 'URL value: ' +value+' but it is not yet connected to live server'}
+                    </Snackbar>
             </View>
         </PaperProvider>
     )

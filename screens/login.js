@@ -1,29 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , ScrollView, ActivityIndicator,} from 'react-native';
+import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView, ScrollView, ActivityIndicator, } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoaderFullScreen from './ReusableComponents/LottieLoader-FullScreen';
 import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 
-  //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
-  
+//  jayar@centaurmarketing.co H1stmj8e4s62xz6c
+
 const LoginPage = ({ navigation }) => {
-  
+
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [gToken, setToken] = useState(null);
   const [loader, setLoader] = useState(true);
   const [loginLoader, setLoginLoader] = useState(false);
   const [userDetails, setUserDetails] = useState(false);
-  
-  const tokenLogin =  async () => {
+
+  useEffect(()=>{
+    const setBaseURL = async () => {
+      await AsyncStorage.setItem('BASE_URL', 'beta.centaurmd.com');
+    };
+    
+    getBaseURL();
+    setBaseURL();
+  },[])
+
+  const getBaseURL = async () => {
+     
+    try {
+      const data = await AsyncStorage.getItem('BASE_URL');
+      if (data !== null) {
+        console.log("URL: ", data)
+        return data;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const tokenLogin = async () => {
     const value = await AsyncStorage.getItem('token')
-    if(value !== null){
+    if (value !== null) {
       navigation.replace('Home Page');
       console.log("still logged in");
     }
-    else{
+    else {
       setLoader(false);
     }
     setLoader(false);
@@ -32,9 +54,12 @@ const LoginPage = ({ navigation }) => {
 
 
 
-  loginFunction =  async () => {
+  loginFunction = async () => {
     setLoginLoader(true);
-     await fetch('https://beta.centaurmd.com/api/login', {
+    const BASE_URL = await AsyncStorage.getItem('BASE_URL');
+    console.log("BASE URL: ", BASE_URL)
+
+    await fetch(`https://${BASE_URL}/api/login`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -44,39 +69,43 @@ const LoginPage = ({ navigation }) => {
     }).then(res => res.json())
       .then(resData => {
         // console.log("Token",resData.token);
-        console.log("ACCOUNT DETAILS: ",resData)
-        if(resData.status === 'success' && (email !== '' || password !== '')){
+        console.log("ACCOUNT DETAILS: ", resData)
+        if (resData.status === 'success' && (email !== '' || password !== '')) {
           setToken(resData.token);
-         
-          const storeToken = async() =>{
+
+          const storeToken = async () => {
             await AsyncStorage.setItem('token', resData.token);
           };
           navigation.navigate('Home Page', {
-            details: resData.user ,
+            details: resData.user,
           });
-         
+          const userDetails = async () => {
+            await AsyncStorage.setItem('userDetails', JSON.stringify(resData.user));
+          };
+
+          userDetails();
           storeToken();
           setEmail(null);
           setPassword(null);
           setLoginLoader(false);
         }
-        else{
+        else {
           alert(resData.message);
           setLoginLoader(false);
         }
-      
+
       });
   };
 
   return (
-    loader === true ? <LoaderFullScreen/> :
-    <KeyboardAvoidingView
-        style={{flex: 1}}
+    loader === true ? <LoaderFullScreen /> :
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
         enabled={true}
       >
-      <ScrollView style={{backgroundColor: '#fff'}}>
-        <View style={styles.blueContainer}>
-          
+        <ScrollView style={{ backgroundColor: '#fff' }}>
+          <View style={styles.blueContainer}>
+
             <SafeAreaView style={styles.logoSafeAreaStyle}>
               <Image
                 style={styles.logoImg}
@@ -85,70 +114,70 @@ const LoginPage = ({ navigation }) => {
                 }}
               />
             </SafeAreaView>
-          
-              <View style={styles.whiteContainer}>
-                      <SafeAreaView >
-                        <Text style={styles.textBig}>
-                         LOGIN TO YOUR ACCOUNT
-                        </Text>
-                      </SafeAreaView>
-                      <SafeAreaView style={styles.inputSafeAreaStyle}>
-        
-                        <View style={styles.inputContainer}>
-                          <Icon name="email-outline" size={20} color="gray" style={{ marginRight: 5 }} />
-                          <TextInput
-                            placeholder="Enter your Email"
-                            keyboardType="email-address"
-                            value={email}
-                            onChangeText={text_email => setEmail(text_email)}
-                          />
-                        </View>
-        
-                        <View style={styles.inputContainer}>
-                          <Icon name="lock-outline" size={20} color="gray" style={{ marginRight: 5 }} />
-                          <TextInput
-                            secureTextEntry
-                            placeholder="Enter your Password"
-                            value={password}
-                            onChangeText={text_password => setPassword(text_password)}
-                          />
-                        </View>
-        
-                      </SafeAreaView>
 
-                        { loginLoader === true ? <View style={{height: "30%"}}>
-                          <LoaderSmall/>
-                          </View> :
-                          <View>
-                          <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                              <Button
-                                style={styles.button}
-                                title="SIGN IN"
-                                color="#28A745"
-                                accessibilityLabel="Learn more about this purple button"
-                                onPress={loginFunction}
-                              />
-                            </SafeAreaView>
-                            <SafeAreaView style={styles.buttonSafeAreaStyle}>
-                              <Text
-                                onPress={() => {
-                                  navigation.navigate('ForgotPasswordPage');
-                                }}
-                                style={styles.textSmall}>
-                                Forgot Password?
-                              </Text>
-                          </SafeAreaView>
-                          </View>
-                        }
-              </View>
-          
-          
-         
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-   
-   
+            <View style={styles.whiteContainer}>
+              <SafeAreaView >
+                <Text style={styles.textBig}>
+                  LOGIN TO YOUR ACCOUNT
+                </Text>
+              </SafeAreaView>
+              <SafeAreaView style={styles.inputSafeAreaStyle}>
+
+                <View style={styles.inputContainer}>
+                  <Icon name="email-outline" size={20} color="gray" style={{ marginRight: 5 }} />
+                  <TextInput
+                    placeholder="Enter your Email"
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={text_email => setEmail(text_email)}
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Icon name="lock-outline" size={20} color="gray" style={{ marginRight: 5 }} />
+                  <TextInput
+                    secureTextEntry
+                    placeholder="Enter your Password"
+                    value={password}
+                    onChangeText={text_password => setPassword(text_password)}
+                  />
+                </View>
+
+              </SafeAreaView>
+
+              {loginLoader === true ? <View style={{ height: "30%" }}>
+                <LoaderSmall />
+              </View> :
+                <View>
+                  <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                    <Button
+                      style={styles.button}
+                      title="SIGN IN"
+                      color="#28A745"
+                      accessibilityLabel="Learn more about this purple button"
+                      onPress={loginFunction}
+                    />
+                  </SafeAreaView>
+                  <SafeAreaView style={styles.buttonSafeAreaStyle}>
+                    <Text
+                      onPress={() => {
+                        navigation.navigate('ForgotPasswordPage');
+                      }}
+                      style={styles.textSmall}>
+                      Forgot Password?
+                    </Text>
+                  </SafeAreaView>
+                </View>
+              }
+            </View>
+
+
+
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+
   );
 };
 
@@ -217,7 +246,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    
+
     borderRadius: 5,
   },
   textSmall: {

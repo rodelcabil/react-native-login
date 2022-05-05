@@ -4,10 +4,14 @@ import AppBar from './ReusableComponents/AppBar'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-const Account = ({route}) => {
-    // const { details } = route.params;
+const Account = ({ route }) => {
 
-    // console.log('DETAILS: ', details)
+    const [userDetails, setUserDetails] = useState([]);
+    const [firstName, setFirstName] = useState("")
+    const [diplayName, setDiplayName] = useState(null)
+    const [lastName, setLastName] = useState(null)
+    const [email, setEmail] = useState(null)
+    const [userName, setUserName] = useState(null)
 
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState(null);
@@ -17,24 +21,29 @@ const Account = ({route}) => {
         { label: 'Staff', value: 'staff' }
     ]);
 
-    useEffect(()=>{
-        try {
-            const value =  AsyncStorage.getItem('userDetails');
-            if (value !== null) {
-                // We have data!!
-                console.log(JSON.parse(value));
-            }
-        } catch (error) {
-              console.log("Error: ", error);
+    useEffect(() => {
+        const getUserDetails = async () => { 
+            const value = await AsyncStorage.getItem('userDetails')
+
+            const data = JSON.parse(value)
+            setUserDetails(data)
+           
+            // console.log("ACCOUNT - USER DETAILS: ", userDetails)
         }
-    })
-  
+        setFirstName(userDetails.first_name)
+        setDiplayName(userDetails.name)
+        setLastName(userDetails.last_name)
+        setEmail(userDetails.email_address)
+        setUserName(userDetails.username)
+        getUserDetails();
+    },[])
+
 
     return (
         <View style={styles.container}>
             <AppBar title="My Account" showMenuIcon={true} />
             <ScrollView>
-                <View style={{padding: 10}}>
+                <View style={{ padding: 10 }}>
                     <View style={styles.inputWrapper}>
                         <Text style={styles.inputTitle}>Access</Text>
                         <DropDownPicker
@@ -53,9 +62,10 @@ const Account = ({route}) => {
                         <View style={styles.inputContainer}>
                             <TextInput
                                 placeholder="Enter your Display Name"
-                                keyboardType="email-address"
+                               
                                 style={styles.input}
-                            // value={email}
+                                value={diplayName}
+                                onChangeText={txt => setDiplayName(txt)}
                             />
                         </View>
                     </View>
@@ -64,9 +74,9 @@ const Account = ({route}) => {
                         <View style={styles.inputContainer}>
                             <TextInput
                                 placeholder="Enter your First Name"
-                                keyboardType="email-address"
                                 style={styles.input}
-                            // value={email}
+                                value={firstName}
+                                onChangeText={txt => setFirstName(txt)}
                             />
                         </View>
                     </View>
@@ -77,7 +87,8 @@ const Account = ({route}) => {
                                 placeholder="Enter your Last Name"
                                 keyboardType="email-address"
                                 style={styles.input}
-                            // value={email}
+                                value={lastName}
+                                onChangeText={txt => setLastName(txt)}
                             />
                         </View>
                     </View>
@@ -88,7 +99,8 @@ const Account = ({route}) => {
                                 placeholder="Enter your Username"
                                 keyboardType="email-address"
                                 style={styles.input}
-                            // value={email}
+                                value={userName}
+                                onChangeText={txt => setUserName(txt)}
                             />
                         </View>
                     </View>
@@ -99,7 +111,8 @@ const Account = ({route}) => {
                                 placeholder="Enter your Email Address"
                                 keyboardType="email-address"
                                 style={styles.input}
-                            // value={email}
+                                value={email}
+                                onChangeText={txt => setEmail(txt)}
                             />
                         </View>
                     </View>
