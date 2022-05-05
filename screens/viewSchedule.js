@@ -22,7 +22,7 @@ import moment from 'moment';
 
 var width = Dimensions.get('window').width;
 
-const ViewSchedule = ({ route, navigation, }) => {
+const ViewSchedule = ({ route, navigation }) => {
     const [carouselItem, setCarouselItem] = useState([]);
     const [activeIndex, setActiveIndex] = useState(0);
     const [consultDetails, setConsulttDetails] = useState([]);
@@ -33,12 +33,9 @@ const ViewSchedule = ({ route, navigation, }) => {
     const [desceGC, setDescGC] = useState(route.params.item?.description);
     const [timefromGC, setTimeFromGC] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm A"));
     const [timeToGC, setTimeToGC] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
-    
 
     useEffect(()=>{
-        console.log(route.params.accessToken, " ACCESS TOKEN");
-        console.log(route.params.email, " EMAIL");
-        console.log(route.params.item?.googleEventId, " ID");
+        console.log(route.params.item);
 
         const geConsultFormData = async () => {
             setImgLoading(true);
@@ -88,8 +85,8 @@ const ViewSchedule = ({ route, navigation, }) => {
           `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events/${route.params.item?.googleEventId}?access_token=${route.params.accessToken}`
         );
         setDialogBox(false);
-        navigation.goBack();
         alert("Deleted Successfully");
+        navigation.navigate('Calendar');
 
     }
 
@@ -110,7 +107,7 @@ const ViewSchedule = ({ route, navigation, }) => {
         const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
     
         const [addLoader, setAddLoader] = useState(false);
-    
+
         const showDatePicker = () => {
             setDatePickerVisibility(true);
         };
@@ -195,6 +192,7 @@ const ViewSchedule = ({ route, navigation, }) => {
                  setShowModal(false)
                  setAddLoader(false);
                  alert("Edit Successfully");
+                 navigation.navigate('Calendar');
             } else {
               alert("Error, please try again");
             }
@@ -476,14 +474,14 @@ const ViewSchedule = ({ route, navigation, }) => {
                                                     <View>
                                                         <TouchableHighlight onPress={() => setShowModal(true)}>
                                                             <View style={styles.editBtn}>
-                                                                <Icon name="lock-outline" size={20} color="white" style={{ marginRight: 5 }} />
+                                                                <Icon name="calendar-edit" size={20} color="white" style={{ marginRight: 5 }} />
                                                                 <Text style={styles.textFunc}>EDIT</Text>
                                                             </View>
                                                         </TouchableHighlight>
 
                                                         <TouchableHighlight onPress={() => setDialogBox(true)}>
                                                             <View style={styles.delBtn}>
-                                                                <Icon name="lock-outline" size={20} color="white" style={{ marginRight: 5 }} />
+                                                                <Icon name="delete-outline" size={20} color="white" style={{ marginRight: 5 }} />
                                                                 <Text style={styles.textFunc}>DELETE</Text>
                                                             </View>
                                                         </TouchableHighlight>
@@ -503,8 +501,14 @@ const ViewSchedule = ({ route, navigation, }) => {
                                                             </DialogFooter>
                                                             }
                                                         >
-                                                            <DialogContent>
-                                                            <Text>Are you sure?</Text>
+                                                            <DialogContent style={{margin: 10,}}>
+                                                            <View style={{alignItems: 'center'}}>
+                                                                <Image
+                                                                    source={require('../assets/calendar.png')}
+                                                                    style={{height: 120, width: 120, marginVertical: 10}}
+                                                                />
+                                                                </View>
+                                                             <Text style={{textAlign: 'center', fontSize: 15, fontWeight: "bold"}}>Are you sure you want to delete this schedule?</Text>
                                                             </DialogContent>
                                                         </Dialog>
 

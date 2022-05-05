@@ -50,7 +50,10 @@ const LoginPage = ({ navigation }) => {
     }
     setLoader(false);
   }
-  tokenLogin();
+
+  useEffect(() =>{
+    tokenLogin();
+  })
 
 
 
