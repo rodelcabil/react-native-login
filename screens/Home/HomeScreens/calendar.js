@@ -33,20 +33,6 @@ export function Calendar ({ navigation, route }) {
     const [deviceID, setDeviceID] = useState();
     const [showModal, setShowModal] = useState(false);
     const [user, setUser] = useState({});
-
-    const [dummy, setDummy] = useState({
-        '2022-03-20': [{ event: 'Schedule title 1', tag: {name:['Dr. Al', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
-        '2022-04-20': [
-            { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'procedures' }, 
-            { event: 'Schedule Title 2', tag: {name:['Dr. Jim',  'Dr. Rodel']}, schedule: '12nn - 1pm', type: 'other' }
-        ], 
-        '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', category: 'reminder' }],
-        '2022-04-21': [{ event: 'Schedule Title 3', tag: {name:['Dr. Al',  'Dr. Jim']}, schedule: '12nn - 1pm', category: 'others' }],
-        '2022-04-22': [{ event: 'Schedule Title 4', tag: {name:['Dr. Rodel', 'Dr. Jay Ar']}, schedule: '12nn - 1pm', category: 'consults' }],
-        '2022-04-23': [{ event: 'Schedule Title 5', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', category: 'other' }],
-        '2022-04-23': [{ event: 'Schedule Title 6', tag: {name:['Dr. Jay Ar', 'Dr. Jim']}, schedule: '12nn - 1pm', category: 'other' }],
-    });
-
     
     const [loader, setLoader] = useState(true);
     GoogleSignin.configure({
@@ -65,17 +51,14 @@ export function Calendar ({ navigation, route }) {
         setDeviceID(uniqueID);
     }
 
-    useEffect(() => {
+    useEffect(() =>{
         isSignedIn()
+        getDeviceID()
+        console.log("Items: ", items);
     }, []);
 
     useEffect(() => {
         getData();
-        getDeviceID()
-        console.log("ITEMS: ", items)
-        console.log("Device ID", deviceID);
-        console.log("Items: ", items);
-
     }, [isFocused]);
 
     const getData = async () => {
@@ -87,6 +70,7 @@ export function Calendar ({ navigation, route }) {
             { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
             }).then(response => {
                 setTempItems(response.data);
+                console.log(response.data);
                 const mappedData = response.data.map((data) => {
                     const date = data.date_from;
                     return {
@@ -105,7 +89,8 @@ export function Calendar ({ navigation, route }) {
                         arrTemp[date].push(coolItem);
                     },
                 );
-                    const SyncGoogleCalendar = async (setAlert) =>{
+                
+                const SyncGoogleCalendar = async (setAlert) =>{
                         const isSignedIn = await GoogleSignin.isSignedIn();
                         if(!!isSignedIn){
                             const userInfo = await GoogleSignin.signInSilently();
@@ -129,16 +114,7 @@ export function Calendar ({ navigation, route }) {
                                 }
                                 arrTemp[date].push({ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
                                 googleEventId: resp.data.items[i].id, googleCalendar: true });
-                            //newSet.push( { [date] : [{ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
-//                                googleEventId: resp.data.items[i].id, googleCalendar: true }] })
                             }
-                            // const output = Object.assign({}, ...newSet)
-
-
-                            // const newElement = {
-                            //     ...reduced,
-                            //    ...output
-                            // }
                             setItems(arrTemp);
                             setLoader(false);
                             if(setAlert === true){
@@ -150,8 +126,8 @@ export function Calendar ({ navigation, route }) {
                             setItems(arrTemp);
                             setLoader(false)
                         }
-                    } 
-                    SyncGoogleCalendar(false);
+                } 
+                SyncGoogleCalendar(false);
             }
         );
     }
@@ -180,9 +156,9 @@ export function Calendar ({ navigation, route }) {
             console.log('Some other error message.');
           }
         }
-      }
+    }
     
-      const isSignedIn = async () => {
+    const isSignedIn = async () => {
           const isSignedIn = await GoogleSignin.isSignedIn();
           if(!!isSignedIn){
             getCurrentUserInfo();
@@ -192,9 +168,9 @@ export function Calendar ({ navigation, route }) {
             setCheckSignIn(false);
             console.log('Please Login..');
           }
-      }
+    }
     
-      const getCurrentUserInfo = async () => {
+    const getCurrentUserInfo = async () => {
         try{
           const userInfo = await GoogleSignin.signInSilently();
          // console.log('edit______', user);
@@ -212,9 +188,9 @@ export function Calendar ({ navigation, route }) {
             console.log('Somethign went wrong');
           }
         }
-      }
+    }
     
-      const SyncGoogleCalendar = async (setAlert) =>{
+    const SyncGoogleCalendar = async (setAlert) =>{
         const arrTemp = items;
         const isSignedIn = await GoogleSignin.isSignedIn();
         if(!!isSignedIn){
@@ -249,28 +225,25 @@ export function Calendar ({ navigation, route }) {
             setItems(arrTemp);
             setLoader(false)
         }
-        } 
+    } 
 
     const getAllSchedules = async () => {
         setLoader(true);
         const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token; 
         // console.log(token, "token");
         await fetch('https://beta.centaurmd.com/api/schedules', {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
-                'Authorization': 'Bearer ' + token,
+                'Authorization': 'Bearer ' + tokenget,
             },
         }).then(res => res.json())
             .then(resData => {
-
                 // console.log("NEW DATA? ", resData)
                 setTempItems(resData);
-
-
                 const mappedData = resData.map((data) => {
                     const date = data.date_from;
-
                     return {
                         ...data,
                         date: moment(date).format('YYYY-MM-DD')
@@ -391,6 +364,16 @@ export function Calendar ({ navigation, route }) {
                                                     <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
                                                     <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                 </View>
+
+                                                {item.googleCalendar === true ?
+                                                
+                                                <View style={styles.googleIconContainer}>
+                                                <Image
+                                                    style={styles.gCalendarIcon}
+                                                    source={require('../../../assets/google-calendar-icon.png')}
+                                                />
+                                                </View>
+                                            : <></>}
                                             </View>
                                         </Card.Content>
                             }
@@ -416,30 +399,12 @@ export function Calendar ({ navigation, route }) {
         );
     }
 
-    function toTimestamp(strDate) {
-        var datum = Date.parse(strDate);
-        return datum;
-    }
-
-    const checkSched = (item) => {
-        var dateString = toTimestamp(item.date);
-        console.log(dateString);
-        if (dateString === item.date) {
-            handleScheduleNotification("Hi!", "WELCOME", item.date)
-        }
-    }
-
-    const clickHandler = () => {
-        navigation.navigate('Add Schedule', { getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet })
-    };
-
     const filterItems = (itemCategory) => {
         setLoader(true);
         const newList = tempItems.filter(item => { return item.category === itemCategory });
         // console.log("new list to: ", newList)
         const mappedData = newList.map((data) => {
             const date = data.date_from;
-
             return {
                 ...data,
                 date: moment(date).format('YYYY-MM-DD')
@@ -461,34 +426,33 @@ export function Calendar ({ navigation, route }) {
         setLoader(false);
     };
 
-
-    const [visible, setVisible] = useState(false);
+    const [visibleAdd, setVisibleAdd] = useState(false);
 
     const ModalPoup = ({visible, children}) => {
-        const [showModal, setShowModal] = React.useState(visible);
+        const [showModalAdd, setShowModalAdd] = React.useState(visible);
         const scaleValue = React.useRef(new Animated.Value(0)).current;
         React.useEffect(() => {
           toggleModal();
         }, [visible]);
         const toggleModal = () => {
           if (visible) {
-            setShowModal(true);
+            setShowModalAdd(true);
             Animated.spring(scaleValue, {
               toValue: 1,
-              duration: 300,
+              duration: 100,
               useNativeDriver: true,
             }).start();
           } else {
-            setTimeout(() => setShowModal(false), 200);
+            setTimeout(() => setShowModalAdd(false), 200);
             Animated.timing(scaleValue, {
               toValue: 0,
-              duration: 300,
+              duration: 100,
               useNativeDriver: true,
             }).start();
           }
         };
         return (
-          <Modal transparent visible={showModal}>
+          <Modal transparent visible={showModalAdd}>
             <View style={styles.modalBackGround}>
               <Animated.View
                 style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
@@ -497,11 +461,11 @@ export function Calendar ({ navigation, route }) {
             </View>
           </Modal>
         );
-      };
+    };
 
     const DialogBox = () =>{
         return(
-            <ModalPoup visible={visible}>
+            <ModalPoup visible={visibleAdd}>
             <View style={{alignItems: 'center'}}>
               <Image
                 source={require('../../../assets/calendar.png')}
@@ -514,7 +478,7 @@ export function Calendar ({ navigation, route }) {
             </Text>
             <View style={{alignItems: 'center'}}>
               <View style={styles.header}>
-                <Button title='close' onPress={() => setVisible(false)}/>
+                <Button title='close' onPress={() => setVisibleAdd(false)}/>
               </View>
             </View>
           </ModalPoup>
@@ -548,7 +512,6 @@ export function Calendar ({ navigation, route }) {
         };
 
         const handleConfirm = (date) => {
-            //console.warn("A date has been picked: ", date);
             setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
             setEndDate(moment(date).format("YYYY-MM-DD"));
             hideDatePicker();
@@ -584,6 +547,7 @@ export function Calendar ({ navigation, route }) {
             hideDatePickerTimeStart();
         };
 
+        const gDay = dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet;
 
         const create = async () => {
             setAddLoader(true);
@@ -592,13 +556,13 @@ export function Calendar ({ navigation, route }) {
             const email = user.user.email;
             const getDaySelecte = dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet;
       
-            console.log(token, email, getDaySelecte, startTime);
+            console.log(token, email, gDay, startTime);
             console.log(endDate, endTime, title, desc);
             const resp = await axios.post(
               `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
               {
                 start: {
-                  dateTime: `${getDaySelecte}T${startTime}:00`,
+                  dateTime: `${gDay}T${startTime}:00`,
                   timeZone: "Asia/Manila",
                 },
                 end: {
@@ -610,19 +574,22 @@ export function Calendar ({ navigation, route }) {
               }
             );
         
-            //console.log(resp.data);   
+            console.log(resp.data);   
         
             if (resp.status === 200) {
-                 setLoader(true);
-                 getData();
+                 //getData();
+                 if (!items[gDay]) {
+                    items[gDay] = [];
+                }
+                 items[gDay].push({ title: title, description: desc, date_from: gDay, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others",
+                 googleEventId: resp.data.id, googleCalendar: true });
                  setShowModal(false);
                  setAddLoader(false);
-                 setVisible(true);
+                 setVisibleAdd(true);
             } else {
               alert("Error, please try again");
             }
           }
-
 
         return(
             <View style={styles.container}>         
@@ -632,7 +599,7 @@ export function Calendar ({ navigation, route }) {
                         style={styles.logoImg2}
                         source={require('../../../assets/calendar.png')}
                     />
-                    <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet} </Text>
+                    <Text style={styles.textTitle}>Date - {gDay} </Text>
                 </View>
                 <ScrollView style={styles.safeAreaViewContainerAdd}>
                     <SafeAreaView style={styles.safeAreaViewContainerAdd}>
@@ -716,12 +683,9 @@ export function Calendar ({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            {/* <AppBar title={"My Schedule"} showMenuIcon={false} /> */}
             {checkSignIn === false ?
              <Button title="Sign In Google" onPress={signIn} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
-             :
-            // <Button title="Sync Google Calendar" onPress={ SyncGoogleCalendar} titleStyle={styles.text2} style={styles.buttonCont}></Button> 
-            <></>
+             : <></>
             }
             <View style={styles.typesContainer}>
                 <DialogBox/>
@@ -1053,6 +1017,17 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: 'center',
       },
+
+      googleIconContainer:{
+          flexDirection: 'row',
+        justifyContent: 'flex-end',
+      },
+      gCalendarIcon: {
+        padding: 0,
+        width: "30%",
+        height: 20,
+        resizeMode: 'contain',
+    },
 });
 
 export default Calendar;

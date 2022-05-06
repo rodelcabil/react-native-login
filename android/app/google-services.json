@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "909386486823-tvek17ebq0nqk6e6vnvv7mrjplvo6526.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.centaurmd",
+            "certificate_hash": "84360b8eb97d619327e9053e66d2e81d47970167"
+          }
+        },
+        {
           "client_id": "909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com",
           "client_type": 3
         }
