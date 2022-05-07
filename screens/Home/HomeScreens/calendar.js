@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button, ScrollView, Animated} from 'react-native';
+import React, { useState, useEffect, memo  } from 'react';
+import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button, ScrollView, Animated, Flatlist } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
@@ -32,7 +32,10 @@ export function Calendar ({ navigation, route }) {
     const [dayGet, setDay] = useState(null);
     const [deviceID, setDeviceID] = useState();
     const [showModal, setShowModal] = useState(false);
+
     const [user, setUser] = useState({});
+    const [googleCalendarToken, setgoogleCalendarToken] = useState();
+
     
     const [loader, setLoader] = useState(true);
     GoogleSignin.configure({
@@ -100,21 +103,24 @@ export function Calendar ({ navigation, route }) {
                             const resp = await axios.get(
                                 `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
                             );
-                
+                            console.log(resp.data)
                             for (let i = 0; i < resp.data.items.length; i++) {
                                 const date = moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD");
-                                const timeStart = moment(resp.data.items[i].start.dateTime).format("HH:mma");
-                                const dateEnd = moment(resp.data.items[i].end.dateTime).format("YYYY-MM-DD");
-                                const timeEnd = moment(resp.data.items[i].end.dateTime).format("HH:mma");
-                                const title = (resp.data.items[i].summary);
-                                const description = (resp.data.items[i].description);
-        
                                 if (!arrTemp[date]) {
                                     arrTemp[date] = [];
                                 }
-                                arrTemp[date].push({ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
-                                googleEventId: resp.data.items[i].id, googleCalendar: true });
+                                arrTemp[date].push({
+                                     title: resp.data.items[i].summary, 
+                                     description: resp.data.items[i].description, 
+                                     date_from:  moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD"), 
+                                     time_from:  moment(resp.data.items[i].start.dateTime).format("HH:mma"), 
+                                     date_to: moment(resp.data.items[i].end.dateTime).format("YYYY-MM-DD"), 
+                                     time_to: moment(resp.data.items[i].end.dateTime).format("HH:mma"), 
+                                     category: "Others",
+                                     googleEventId: resp.data.items[i].id, 
+                                     googleCalendar: true });
                             }
+                            setItems({});
                             setItems(arrTemp);
                             setLoader(false);
                             if(setAlert === true){
@@ -123,11 +129,13 @@ export function Calendar ({ navigation, route }) {
                         }
                         else{
                           //  alert('Google Account not Connected');
+                            setItems({});
                             setItems(arrTemp);
                             setLoader(false)
                         }
                 } 
                 SyncGoogleCalendar(false);
+                console.log(arrTemp);
             }
         );
     }
@@ -139,7 +147,8 @@ export function Calendar ({ navigation, route }) {
           setUser(userInfo)
           setCheckSignIn(true);
           setLoader(true);
-          SyncGoogleCalendar(true);
+          getData();
+          //yncGoogleCalendar(true);
         }
         catch(error){
           console.log('Message______', error.message);
@@ -601,7 +610,7 @@ export function Calendar ({ navigation, route }) {
                     />
                     <Text style={styles.textTitle}>Date - {gDay} </Text>
                 </View>
-                <ScrollView style={styles.safeAreaViewContainerAdd}>
+                <Flatlist style={styles.safeAreaViewContainerAdd}>
                     <SafeAreaView style={styles.safeAreaViewContainerAdd}>
                         <Form onButtonPress={() => !user.idToken ? signIn() : create()}
                             buttonStyle={styles.buttonCont}
@@ -676,7 +685,7 @@ export function Calendar ({ navigation, route }) {
                         {addLoader === true? 
                             <LoaderSmall/> : <></>}
                     </SafeAreaView>
-                </ScrollView>
+                </Flatlist >
             </View>
         );
     }
@@ -1030,4 +1039,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Calendar;
+export default memo(Calendar);

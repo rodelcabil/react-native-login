@@ -76,7 +76,7 @@ const LoginPage = ({ navigation }) => {
           const storeToken = async () => {
             await AsyncStorage.setItem('token', resData.token);
           };
-          navigation.navigate('Home Page', {
+          navigation.replace('Home Page', {
             details: resData.user,
             token: resData.token,
           });

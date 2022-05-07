@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator, TouchableHighlight, Modal, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator, TouchableHighlight, Modal, TouchableOpacity, Animated } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
@@ -40,7 +40,6 @@ const ViewSchedule = ({ route, navigation }) => {
         const geConsultFormData = async () => {
             setImgLoading(true);
             const token = await AsyncStorage.getItem('token');
-            console.log(token, "token");
             await fetch('https://beta.centaurmd.com/api/consult-info/'+ route.params.item?.id, {
                 method: 'GET',
                 headers: {
@@ -85,12 +84,125 @@ const ViewSchedule = ({ route, navigation }) => {
           `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events/${route.params.item?.googleEventId}?access_token=${route.params.accessToken}`
         );
         setDialogBox(false);
-        alert("Deleted Successfully");
-        navigation.navigate('Calendar');
+        //alert("Deleted Successfully");
+        setVisibleDelete(true)
+        //navigation.navigate('Calendar');
+        setTimeout(() => {navigation.navigate('Calendar');}, 500)
 
     }
 
+    const [visibleDelete, setVisibleDelete] = useState(false);
 
+    const ModalPoupDelete = ({visible, children}) => {
+        const [showModalAdd, setShowModalAdd] = React.useState(visible);
+        const scaleValue = React.useRef(new Animated.Value(0)).current;
+        React.useEffect(() => {
+          toggleModal();
+        }, [visible]);
+        const toggleModal = () => {
+          if (visible) {
+            setShowModalAdd(true);
+            Animated.spring(scaleValue, {
+              toValue: 1,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          } else {
+            setTimeout(() => setShowModalAdd(false), 200);
+            Animated.timing(scaleValue, {
+              toValue: 0,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          }
+        };
+        return (
+          <Modal transparent visible={showModalAdd}>
+            <View style={styles.modalBackGround}>
+              <Animated.View
+                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+                {children}
+              </Animated.View>
+            </View>
+          </Modal>
+        );
+    };
+
+    const DialogBoxDelete = () =>{
+        return(
+            <ModalPoupDelete visible={visibleDelete}>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={require('../assets/calendar.png')}
+                style={{height: 150, width: 150, marginVertical: 10}}
+              />
+            </View>
+    
+            <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+               Deleted Successfully
+            </Text>
+          </ModalPoupDelete>
+        );
+    }
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const ModalPoup = ({visible, children}) => {
+        const [showModalAdd, setShowModalAdd] = React.useState(visible);
+        const scaleValue = React.useRef(new Animated.Value(0)).current;
+        React.useEffect(() => {
+          toggleModal();
+        }, [visible]);
+        const toggleModal = () => {
+          if (visible) {
+            setShowModalAdd(true);
+            Animated.spring(scaleValue, {
+              toValue: 1,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          } else {
+            setTimeout(() => setShowModalAdd(false), 200);
+            Animated.timing(scaleValue, {
+              toValue: 0,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          }
+        };
+        return (
+          <Modal transparent visible={showModalAdd}>
+            <View style={styles.modalBackGround}>
+              <Animated.View
+                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+                {children}
+              </Animated.View>
+            </View>
+          </Modal>
+        );
+    };
+
+    const DialogBox = () =>{
+        return(
+            <ModalPoup visible={visibleAdd}>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={require('../assets/calendar.png')}
+                style={{height: 150, width: 150, marginVertical: 10}}
+              />
+            </View>
+    
+            <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+               Editted Successfully
+            </Text>
+            <View style={{alignItems: 'center'}}>
+              <View style={styles.header}>
+                <Button title='close' onPress={() => setVisibleAdd(false)}/>
+              </View>
+            </View>
+          </ModalPoup>
+        );
+    }
     
     const AddSchedModal = () => {
         const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -191,8 +303,9 @@ const ViewSchedule = ({ route, navigation }) => {
                  setDescGC(desc);
                  setShowModal(false)
                  setAddLoader(false);
-                 alert("Edit Successfully");
-                 navigation.navigate('Calendar');
+                 //alert("Edit Successfully"); setTimeout(() => {navigation.navigate('Calendar');}, 1000)
+                 setVisibleAdd(true);
+                 
             } else {
               alert("Error, please try again");
             }
@@ -311,13 +424,14 @@ const ViewSchedule = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
+            <DialogBox/>
+            <DialogBoxDelete/>
             <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  titleGC} showMenuIcon={true} />
             <ScrollView>
             <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
                 { route.params.item?.category !== "consults" ? <></> :
                
                 <View style={{ height: 340, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
-
                 {imgLoading === true ? <ActivityIndicator size="large" animating={true}/>
                 :
                 <>
@@ -712,6 +826,28 @@ const styles = StyleSheet.create({
         padding: 5,
         color: 'white',
     },
+
+    //ALERT
+          //DIALOG BOX
+          modalBackGround: {
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          modalContainer: {
+            width: '80%',
+            backgroundColor: 'white',
+            paddingHorizontal: 20,
+            paddingVertical: 30,
+            borderRadius: 20,
+            elevation: 20,
+          },
+          header: {
+            width: '100%',
+            height: 40,
+            justifyContent: 'center',
+          },
 });
 
 export default ViewSchedule;
