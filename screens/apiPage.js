@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react'
 import { View, StyleSheet, Text, TextInput } from 'react-native'
 import AppBar from './ReusableComponents/AppBar';
-import { List, DefaultTheme, Provider as PaperProvider, S } from 'react-native-paper';
+import { List, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {    Snackbar } from 'react-native-paper';
@@ -65,7 +65,7 @@ const APICalls = () => {
                 <AppBar title="API Calls" showMenuIcon={true} />
                 <View style={styles.wrapper}>
 
-                    <List.Accordion
+                    {/* <List.Accordion
                         title="Google Calendar"
                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', }}>
                         <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
@@ -106,7 +106,7 @@ const APICalls = () => {
                             </View>
                         </View>
                     </List.Accordion>
-                    <View style={{ marginBottom: 5 }} />
+                    <View style={{ marginBottom: 5 }} /> */}
                     <List.Accordion
                         title="Centaurmd"
                         style={{ borderWidth: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', }}>
