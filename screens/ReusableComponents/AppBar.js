@@ -104,7 +104,7 @@ const AppBar = ({title, showMenuIcon}) => {
                         />
                         <Text style={styles.textEmail}>Dr. Sample Name</Text>
                     </View>
-                    <MenuItem onPress={hideMenu}>Settings</MenuItem>
+                    <MenuItem onPress={hideMenu}>View Profile</MenuItem>
                     <MenuDivider />
                     <MenuItem onPress={signOut}><Text style={styles.textLogOut}>Log Out</Text></MenuItem>
                 </Menu>
