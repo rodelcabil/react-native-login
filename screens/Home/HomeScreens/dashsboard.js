@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions,Button } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions, Button } from 'react-native';
 import AppBar from '../../ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Card, Avatar,  } from 'react-native-paper';
+import { Card, Avatar, } from 'react-native-paper';
 import StatisticsComponent from '../../ReusableComponents/statisticsCoponent';
 import { List, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -10,6 +10,16 @@ import axios from 'axios';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+    ProgressChart,
+    ContributionGraph,
+    StackedBarChart
+} from "react-native-chart-kit";
+import { FunnelChart } from 'react-funnel-pipeline'
+
 
 const black_theme = {
     ...DefaultTheme,
@@ -39,7 +49,11 @@ const Dashboard = ({ navigation, route }) => {
         { key: 'second', title: 'Consults' },
         { key: 'third', title: 'Procedures' },
     ]);
-  
+
+    const [summary, setSummary] = useState([]);
+    const [summaryData, setSummaryData] = useState();
+    const [summaryDetails, setSummaryDetails] = useState();
+
     const initialLayout = { width: Dimensions.get('window').width };
 
 
@@ -63,9 +77,6 @@ const Dashboard = ({ navigation, route }) => {
                     else {
                         setHasSched(false)
                     }
-
-
-
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
             console.log("HAS SCHED?: ", hasSched)
@@ -91,42 +102,195 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
             console.log("DASHBOARD DATA: ", dashboardData.data)
         }
+        const getReportSumamryData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/reports-summary`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                   
+                    setSummary(response.data)
+
+
+                    let data= [];  
+                    for(var i = 0; i < response.data.datasets.length; i++){
+                        data[i] =  response.data.datasets[i].data;
+                            
+                    }
+
+                   
+                    
+
+                    
+                    let data2 = [];  
+                    for(var i = 0; i < response.data.datasets.length; i++){
+                       data2.push({
+                            data: response.data.datasets[i].data, 
+                            name: response.data.datasets[i].label, 
+                            color: response.data.datasets[i].backgroundColor
+                        });
+                    }
+                    
+
+                    const mappedData = data2.map((data) => {
+                        const color = data.color;
+                        return {
+                            ...data,
+                            color:() => data.name === 'Dr. Patrick Hsu (0)' ? "#03a9f3" : data.name === 'Dr. Kendall Roehl (0)' ? "#ed7d31" :  data.name === 'Dr. Vasileios Vasilakis (0)' ? "#ffc000" :  data.name === 'MedSpa Provider (0)' ? "#00c292" : '#000000',  
+                            backgroundColor: color
+                        };
+                    });
+    
+                 
+
+                    console.log("SUMMARY DATA: ", mappedData)
+                    setSummaryData(mappedData)
+                    // setSummaryDetails(mappedData)
+                   
+
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+            // console.log("DASHBOARD DATA: ", dashboardData.data)
+        }
+        
         getMySchedule();
         getDashboardData();
+        getReportSumamryData();
     }, [])
 
-    
+
 
     const ConsultFormRoute = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-            <View>
-                <Text>Consult Form Route</Text>
+        <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
+            <LineChart
+                data={{
+                    labels: summary.labels,
+                    datasets: summaryData
+                }}
+                width={Dimensions.get("window").width - 44} // from react-native
+                height={230}
+                yAxisInterval={1}
+                
+                chartConfig={{
+                    backgroundColor: "#F6F7F9",
+                    backgroundGradientFrom: "#F6F7F9",
+                    backgroundGradientTo: "#F6F7F9",
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `gray`,
+                    labelColor: (opacity = 1) => `gray`,
+                   
+                    propsForDots: {
+                        r: "7",
+                        strokeWidth: "0",
+                    }
+                }}
+                bezier
+                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
+            />
+            <View style={styles.typesContainer}>
+                {summaryData.map((item, i) =>{
+                    return <View style={styles.types} key={i}>
+                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
+                        <Text style={styles.text2}>{item.name}</Text>
+                    </View>
+                })}
             </View>
         </View>
     );
     const ConsultsRoute = () => (
         <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-            <Text>Consults Route</Text>
-            
+            <LineChart
+                data={{
+                    labels: summary.labels,
+                    datasets: summaryData
+                }}
+                width={Dimensions.get("window").width - 44} // from react-native
+                height={230}
+                yAxisInterval={1}
+                
+                chartConfig={{
+                    backgroundColor: "#F6F7F9",
+                    backgroundGradientFrom: "#F6F7F9",
+                    backgroundGradientTo: "#F6F7F9",
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `gray`,
+                    labelColor: (opacity = 1) => `gray`,
+                   
+                    propsForDots: {
+                        r: "6",
+                        strokeWidth: "2",
+                        // stroke: "#ffa726"
+                    }
+                }}
+                bezier
+                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
+            />
+             <View style={styles.typesContainer}>
+                {summaryData.map((item, i) =>{
+                    return <View style={styles.types} key={i}>
+                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
+                        <Text style={styles.text2}>{item.name}</Text>
+                    </View>
+                })}
+            </View>
         </View>
     );
     const ProceduresRoute = () => (
         <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-           <Text>Procedure Route</Text>
+            <LineChart
+                data={{
+                    labels: summary.labels,
+                    datasets: summaryData
+                }}
+                width={Dimensions.get("window").width - 44} // from react-native
+                height={230}
+                yAxisInterval={1}
+                
+                chartConfig={{
+                    backgroundColor: "#F6F7F9",
+                    backgroundGradientFrom: "#F6F7F9",
+                    backgroundGradientTo: "#F6F7F9",
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `gray`,
+                    labelColor: (opacity = 1) => `gray`,
+                    propsForDots: {
+                        r: "6",
+                        strokeWidth: "2",
+                        // stroke: "#ffa726"
+                    }
+                }}
+                bezier
+                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
+            />
+             <View style={styles.typesContainer}>
+                {summaryData.map((item, i) =>{
+                    return <View style={styles.types} key={i}>
+                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
+                        <Text style={styles.text2}>{item.name}</Text>
+                    </View>
+                })}
+            </View>
         </View>
     );
-    
+
     const renderScene = SceneMap({
         first: ConsultFormRoute,
         second: ConsultsRoute,
         third: ProceduresRoute
     });
-    
-    
+
+
     const renderTabBar = props => (
         <TabBar
             {...props}
-            indicatorStyle={{ backgroundColor: '#da7331' }}
+            indicatorStyle={{ backgroundColor: '#3a87ad' }}
             style={{ backgroundColor: '#fff', }}
             renderLabel={({ route }) => (
                 <Text style={{ color: 'black', margin: 8, textTransform: 'uppercase', fontSize: 12 }}>
@@ -136,15 +300,15 @@ const Dashboard = ({ navigation, route }) => {
         />
     );
 
-   
+
     return (
         <PaperProvider theme={black_theme}>
             <View style={styles.container}>
                 <AppBar title={"Dashboard"} showMenuIcon={false} />
-                
+
                 <ScrollView >
                     <View style={styles.wrapper} >
-                  
+
                         <View>
                             <Text style={styles.text}>Today's schedule</Text>
 
@@ -264,20 +428,20 @@ const Dashboard = ({ navigation, route }) => {
                             title="Report Summary"
                             titleStyle={{ color: '#fff', fontWeight: 'bold' }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                  <View style={{paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
-                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{marginRight: 10}}/>
-                                    <AntdIcon name="filter" size={25} color="#7e7e7e"/>
+                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 430, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
+                                    <AntdIcon name="filter" size={25} color="#7e7e7e" />
                                 </View>
                                 <TabView
                                     navigationState={{ index, routes }}
                                     renderScene={renderScene}
                                     onIndexChange={setIndex}
-                                    initialLayout={{initialLayout}}
+                                    initialLayout={{ initialLayout }}
                                     renderTabBar={renderTabBar}
                                 />
-                              
-                               
+
+
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
@@ -286,7 +450,7 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                               
+
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
@@ -329,6 +493,7 @@ const Dashboard = ({ navigation, route }) => {
                         <List.Accordion
                             title="Leads Funnel"
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                            expanded="true"
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
 
@@ -425,6 +590,27 @@ const styles = StyleSheet.create({
         height: 50,
         opacity: 0.5,
         resizeMode: 'contain',
+    },
+    types: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        display: 'flex',
+        marginBottom: 5,
+        marginRight: 20
+    },
+    typesContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        display: 'flex',
+        marginTop: 20,
+        flexWrap: 'wrap'
+
+    },
+   
+    text2: {
+        fontSize: 12,
+        color: 'black'
     },
 });
 

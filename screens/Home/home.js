@@ -45,7 +45,7 @@ const Home = ({route}) => {
 
     return (
      
-        <Tab.Navigator  initialRouteName="Calendar">
+        <Tab.Navigator  initialRouteName="Dashboard">
             <Tab.Screen name="Dashboard" component={Dashboard} 
                  options={{
                     headerShown:false,
