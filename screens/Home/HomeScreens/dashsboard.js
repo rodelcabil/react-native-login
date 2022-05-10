@@ -10,6 +10,14 @@ import axios from 'axios';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+    ProgressChart,
+    ContributionGraph,
+    StackedBarChart
+  } from "react-native-chart-kit";
 
 const black_theme = {
     ...DefaultTheme,
@@ -33,6 +41,7 @@ const Dashboard = ({ navigation, route }) => {
     const [hasSched, setHasSched] = useState(false);
     const [dashboardData, setDashboardData] = useState([]);
     const [index, setIndex] = useState(0);
+    const [indexL, setIndexL] = useState(0);
     const layout = useWindowDimensions();
     const [routes] = useState([
         { key: 'first', title: 'Consult Form' },
@@ -41,6 +50,10 @@ const Dashboard = ({ navigation, route }) => {
     ]);
   
     const initialLayout = { width: Dimensions.get('window').width };
+
+    const [filterData, setFilterData] = useState([]);
+
+    const filters = ['Procedures','Surgeons','Location','Source of Inquiry','Leads Funnel'];
 
 
     useEffect(() => {
@@ -70,7 +83,6 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
             console.log("HAS SCHED?: ", hasSched)
         }
-
         const getDashboardData = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
@@ -91,6 +103,44 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
             console.log("DASHBOARD DATA: ", dashboardData.data)
         }
+        const getFilteredQuery = async (filter) => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/charts?filter=${filter}`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    console.log("LOCATION DATA: ", response.data)
+                    const temoArr = [];
+                    temoArr.push(
+                        {
+                            name: response.data.labels[0],
+                            counts: response.data.datasets[0].data[0],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[0],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        },
+                        {
+                            name: response.data.labels[1],
+                            counts: response.data.datasets[0].data[1],
+                            //counts: 2,
+                            color: response.data.datasets[0].backgroundColor[1],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15,
+                        }
+                    )
+                    setFilterData(temoArr)
+                    console.log(filterData);
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+        getFilteredQuery(filters[2]);
         getMySchedule();
         getDashboardData();
     }, [])
@@ -135,6 +185,146 @@ const Dashboard = ({ navigation, route }) => {
             )}
         />
     );
+
+    const renderTabBarLocation = props => (
+        <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: '#da7331' }}
+            style={{ backgroundColor: '#fff', }}
+            renderLabel={({ route }) => (
+                <Text style={{ color: 'black', margin: 8, textTransform: 'uppercase', fontSize: 12 }}>
+                    {route.title}
+                </Text>
+            )}
+        />
+    );
+
+
+    const chartConfig = {
+        backgroundGradientFrom: "#1E2923",
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: "#08130D",
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2, // optional, default 3
+        barPercentage: 0.5,
+        useShadowColorFromDataset: false // optional
+      };
+
+    const screenWidth = Dimensions.get("window").width;
+
+    const ConsultFormRouteLocation = () => (
+        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
+            <View style={styles.rowContainer}>
+                    <View style={styles.typesContainer}>
+                        <PieChart
+                            data={filterData}
+                            width={screenWidth/1.8}
+                            height={250}
+                            chartConfig={chartConfig}
+                            accessor={"counts"}
+                            backgroundColor={"transparent"}
+                            center={[50, 20]}
+                            hasLegend={false}
+                        />
+                    </View>
+                    <View style={styles.typesContainer}>
+                        {filterData.map(item =>{
+                            return(
+                                <View style={styles.types}>
+                                    <View style={{
+                                                marginRight: 10,
+                                                height: 20,
+                                                width: 20,
+                                                borderRadius: 15,
+                                                backgroundColor: item.color,
+                                    }}></View>
+                                    <Text style={styles.text2}>{item.name}</Text>
+                                    <View style={{marginBottom: 30}}/>
+                                </View>
+                            )
+                        })}
+                </View>
+            </View>
+        </View>
+    );
+    
+    const ConsultsRouteLocation = () => (
+        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
+            <View style={styles.rowContainer}>
+                    <View style={styles.typesContainer}>
+                        <PieChart
+                            data={filterData}
+                            width={screenWidth/1.8}
+                            height={250}
+                            chartConfig={chartConfig}
+                            accessor={"counts"}
+                            backgroundColor={"transparent"}
+                            center={[50, 20]}
+                            hasLegend={false}
+                        />
+                    </View>
+                    <View style={styles.typesContainer}>
+                        {filterData.map(item =>{
+                            return(
+                                <View style={styles.types}>
+                                    <View style={{
+                                                marginRight: 10,
+                                                height: 20,
+                                                width: 20,
+                                                borderRadius: 15,
+                                                backgroundColor: item.color,
+                                    }}></View>
+                                    <Text style={styles.text2}>{item.name}</Text>
+                                    <View style={{marginBottom: 30}}/>
+                                </View>
+                            )
+                        })}
+                </View>
+            </View>
+        </View>
+    );
+    const ProceduresRouteLocation = () => (
+        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
+            <View style={styles.rowContainer}>
+                    <View style={styles.typesContainer}>
+                        <PieChart
+                            data={filterData}
+                            width={screenWidth/1.8}
+                            height={250}
+                            chartConfig={chartConfig}
+                            accessor={"counts"}
+                            backgroundColor={"transparent"}
+                            center={[50, 20]}
+                            hasLegend={false}
+                        />
+                    </View>
+                    <View style={styles.typesContainer}>
+                        {filterData.map(item =>{
+                            return(
+                                <View style={styles.types}>
+                                    <View style={{
+                                                marginRight: 10,
+                                                height: 20,
+                                                width: 20,
+                                                borderRadius: 15,
+                                                backgroundColor: item.color,
+                                    }}></View>
+                                    <Text style={styles.text2}>{item.name}</Text>
+                                    <View style={{marginBottom: 30}}/>
+                                </View>
+                            )
+                        })}
+                </View>
+            </View>
+        </View>
+    );
+    
+    const renderSceneLocation = SceneMap({
+        first: ConsultFormRouteLocation,
+        second: ConsultsRouteLocation,
+        third: ProceduresRouteLocation
+    });
 
    
     return (
@@ -313,7 +503,21 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
+                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                  <View style={{paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{marginRight: 10}}/>
+                                    <AntdIcon name="filter" size={25} color="#7e7e7e"/>
+                                </View>
+                                <TabView
+                                    navigationState={{ index, routes }}
+                                    renderScene={renderSceneLocation}
+                                    onIndexChange={setIndexL}
+                                    initialLayout={{initialLayout}}
+                                    renderTabBar={renderTabBarLocation}
+                                />
+                              
+                               
+                            </View>
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
@@ -425,6 +629,19 @@ const styles = StyleSheet.create({
         height: 50,
         opacity: 0.5,
         resizeMode: 'contain',
+    },
+    text2: {
+        fontSize: 12,
+        color: 'black'
+    },
+    types: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    typesContainer: {
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
+        marginTop: 10
     },
 });
 

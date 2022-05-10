@@ -8,6 +8,7 @@ import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google
 import axios from 'axios';
 import { Dimensions } from "react-native";
 import Icon2 from 'react-native-vector-icons/Ionicons';
+import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 
 const AddSchedule = ({ route, navigation }) => {
 
@@ -27,6 +28,7 @@ const AddSchedule = ({ route, navigation }) => {
     const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
 
     const [addLoader, setAddLoader] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -74,15 +76,12 @@ const AddSchedule = ({ route, navigation }) => {
 
     const create = async () => {
         setAddLoader(true);
-        const userInfoToken = await GoogleSignin.getTokens();
-        const token = userInfoToken.accessToken;
-        const userInfo = await GoogleSignin.signInSilently();
         const getDaySelecte = route.params.getdate === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : route.params.getdate;
   
-        console.log(token, email, getDaySelecte, startTime);
+        console.log(route.params.accessToken, route.params.email, getDaySelecte, startTime);
         console.log(endDate, endTime, title, desc);
         const resp = await axios.post(
-          `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`,
+          `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events?access_token=${route.params.accessToken}`,
           {
             start: {
               dateTime: `${getDaySelecte}T${startTime}:00`,
@@ -103,7 +102,7 @@ const AddSchedule = ({ route, navigation }) => {
              setShowModal(false);
              setAddLoader(false);
              setVisibleAdd(true);
-             setTimeout(() => {navigation.navigate('Calendar');}, 500)
+             setTimeout(() => {navigation.navigate('Calendar');}, 1000)
         } else {
           alert("Error, please try again");
         }
@@ -147,26 +146,21 @@ const AddSchedule = ({ route, navigation }) => {
       };
   
       const DialogBox = () =>{
-          return(
-              <ModalPoup visible={visibleAdd}>
-              <View style={{alignItems: 'center'}}>
-                <Image
-                  source={require('../assets/sucess.png')}
-                  style={{height: 150, width: 150, marginVertical: 10}}
-                />
-              </View>
-      
-              <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
-                 Added Successfully
-              </Text>
-              <View style={{alignItems: 'center'}}>
-                <View style={styles.header}>
-                  <Button title='close' onPress={() => setVisibleAdd(false)}/>
-                </View>
-              </View>
-            </ModalPoup>
-          );
-      }
+        return(
+            <ModalPoup visible={visibleAdd}>
+            <View style={{alignItems: 'center'}}>
+              <Image
+                source={require('../assets/sucess.png')}
+                style={{height: 120, width: 120, marginVertical: 10}}
+              />
+            </View>
+    
+            <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+               Added Successfully
+            </Text>
+          </ModalPoup>
+        );
+    }
 
       return(
         <View style={styles.container}>    
@@ -179,11 +173,8 @@ const AddSchedule = ({ route, navigation }) => {
                 />
                 <Text style={styles.textTitle}>Date - {route.params.getdate} </Text>
             </View>
-            <Flatlist style={styles.safeAreaViewContainerAdd}>
+            <ScrollView style={styles.safeAreaViewContainerAdd}>
                 <SafeAreaView style={styles.safeAreaViewContainerAdd}>
-                    <Form onButtonPress={() => !user.idToken ? signIn() : create()}
-                        buttonStyle={styles.buttonCont}
-                    >
                         <FormItem
                             label="Title"
                             isRequired
@@ -250,11 +241,18 @@ const AddSchedule = ({ route, navigation }) => {
                                 />
                             </View>
                         </TouchableOpacity>
-                    </Form>
                     {addLoader === true? 
-                        <LoaderSmall/> : <></>}
+                          <LoaderSmall/> : 
+                           <View style={{marginTop: 10}}>
+                            <Button 
+                                style={styles.buttonCont}
+                                title="Submit" 
+                                onPress={() => route.params.user.idToken === null ? signIn() : create()
+                                }
+                            />
+                          </View>}
                 </SafeAreaView>
-            </Flatlist >
+            </ScrollView >
         </View>
     );
 };
@@ -411,7 +409,7 @@ const styles = StyleSheet.create({
                 alignItems: 'center',
               },
               modalContainer: {
-                width: '80%',
+                width: '70%',
                 backgroundColor: 'white',
                 paddingHorizontal: 20,
                 paddingVertical: 30,
