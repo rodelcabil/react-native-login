@@ -33,10 +33,13 @@ export function Calendar ({ navigation, route }) {
     const [showModal, setShowModal] = useState(false);
 
     const [user, setUser] = useState({});
+    const [getTokenGC, setGetTokenGC] = useState(null);
 
     
     const [loader, setLoader] = useState(true);
     const [gcSync, setGCSync] = useState(false);
+
+
     GoogleSignin.configure({
         scopes: [
           "profile",
@@ -72,7 +75,6 @@ export function Calendar ({ navigation, route }) {
             { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
             }).then(response => {
                 setTempItems(response.data);
-                console.log(response.data);
                 const mappedData = response.data.map((data) => {
                     const date = data.date_from;
                     return {
@@ -94,7 +96,7 @@ export function Calendar ({ navigation, route }) {
                 
                 const SyncGoogleCalendar = async (setAlert) =>{
                         const isSignedIn = await GoogleSignin.isSignedIn();
-                        if(!!isSignedIn){
+                        if(isSignedIn === true){
                             //setGCSync(true);
                             const userInfo = await GoogleSignin.signInSilently();
                             const userInfoToken = await GoogleSignin.getTokens();
@@ -103,8 +105,6 @@ export function Calendar ({ navigation, route }) {
                             await axios.get(
                                 `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
                             ).then(response =>{
-                                console.log(response.data)
-
                                 const mappedData = response.data.items.map((data, index) => {
                                     const date = data.start.dateTime
                                     return {
@@ -123,9 +123,9 @@ export function Calendar ({ navigation, route }) {
                                              title: coolItem.summary, 
                                              description: coolItem.description, 
                                              date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
-                                             time_from:  moment(coolItem.start.dateTime).format("HH:mma"), 
+                                             time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
                                              date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
-                                             time_to: moment(coolItem.end.dateTime).format("HH:mma"), 
+                                             time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
                                              category: "Others",
                                              googleEventId: coolItem.id, 
                                              googleCalendar: true });
@@ -134,22 +134,6 @@ export function Calendar ({ navigation, route }) {
     
                             });
 
-                           /* for (let i = 0; i < resp.data.items.length; i++) {
-                                const date = moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD");
-                                if (!arrTemp[date]) {
-                                    arrTemp[date] = [];
-                                }
-                                arrTemp[date].push({
-                                     title: resp.data.items[i].summary, 
-                                     description: resp.data.items[i].description, 
-                                     date_from:  moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD"), 
-                                     time_from:  moment(resp.data.items[i].start.dateTime).format("HH:mma"), 
-                                     date_to: moment(resp.data.items[i].end.dateTime).format("YYYY-MM-DD"), 
-                                     time_to: moment(resp.data.items[i].end.dateTime).format("HH:mma"), 
-                                     category: "Others",
-                                     googleEventId: resp.data.items[i].id, 
-                                     googleCalendar: true });
-                            }*/
                             setItems({});
                             setItems(arrTemp);
                             setLoader(false);
@@ -159,7 +143,6 @@ export function Calendar ({ navigation, route }) {
                             }
                         }
                         else{
-                          //  alert('Google Account not Connected');
                             setItems({});
                             setItems(arrTemp);
                             setLoader(false)
@@ -167,7 +150,6 @@ export function Calendar ({ navigation, route }) {
                         }
                 } 
                 SyncGoogleCalendar(false);
-                console.log(arrTemp);
             }
         );
     }
@@ -177,6 +159,10 @@ export function Calendar ({ navigation, route }) {
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
           setUser(userInfo)
+
+          const userInfoToken = await GoogleSignin.getTokens();
+          setGetTokenGC(userInfoToken.accessToken)
+
           setCheckSignIn(true);
           setLoader(true);
           setGCSync(true);
@@ -217,6 +203,9 @@ export function Calendar ({ navigation, route }) {
           const userInfo = await GoogleSignin.signInSilently();
          // console.log('edit______', user);
           setUser(userInfo);
+
+         const userInfoToken = await GoogleSignin.getTokens();
+          setGetTokenGC(userInfoToken.accessToken)
           setCheckSignIn(true);
         }
         catch(error){
@@ -312,8 +301,8 @@ export function Calendar ({ navigation, route }) {
             loader === true ? 
               <SkeletonLoaderCard/>
             :
-            moment(item.date_from).format('YYYY-MM-DD') === ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ? 
-                <TouchableHighlight
+            moment(item.date_from).format('YYYY-MM-DD') !== ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ?  <></>
+               : <TouchableHighlight
                     style={{ margin: 10, width: width }}
                     activeOpacity={0.6}
                     underlayColor="#DDDDDD"
@@ -422,7 +411,6 @@ export function Calendar ({ navigation, route }) {
                         </Card>
                     </SafeAreaView>
                 </TouchableHighlight>
-               : <></>
         );
     };
 
@@ -468,272 +456,15 @@ export function Calendar ({ navigation, route }) {
         setLoader(false);
     };
 
-    const [visibleAdd, setVisibleAdd] = useState(false);
 
-    const ModalPoup = ({visible, children}) => {
-        const [showModalAdd, setShowModalAdd] = React.useState(visible);
-        const scaleValue = React.useRef(new Animated.Value(0)).current;
-        React.useEffect(() => {
-          toggleModal();
-        }, [visible]);
-        const toggleModal = () => {
-          if (visible) {
-            setShowModalAdd(true);
-            Animated.spring(scaleValue, {
-              toValue: 1,
-              duration: 100,
-              useNativeDriver: true,
-            }).start();
-          } else {
-            setTimeout(() => setVisibleAdd(false), 500);
-            Animated.timing(scaleValue, {
-              toValue: 0,
-              duration: 100,
-              useNativeDriver: true,
-            }).start();
-          }
-        };
-        return (
-          <Modal transparent visible={showModalAdd}>
-            <View style={styles.modalBackGround}>
-              <Animated.View
-                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
-                {children}
-              </Animated.View>
-            </View>
-          </Modal>
-        );
-    };
-
-    const DialogBox = () =>{
-        return(
-            <ModalPoup visible={visibleAdd}>
-            <View style={{alignItems: 'center'}}>
-              <Image
-                source={require('../../../assets/sucess.png')}
-                style={{height: 120, width: 120, marginVertical: 10}}
-              />
-            </View>
-    
-            <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
-               Added Successfully
-            </Text>
-           
-           {/*
-           <View style={{alignItems: 'center'}}>
-              <View style={styles.header}>
-                <Button title='close' onPress={() => setVisibleAdd(false)}/>
-              </View>
-            </View>
-           */} 
-         
-          </ModalPoup>
-        );
-    }
-
-    const AddSchedModal = () => {
-        const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-        const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
-        const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
-    
-        const [title, setTitle] = useState(null);
-        const [desc, setDesc] = useState(null);
-        const [endDate, setEndDate] = useState(null);
-        const [startTime, setStartTime] = useState(null);
-        const [endTime, setEndTime] = useState(null);
-    
-        const [datePickerTitle, setdatePickerTitle] = useState(null);
-        const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
-    
-        const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
-
-        const [addLoader, setAddLoader] = useState(false);
-
-        const showDatePicker = () => {
-            setDatePickerVisibility(true);
-        };
-
-        const hideDatePicker = () => {
-            setDatePickerVisibility(false);
-        };
-
-        const handleConfirm = (date) => {
-            setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
-            setEndDate(moment(date).format("YYYY-MM-DD"));
-            hideDatePicker();
-        };
-
-        const showDatePickerTime = () => {
-            setDatePickerTimeVisibility(true);
-        };
-
-        const hideDatePickerTime = () => {
-            setDatePickerTimeVisibility(false);
-        };
-
-        const handleConfirmTime = (time) => {
-            var convTime = moment(time).format("HH:mm")
-            setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-            setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
-            hideDatePickerTime();
-        };
-
-        const showDatePickerTimeStart = () => {
-            setDatePickerVisibilityStart(true);
-        };
-
-        const hideDatePickerTimeStart = () => {
-            setDatePickerVisibilityStart(false);
-        };
-
-        const handleConfirmTimeStart = (time) => {
-            var convTime = moment(time).format("HH:mm")
-            setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-            setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
-            hideDatePickerTimeStart();
-        };
-
-       // const gDay = dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet;
-
-        const create = async () => {
-            setAddLoader(true);
-            const userInfoToken = await GoogleSignin.getTokens();
-            const token = userInfoToken.accessToken;
-            const email = user.user.email;
-            const getDaySelecte = dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet;
-      
-            console.log(token, email, getDaySelecte, startTime);
-            console.log(endDate, endTime, title, desc);
-            const resp = await axios.post(
-              `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
-              {
-                start: {
-                  dateTime: `${getDaySelecte}T${startTime}:00`,
-                  timeZone: "Asia/Manila",
-                },
-                end: {
-                  dateTime: `${endDate}T${endTime}:00`,
-                  timeZone: "Asia/Manila",
-                },
-                summary: title,
-                description: desc,
-              }
-            );
-        
-            console.log(resp.data);   
-        
-            if (resp.status === 200) {
-                 //getData();
-                 if (!items[getDaySelecte]) {
-                    items[getDaySelecte] = [];
-                }
-                 items[getDaySelecte].push({ title: title, description: desc, date_from: getDaySelecte, time_from: startTime, date_to: endDate, time_to: endTime, category: "Others",
-                 googleEventId: resp.data.id, googleCalendar: true });
-                 setShowModal(false);
-                 setAddLoader(false);
-                 setVisibleAdd(true);
-            } else {
-              alert("Error, please try again");
-            }
-          }
-
-        return(
-            <View style={styles.container}>         
-                <View style={styles.dateContainer}>
-                <Icon2 name="arrow-back" size={30} color="white"  onPress={() =>setShowModal(false)}/>
-                    <Image
-                        style={styles.logoImg2}
-                        source={require('../../../assets/calendar.png')}
-                    />
-                    <Text style={styles.textTitle}>Date - {dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet} </Text>
-                </View>
-                <ScrollView style={styles.safeAreaViewContainerAdd}>
-                    <SafeAreaView style={styles.safeAreaViewContainerAdd}>
-                            <FormItem
-                                label="Title"
-                                isRequired
-                                value={title}
-                                style={styles.inputContainer}
-                                onChangeText={titleInp => setTitle(titleInp)}
-                                asterik />
-
-                            <FormItem
-                                label="Description"
-                                isRequired
-                                value={desc}
-                                style={styles.inputContainer}
-                                onChangeText={descript => setDesc(descript)}
-                                asterik />
-
-                            <Label text="End Date" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePicker}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerVisible}
-                                        mode="date"
-                                        value={endDate}
-                                        onConfirm={handleConfirm}
-                                        onCancel={hideDatePicker}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-
-                            <Label text="Start Time" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePickerTimeStart}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerVisibleStart}
-                                        mode="time"
-                                        value={startTime}
-                                        onConfirm={handleConfirmTimeStart}
-                                        onCancel={hideDatePickerTimeStart}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-
-                            <Label text="End Time" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePickerTime}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerTimeVisible}
-                                        mode="time"
-                                        value={endTime}
-                                        onConfirm={handleConfirmTime}
-                                        onCancel={hideDatePickerTime}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-
-                        {addLoader === true? 
-                          <LoaderSmall/> : 
-                           <View style={{marginTop: 10}}>
-                            <Button 
-                                style={styles.buttonCont}
-                                title="Submit" 
-                                onPress={() => !user.idToken ? signIn() : create()
-                                }
-                            />
-                          </View>}
-                    </SafeAreaView>
-                </ScrollView >
-            </View>
-        );
-    }
-
-    const clickHandler = () => {
-        navigation.navigate('Add Schedule', { getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet })
+    const clickHandler = async () => {
+        const accToken = await GoogleSignin.getTokens();
+        navigation.navigate('Add Schedule', { 
+            getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet,
+            user: user,
+            accessToken: accToken.accessToken,
+            email: user.user.email,
+        })
     };
 
     return (
@@ -760,7 +491,6 @@ export function Calendar ({ navigation, route }) {
              : <></>
             }
             <View style={styles.typesContainer}>
-                <DialogBox/>
                 {/* <TouchableHighlight
                     style={{ padding: 5, borderRadius: 5 }}
                     activeOpacity={0.6}
@@ -829,24 +559,15 @@ export function Calendar ({ navigation, route }) {
             <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={
-                    ()=>setShowModal(true)
-                   // clickHandler
+                    clickHandler
                 }
                 style={styles.touchableOpacityStyle}>
                 <Image
-                    source={require('../../../assets/addSchedIcon2.png')}
+                    source={require('../../../assets/addIcon.png')}
                     style={styles.floatingButtonStyle}
                 />
             </TouchableOpacity>
             : <></> }
-
-            <Modal
-                animationType={'slide'}
-                transparent={false}
-                visible={showModal}
-            >
-                <AddSchedModal/>
-            </Modal>
 
         </View>
     );
@@ -960,7 +681,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         display: 'flex',
         marginTop: 20
-
     },
     touchableOpacityStyle: {
         position: 'absolute',
