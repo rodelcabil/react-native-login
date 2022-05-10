@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator, TouchableHighlight, Modal, TouchableOpacity, Animated } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -31,6 +31,8 @@ const ViewSchedule = ({ route, navigation }) => {
 
     const [titleGC, setTitleGC] = useState(route.params.item?.title);
     const [desceGC, setDescGC] = useState(route.params.item?.description);
+    const [dateEnd, setDateEnd] = useState(route.params.item?.date_to);
+    const [dateStart, setDateStart] = useState(route.params.item?.date_from);
     const [timefromGC, setTimeFromGC] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm A"));
     const [timeToGC, setTimeToGC] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
 
@@ -87,7 +89,7 @@ const ViewSchedule = ({ route, navigation }) => {
         //alert("Deleted Successfully");
         setVisibleDelete(true)
         //navigation.navigate('Calendar');
-        setTimeout(() => {navigation.navigate('Calendar');}, 500)
+        setTimeout(() => {navigation.navigate('Calendar');}, 1000)
 
     }
 
@@ -104,14 +106,14 @@ const ViewSchedule = ({ route, navigation }) => {
             setShowModalAdd(true);
             Animated.spring(scaleValue, {
               toValue: 1,
-              duration: 100,
+              duration: 500,
               useNativeDriver: true,
             }).start();
           } else {
-            setTimeout(() => setShowModalAdd(false), 200);
+            setTimeout(() => setShowModalAdd(false), 500);
             Animated.timing(scaleValue, {
               toValue: 0,
-              duration: 100,
+              duration: 500,
               useNativeDriver: true,
             }).start();
           }
@@ -133,7 +135,7 @@ const ViewSchedule = ({ route, navigation }) => {
             <ModalPoupDelete visible={visibleDelete}>
             <View style={{alignItems: 'center'}}>
               <Image
-                source={require('../assets/calendar.png')}
+                source={require('../assets/sucess.png')}
                 style={{height: 150, width: 150, marginVertical: 10}}
               />
             </View>
@@ -145,290 +147,13 @@ const ViewSchedule = ({ route, navigation }) => {
         );
     }
 
-    const [visibleAdd, setVisibleAdd] = useState(false);
-
-    const ModalPoup = ({visible, children}) => {
-        const [showModalAdd, setShowModalAdd] = React.useState(visible);
-        const scaleValue = React.useRef(new Animated.Value(0)).current;
-        React.useEffect(() => {
-          toggleModal();
-        }, [visible]);
-        const toggleModal = () => {
-          if (visible) {
-            setShowModalAdd(true);
-            Animated.spring(scaleValue, {
-              toValue: 1,
-              duration: 100,
-              useNativeDriver: true,
-            }).start();
-          } else {
-            setTimeout(() => setShowModalAdd(false), 200);
-            Animated.timing(scaleValue, {
-              toValue: 0,
-              duration: 100,
-              useNativeDriver: true,
-            }).start();
-          }
-        };
-        return (
-          <Modal transparent visible={showModalAdd}>
-            <View style={styles.modalBackGround}>
-              <Animated.View
-                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
-                {children}
-              </Animated.View>
-            </View>
-          </Modal>
-        );
-    };
-
-    const DialogBox = () =>{
-        return(
-            <ModalPoup visible={visibleAdd}>
-            <View style={{alignItems: 'center'}}>
-              <Image
-                source={require('../assets/calendar.png')}
-                style={{height: 150, width: 150, marginVertical: 10}}
-              />
-            </View>
-    
-            <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
-               Editted Successfully
-            </Text>
-            <View style={{alignItems: 'center'}}>
-              <View style={styles.header}>
-                <Button title='close' onPress={() => setVisibleAdd(false)}/>
-              </View>
-            </View>
-          </ModalPoup>
-        );
-    }
-    
-    const AddSchedModal = () => {
-        const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-        const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
-        const [isDatePickerTimeVisible, setDatePickerTimeVisibility] = useState(false);
-    
-        const [title, setTitle] = useState(route.params.item?.title);
-        const [desc, setDesc] = useState(route.params.item?.description);
-        const [endDate, setEndDate] = useState(route.params.item?.date_to);
-        const [startTime, setStartTime] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm"));
-        const [endTime, setEndTime] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm"));
-        const [datePickerTitle, setdatePickerTitle] = useState( route.params.item?.date_to);
-        const [datePickerTitleTime, setdatePickerTitleTime] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm A"));
-        const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
-    
-        const [addLoader, setAddLoader] = useState(false);
-
-        const showDatePicker = () => {
-            setDatePickerVisibility(true);
-        };
-    
-        const hideDatePicker = () => {
-            setDatePickerVisibility(false);
-        };
-    
-        const handleConfirm = (date) => {
-            setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
-            setEndDate(moment(date).format("YYYY-MM-DD"));
-            hideDatePicker();
-        };
-    
-        const showDatePickerTime = () => {
-            setDatePickerTimeVisibility(true);
-        };
-    
-        const hideDatePickerTime = () => {
-            setDatePickerTimeVisibility(false);
-        };
-    
-        const handleConfirmTime = (time) => {
-            var convTime = moment(time).format("HH:mm")
-            setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-            setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
-            hideDatePickerTime();
-        };
-    
-        const showDatePickerTimeStart = () => {
-            setDatePickerVisibilityStart(true);
-        };
-    
-        const hideDatePickerTimeStart = () => {
-            setDatePickerVisibilityStart(false);
-        };
-    
-        const handleConfirmTimeStart = (time) => {
-            var convTime = moment(time).format("HH:mm")
-            setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-            setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
-            hideDatePickerTimeStart();
-        };
-    
-    
-        const create = async () => {
-            setAddLoader(true);
-            const token = route.params.accessToken;
-            const email = route.params.email;
-
-            console.log(route.params.item?.date_from, startTime, endDate, endTime, title, desc);
-            const config = {
-                headers: { Authorization: `Bearer ${token}` }
-            };
-            const resp = await axios.put(
-              `https://www.googleapis.com/calendar/v3/calendars/${email}/events/${route.params.item?.googleEventId}`,
-              {
-                start: {
-                 // dateTime: `${startSplitted[0]}T${startSplitted[1]}:00.0Z`
-                  dateTime: `${route.params.item?.date_from}T${startTime}:00`, //`2019-04-04T09:30:00.0z`
-                  timeZone: "Asia/Manila",
-                },
-                end: {
-                  // dateTime: `${endSplitted[0]}T${endSplitted[1]}:00.0Z`
-                  //`20019-4-04T09:30:00.0z`
-                  dateTime: `${endDate}T${endTime}:00`,
-                  timeZone: "Asia/Manila",
-                },
-                summary: title,
-                description: desc,
-              },
-              config
-            );
-        
-            //console.log(resp.data);
-        
-            if (resp.status === 200) {
-                 setTimeFromGC(startTime);
-                 setTimeToGC(endTime);
-                 setTitleGC(title);
-                 setDescGC(desc);
-                 setShowModal(false)
-                 setAddLoader(false);
-                 //alert("Edit Successfully"); setTimeout(() => {navigation.navigate('Calendar');}, 1000)
-                 setVisibleAdd(true);
-                 
-            } else {
-              alert("Error, please try again");
-            }
-          }
-    
-    
-        return(
-            <View style={styles.container}>         
-                <View style={styles.dateContainer}>
-                <Icon2 name="arrow-back" size={30} color="white"  onPress={() =>setShowModal(false)}/>
-                    <Image
-                        style={styles.logoImg2}
-                        source={require('../assets/calendar.png')}
-                    />
-                    <Text style={styles.textTitle}>Date - {route.params.item?.date_from} </Text>
-                </View>
-                <ScrollView style={styles.safeAreaViewContainerAdd}>
-                    <SafeAreaView style={styles.safeAreaViewContainerAdd}>
-                        <Form onButtonPress={() => {
-                        <Dialog
-                            visible={dialogBox}
-                            width={400}
-                            footer={
-                            <DialogFooter>
-                                <DialogButton
-                                text="CANCEL"
-                                onPress={() => {
-                                    setDialogBox(false);
-                                }}
-                                />
-                                <DialogButton text="OK" onPress={create()} />
-                            </DialogFooter>
-                            }
-                        >
-                            <DialogContent>
-                            <Text>Are you sure?</Text>
-                            </DialogContent>
-                        </Dialog>
-                        }}
-                            buttonStyle={styles.buttonCont}
-                        >
-                            <FormItem
-                                label="Title"
-                                isRequired
-                                value={title}
-                                style={styles.inputContainer}
-                                onChangeText={titleInp => setTitle(titleInp)}
-                                asterik />
-    
-                            <FormItem
-                                label="Description"
-                                isRequired
-                                value={desc}
-                                style={styles.inputContainer}
-                                onChangeText={descript => setDesc(descript)}
-                                asterik />
-    
-                            <Label text="End Date" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePicker}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerVisible}
-                                        mode="date"
-                                        value={endDate}
-                                        onConfirm={handleConfirm}
-                                        onCancel={hideDatePicker}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-    
-                            <Label text="Start Time" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePickerTimeStart}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerVisibleStart}
-                                        mode="time"
-                                        value={startTime}
-                                        onConfirm={handleConfirmTimeStart}
-                                        onCancel={hideDatePickerTimeStart}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-    
-                            <Label text="End Time" isRequired asterik />
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={showDatePickerTime}
-                            >
-                                <View style={styles.inputContainer2}>
-                                    <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                                    <DateTimePickerModal
-                                        isVisible={isDatePickerTimeVisible}
-                                        mode="time"
-                                        value={endTime}
-                                        onConfirm={handleConfirmTime}
-                                        onCancel={hideDatePickerTime}
-                                    />
-                                </View>
-                            </TouchableOpacity>
-                        </Form>
-                        {addLoader === true? 
-                            <LoaderSmall/> : <></>}
-                    </SafeAreaView>
-                </ScrollView>
-            </View>
-        );
-    }
 
     return (
         <View style={styles.container}>
-            <DialogBox/>
             <DialogBoxDelete/>
             <AppBar title={route.params.item?.category === "consults" ||  route.params.item?.category === "procedures" ?  route.params.item?.procedures :  titleGC} showMenuIcon={true} />
             <ScrollView>
-            <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
+                <View style={{ paddingHorizontal: 20, paddingTop: 20, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
                 { route.params.item?.category !== "consults" ? <></> :
                
                 <View style={{ height: 340, alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
@@ -466,10 +191,6 @@ const ViewSchedule = ({ route, navigation }) => {
                             </View>
                         }
                 </View>
-               
-                {/* <SafeAreaView style={{ paddingHorizontal: 20, paddingTop: 20, color: '# 0E2138' }}>
-                    <Text style={styles.textDetailsHeader}>Details</Text>
-                </SafeAreaView> */}
                 <SafeAreaView style={styles.safeAreaViewContainer}>
                     <View
                         style={{
@@ -490,6 +211,16 @@ const ViewSchedule = ({ route, navigation }) => {
                                         <Icon name="calendar" size={23} color="#3a87ad" />
                                         <Text style={styles.scheduleStyle}>{route.params.item?.time_from} - {route.params.item?.time_to}</Text>
                                     </View>
+                                    <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="calendar" size={23} color="#3a87ad" />
+                                                <Text style={styles.tagStyle}>Date From : {dateStart}</Text>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="calendar" size={23} color="#3a87ad" />
+                                                <Text style={styles.tagStyle}>Date To : {dateEnd}</Text>
+                                            </View>
                                     
                                 </View>
                             </>
@@ -584,9 +315,28 @@ const ViewSchedule = ({ route, navigation }) => {
                                                 <Icon name="calendar" size={23} color="#81c784" />
                                                 <Text style={styles.scheduleStyle}>{timefromGC} - {timeToGC}</Text>
                                             </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="calendar" size={23} color="#81c784" />
+                                                <Text style={styles.tagStyle}>Date From : {dateStart}</Text>
+                                            </View>
+                                            <View style={styles.border} />
+                                            <View style={styles.rowContainer}>
+                                                <Icon name="calendar" size={23} color="#81c784" />
+                                                <Text style={styles.tagStyle}>Date To : {dateEnd}</Text>
+                                            </View>
                                                 {route.params.item?.googleCalendar === true ?
                                                     <View>
-                                                        <TouchableHighlight onPress={() => setShowModal(true)}>
+                                                        <TouchableHighlight 
+                                                             onPress={() => // setShowModal(true)
+                                                            // setEditOpen(true)
+                                                             navigation.navigate('Edit Schedule', {
+                                                                 item: route.params.item,
+                                                                 accessToken: route.params.accessToken,
+                                                                 email: route.params.email,
+                                                                })
+                                                             }
+                                                             >
                                                             <View style={styles.editBtn}>
                                                                 <Icon name="calendar-edit" size={20} color="white" style={{ marginRight: 5 }} />
                                                                 <Text style={styles.textFunc}>EDIT</Text>
@@ -602,7 +352,7 @@ const ViewSchedule = ({ route, navigation }) => {
 
                                                         <Dialog
                                                             visible={dialogBox}
-                                                            width={400}
+                                                            width={300}
                                                             footer={
                                                             <DialogFooter>
                                                                 <DialogButton
@@ -618,21 +368,15 @@ const ViewSchedule = ({ route, navigation }) => {
                                                             <DialogContent style={{margin: 10,}}>
                                                             <View style={{alignItems: 'center'}}>
                                                                 <Image
-                                                                    source={require('../assets/calendar.png')}
-                                                                    style={{height: 120, width: 120, marginVertical: 10}}
+                                                                    source={require('../assets/askIcon.png')}
+                                                                    style={{height: 120, width: 120, marginVertical: 10, resizeMode: 'contain'}}
                                                                 />
                                                                 </View>
                                                              <Text style={{textAlign: 'center', fontSize: 15, fontWeight: "bold"}}>Are you sure you want to delete this schedule?</Text>
                                                             </DialogContent>
                                                         </Dialog>
 
-                                                        <Modal
-                                                            animationType={'slide'}
-                                                            transparent={false}
-                                                            visible={showModal}
-                                                        >
-                                                            <AddSchedModal/>
-                                                        </Modal>
+
                                                     </View> :
                                                     <></>
                                                 }
@@ -642,6 +386,7 @@ const ViewSchedule = ({ route, navigation }) => {
                         }
                     </View>
                 </SafeAreaView>
+             
             </ScrollView>
         </View>
     );
@@ -836,7 +581,7 @@ const styles = StyleSheet.create({
             alignItems: 'center',
           },
           modalContainer: {
-            width: '80%',
+            width: '70%',
             backgroundColor: 'white',
             paddingHorizontal: 20,
             paddingVertical: 30,
@@ -850,4 +595,4 @@ const styles = StyleSheet.create({
           },
 });
 
-export default ViewSchedule;
+export default memo(ViewSchedule);

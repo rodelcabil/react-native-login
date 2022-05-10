@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, SafeAreaView, Text, TextInput, Button, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, Image, SafeAreaView, TouchableOpacity, Modal, Button, ScrollView, Animated, Flatlist } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
 import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 import axios from 'axios';
+import { Dimensions } from "react-native";
+import Icon2 from 'react-native-vector-icons/Ionicons';
 
 const AddSchedule = ({ route, navigation }) => {
 
@@ -24,125 +26,7 @@ const AddSchedule = ({ route, navigation }) => {
 
     const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
 
-    const [user, setUser] = useState({});
-
-    useEffect(()=>{
-      GoogleSignin.configure({
-        scopes: [
-          "profile",
-          "email",
-          "https://www.googleapis.com/auth/calendar.events"
-        ],
-        webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
-        offlineAccess: true,
-        forceCodeForRefreshToken: true,
-      });
-      isSignedIn()
-    },[])
-  
-    const signIn = async () => {
-      try{
-        await GoogleSignin.hasPlayServices();
-        const userInfo = await GoogleSignin.signIn();
-        //console.log('due_______' , userInfo)
-        setUser(userInfo)
-      }
-      catch(error){
-        console.log('Message______', error.message);
-        if(error.code === statusCodes.SIGN_IN_CANCELLED){
-          console.log('User Cancelled the Login Flow.');
-        }
-        else if(error.code === statusCodes.IN_PROGRESS){
-          console.log('Signing In.');
-        }
-        else if(error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE){
-          console.log('Play Services not Available.');
-        }
-        else{
-          console.log('Some other error message.');
-        }
-      }
-    }
-  
-    const isSignedIn = async () => {
-        const isSignedIn = await GoogleSignin.isSignedIn();
-        if(!!isSignedIn){
-          getCurrentUserInfo();
-        }
-        else{
-          console.log('Please Login..');
-        }
-    }
-  
-    const getCurrentUserInfo = async () => {
-      try{
-        const userInfo = await GoogleSignin.signInSilently();
-       // console.log('edit______', user);
-        setUser(userInfo);
-      }
-      catch(error){
-        if(error.code === statusCodes.SIGN_IN_REQUIRED){
-          alert('User has not signed in yet');
-          console.log('User has not signed in yet');
-        }
-        else{
-          alert('Somethign went wrong');
-          console.log('Somethign went wrong');
-        }
-      }
-    }
-  
-    const signOut = async () => {
-      try{
-        await GoogleSignin.revokeAccess();
-        await GoogleSignin.signOut();
-        setUser({});
-      }
-      catch(error){
-        console.log('Error');
-      }
-    }
-  
-    const create = async () => {
-      const userInfoToken = await GoogleSignin.getTokens();
-      const token = userInfoToken.accessToken;
-      const email = user.user.email;
-
-      const resp = await axios.post(
-        `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${token}`,
-        {
-          start: {
-           // dateTime: `${startSplitted[0]}T${startSplitted[1]}:00.0Z`
-            dateTime: `${route.params.getdate}T${startTime}:00`, //`2019-04-04T09:30:00.0z`
-            timeZone: "Asia/Manila",
-          },
-          end: {
-            // dateTime: `${endSplitted[0]}T${endSplitted[1]}:00.0Z`
-            //`20019-4-04T09:30:00.0z`
-            dateTime: `${endDate}T${endTime}:00`,
-            timeZone: "Asia/Manila",
-          },
-          summary: title,
-          description: desc,
-        }
-      );
-  
-      //console.log(resp.data);
-  
-      if (resp.status === 200) {
-        navigation.goBack();
-        signOut();
-        alert("Added Successfully");
-      } else {
-        alert("Error, please try again");
-      }
-    }
-
-    const submitSched = (title, desc, endDate, startTime, endTime, dateSelected) => {
-        console.log(title, desc, endDate, startTime, endTime, "Others", dateSelected);
-         !user.idToken ? signIn() : create()
-
-    };
+    const [addLoader, setAddLoader] = useState(false);
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -153,7 +37,6 @@ const AddSchedule = ({ route, navigation }) => {
     };
 
     const handleConfirm = (date) => {
-        //console.warn("A date has been picked: ", date);
         setdatePickerTitle(moment(date).format("YYYY-MM-DD"))
         setEndDate(moment(date).format("YYYY-MM-DD"));
         hideDatePicker();
@@ -189,20 +72,116 @@ const AddSchedule = ({ route, navigation }) => {
         hideDatePickerTimeStart();
     };
 
-    return (
-        <View style={styles.container}>
-            <AppBar title={"Add Personal Schedule"} showMenuIcon={true} />
-         
-                <View style={styles.dateContainer}>
-                    <Image
-                        style={styles.logoImg}
-                        source={require('../assets/calendar.png')}
-                    />
-                    <Text style={styles.textTitle}>Date - {route.params.getdate}</Text>
+    const create = async () => {
+        setAddLoader(true);
+        const userInfoToken = await GoogleSignin.getTokens();
+        const token = userInfoToken.accessToken;
+        const userInfo = await GoogleSignin.signInSilently();
+        const getDaySelecte = route.params.getdate === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : route.params.getdate;
+  
+        console.log(token, email, getDaySelecte, startTime);
+        console.log(endDate, endTime, title, desc);
+        const resp = await axios.post(
+          `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`,
+          {
+            start: {
+              dateTime: `${getDaySelecte}T${startTime}:00`,
+              timeZone: "Asia/Manila",
+            },
+            end: {
+              dateTime: `${endDate}T${endTime}:00`,
+              timeZone: "Asia/Manila",
+            },
+            summary: title,
+            description: desc,
+          }
+        );
+    
+        console.log(resp.data);   
+    
+        if (resp.status === 200) {
+             setShowModal(false);
+             setAddLoader(false);
+             setVisibleAdd(true);
+             setTimeout(() => {navigation.navigate('Calendar');}, 500)
+        } else {
+          alert("Error, please try again");
+        }
+      }
+
+      const [visibleAdd, setVisibleAdd] = useState(false);
+
+      const ModalPoup = ({visible, children}) => {
+          const [showModalAdd, setShowModalAdd] = React.useState(visible);
+          const scaleValue = React.useRef(new Animated.Value(0)).current;
+          React.useEffect(() => {
+            toggleModal();
+          }, [visible]);
+          const toggleModal = () => {
+            if (visible) {
+              setShowModalAdd(true);
+              Animated.spring(scaleValue, {
+                toValue: 1,
+                duration: 100,
+                useNativeDriver: true,
+              }).start();
+            } else {
+              setTimeout(() => setShowModalAdd(false), 200);
+              Animated.timing(scaleValue, {
+                toValue: 0,
+                duration: 100,
+                useNativeDriver: true,
+              }).start();
+            }
+          };
+          return (
+            <Modal transparent visible={showModalAdd}>
+              <View style={styles.modalBackGround}>
+                <Animated.View
+                  style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+                  {children}
+                </Animated.View>
+              </View>
+            </Modal>
+          );
+      };
+  
+      const DialogBox = () =>{
+          return(
+              <ModalPoup visible={visibleAdd}>
+              <View style={{alignItems: 'center'}}>
+                <Image
+                  source={require('../assets/sucess.png')}
+                  style={{height: 150, width: 150, marginVertical: 10}}
+                />
+              </View>
+      
+              <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+                 Added Successfully
+              </Text>
+              <View style={{alignItems: 'center'}}>
+                <View style={styles.header}>
+                  <Button title='close' onPress={() => setVisibleAdd(false)}/>
                 </View>
-                <ScrollView>
-                <SafeAreaView style={styles.safeAreaViewContainer}>
-                    <Form onButtonPress={() => submitSched(title, desc, endDate, startTime, endTime, route.params.getdate)}
+              </View>
+            </ModalPoup>
+          );
+      }
+
+      return(
+        <View style={styles.container}>    
+             <DialogBox/>     
+            <View style={styles.dateContainer}>
+            <Icon2 name="arrow-back" size={30} color="white"  onPress={() => navigation.navigate('Calendar')}/>
+                <Image
+                    style={styles.logoImg2}
+                    source={require('../assets/calendar.png')}
+                />
+                <Text style={styles.textTitle}>Date - {route.params.getdate} </Text>
+            </View>
+            <Flatlist style={styles.safeAreaViewContainerAdd}>
+                <SafeAreaView style={styles.safeAreaViewContainerAdd}>
+                    <Form onButtonPress={() => !user.idToken ? signIn() : create()}
                         buttonStyle={styles.buttonCont}
                     >
                         <FormItem
@@ -227,7 +206,7 @@ const AddSchedule = ({ route, navigation }) => {
                             onPress={showDatePicker}
                         >
                             <View style={styles.inputContainer2}>
-                                <Text style={styles.text2}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                                <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
                                     mode="date"
@@ -244,7 +223,7 @@ const AddSchedule = ({ route, navigation }) => {
                             onPress={showDatePickerTimeStart}
                         >
                             <View style={styles.inputContainer2}>
-                                <Text style={styles.text2}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                                <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleStart}
                                     mode="time"
@@ -261,7 +240,7 @@ const AddSchedule = ({ route, navigation }) => {
                             onPress={showDatePickerTime}
                         >
                             <View style={styles.inputContainer2}>
-                                <Text style={styles.text2}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                                <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerTimeVisible}
                                     mode="time"
@@ -271,27 +250,11 @@ const AddSchedule = ({ route, navigation }) => {
                                 />
                             </View>
                         </TouchableOpacity>
-
                     </Form>
-
-
-
-                    {/*
-           <Text style={styles.text}>Description</Text>
-            <TextInput
-                    style={styles.inputContainer}
-                    keyboardType="email-address"
-                    multiline={true}
-                    onChangeText={descript => setDesc(descript)}
-            />
-            <Animatable.View animation="fadeInLeft" duration={500}>
-                <Text style={styles.errorMsg}> Description is required</Text>
-            </Animatable.View>
-
-           */}
-
+                    {addLoader === true? 
+                        <LoaderSmall/> : <></>}
                 </SafeAreaView>
-            </ScrollView>
+            </Flatlist >
         </View>
     );
 };
@@ -349,54 +312,54 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 10
     },
-    safeAreaViewContainer: {
-        padding: 20,
+    safeAreaViewContainerAdd: {
+        padding: 15,
         flex: 1,
-        backgroundColor: '#F2F4F5'
+        backgroundColor: '#fff'
     },
-    columnContainer: {
-        flexDirection: 'column',
-
-    },
-    rowContainer: {
+    dateContainer: {
         flexDirection: 'row',
-        marginTop: 5,
-
-    },
-    titleStyle: {
-        letterSpacing: 0.2,
-        fontWeight: '800',
-        color: 'white',
+        height: 80,
+        paddingHorizontal: 20,
+        alignItems: 'center',
         fontSize: 18,
+        backgroundColor: '#3a87ad',
     },
-    tagStyle: {
-        fontWeight: '700',
-        fontSize: 14,
-        color: 'white',
-
-    },
-    scheduleStyle: {
-        fontWeight: '700',
-        fontSize: 14,
-        color: 'white',
+    datetimeCont: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
 
-    text: {
-        marginHorizontal: 10,
-        fontSize: 15,
-        fontWeight: '400',
+    textPicker: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        fontWeight: 'bold'
     },
-    text2: {
-        fontSize: 15,
-        fontWeight: '400',
-        alignSelf: 'center',
-        marginHorizontal: 15,
+
+    inputContainer: {
+        marginHorizontal: 3,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        paddingHorizontal: 5,
+        alignItems: 'center',
+        fontSize: 13,
+        backgroundColor: 'white',
     },
-    textTitle: {
-        fontSize: 18,
-        fontWeight: '700',
-        padding: 5,
-        color: 'white',
+
+    inputContainer2: {
+        height: 50,
+        marginHorizontal: 3,
+        marginVertical: 2,
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        fontSize: 13,
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        marginBottom: 20,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     buttonCont: {
         marginHorizontal: 5,
@@ -407,10 +370,11 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
         marginTop: 10,
     },
-    logoImg: {
+    logoImg2: {
         width: 50,
         height: 50,
         marginRight: 10,
+        marginLeft: 10,
         resizeMode: 'contain',
     },
     errorMsg: {
@@ -418,7 +382,58 @@ const styles = StyleSheet.create({
         fontSize: 13,
         marginHorizontal: 3,
         marginBottom: 10,
-    }
+    },
+    textTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        padding: 5,
+        color: 'white',
+    },
+      skeltonMainView: {
+        margin: 10,
+        borderWidth: 0,
+        elevation: 5,
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        borderRadius: 5,
+        alignSelf: "center",
+        width: Dimensions.get('window').width-20,
+        height: Dimensions.get('window').height / 6,
+        borderRadius: 20,
+        // height: globals.screenHeight * 0.24,
+      },
+
+            //DIALOG BOX
+            modalBackGround: {
+                flex: 1,
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                justifyContent: 'center',
+                alignItems: 'center',
+              },
+              modalContainer: {
+                width: '80%',
+                backgroundColor: 'white',
+                paddingHorizontal: 20,
+                paddingVertical: 30,
+                borderRadius: 20,
+                elevation: 20,
+              },
+              header: {
+                width: '100%',
+                height: 40,
+                justifyContent: 'center',
+              },
+        
+              googleIconContainer:{
+                  flexDirection: 'row',
+                justifyContent: 'flex-end',
+              },
+              gCalendarIcon: {
+                padding: 0,
+                width: "30%",
+                height: 20,
+                resizeMode: 'contain',
+            },
 });
 
 export default AddSchedule;
