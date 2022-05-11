@@ -5,6 +5,7 @@ import { Form, FormItem, Label } from 'react-native-form-component';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import moment from 'moment';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
+import * as Animatable from 'react-native-animatable';
 import axios from 'axios';
 import { Dimensions } from "react-native";
 import Icon2 from 'react-native-vector-icons/Ionicons';
@@ -18,17 +19,22 @@ const AddSchedule = ({ route, navigation }) => {
 
     const [title, setTitle] = useState(null);
     const [desc, setDesc] = useState(null);
-    const [endDate, setEndDate] = useState(null);
+    const [endDate, setEndDate] = useState(route.params.getdate);
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
 
-    const [datePickerTitle, setdatePickerTitle] = useState(null);
+    const [datePickerTitle, setdatePickerTitle] = useState(route.params.getdate);
+    
     const [datePickerTitleTime, setdatePickerTitleTime] = useState(null);
-
     const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(null);
 
     const [addLoader, setAddLoader] = useState(false);
     const [showModal, setShowModal] = useState(false);
+
+    const [showErrorTitle, setShowErrorTitle] = useState(false);
+    const [showErrorDesc, setShowErrorDesc] = useState(false);
+    const [showErrorStartTime, setShowErrorStartTime] = useState(false);
+    const [showErrorEndTime, setShowErrorEndTime] = useState(false);
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -54,7 +60,7 @@ const AddSchedule = ({ route, navigation }) => {
 
     const handleConfirmTime = (time) => {
         var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
         setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
         hideDatePickerTime();
     };
@@ -63,15 +69,15 @@ const AddSchedule = ({ route, navigation }) => {
         setDatePickerVisibilityStart(true);
     };
 
-    const hideDatePickerTimeStart = () => {
+    const hideDatePickerTimeEnd = () => {
         setDatePickerVisibilityStart(false);
     };
 
-    const handleConfirmTimeStart = (time) => {
+    const handleConfirmTimeEnd = (time) => {
         var convTime = moment(time).format("HH:mm")
-        setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
+        setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
         setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
-        hideDatePickerTimeStart();
+        hideDatePickerTimeEnd();
     };
 
     const create = async () => {
@@ -171,21 +177,33 @@ const AddSchedule = ({ route, navigation }) => {
                     style={styles.logoImg2}
                     source={require('../assets/calendar.png')}
                 />
-                <Text style={styles.textTitle}>Date - {route.params.getdate} </Text>
+                <View style={{flexDirection: 'column'}}>
+                  <Text style={{fontSize: 13, fontWeight: 'bold', color: 'white', marginLeft: 5, marginTop: 10}}>Start Date</Text>
+                  <Text style={styles.textTitle}>Date - {route.params.getdate} </Text>
+                </View>
             </View>
             <ScrollView style={styles.safeAreaViewContainerAdd}>
                 <SafeAreaView style={styles.safeAreaViewContainerAdd}>
+
+                        <Label text="Title" isRequired asterik />
+                        {showErrorTitle === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please enter Title</Text>
+                                </Animatable.View>
+                          :<></>}
                         <FormItem
-                            label="Title"
-                            isRequired
                             value={title}
                             style={styles.inputContainer}
                             onChangeText={titleInp => setTitle(titleInp)}
                             asterik />
 
+                        <Label text="Description" isRequired asterik />
+                        {showErrorDesc === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please enter Description</Text>
+                                </Animatable.View>
+                          :<></>}
                         <FormItem
-                            label="Description"
-                            isRequired
                             value={desc}
                             style={styles.inputContainer}
                             onChangeText={descript => setDesc(descript)}
@@ -201,26 +219,34 @@ const AddSchedule = ({ route, navigation }) => {
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
                                     mode="date"
-                                    value={endDate}
+                                    value={route.params.getdate}
                                     onConfirm={handleConfirm}
                                     onCancel={hideDatePicker}
+                                    minimumDate={Date.now()}
                                 />
                             </View>
                         </TouchableOpacity>
 
                         <Label text="Start Time" isRequired asterik />
+                        
                         <TouchableOpacity
                             activeOpacity={0.7}
                             onPress={showDatePickerTimeStart}
                         >
+                          {showErrorStartTime === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please select Start Time</Text>
+                                </Animatable.View>
+                          :<></>}
+
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisibleStart}
                                     mode="time"
                                     value={startTime}
-                                    onConfirm={handleConfirmTimeStart}
-                                    onCancel={hideDatePickerTimeStart}
+                                    onConfirm={handleConfirmTime}
+                                    onCancel={hideDatePickerTime}
                                 />
                             </View>
                         </TouchableOpacity>
@@ -230,27 +256,63 @@ const AddSchedule = ({ route, navigation }) => {
                             activeOpacity={0.7}
                             onPress={showDatePickerTime}
                         >
+                         {showErrorEndTime === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please select End Time</Text>
+                                </Animatable.View>
+                          :<></>}
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
                                 <DateTimePickerModal
                                     isVisible={isDatePickerTimeVisible}
                                     mode="time"
                                     value={endTime}
-                                    onConfirm={handleConfirmTime}
-                                    onCancel={hideDatePickerTime}
+                                    onConfirm={handleConfirmTimeEnd}
+                                    onCancel={hideDatePickerTimeEnd}
                                 />
                             </View>
                         </TouchableOpacity>
-                    {addLoader === true? 
+
+                         {addLoader === true? 
                           <LoaderSmall/> : 
                            <View style={{marginTop: 10}}>
                             <Button 
                                 style={styles.buttonCont}
                                 title="Submit" 
-                                onPress={() => route.params.user.idToken === null ? signIn() : create()
-                                }
+                                onPress={() => {
+                                  if(startTime !== null && endTime !== null && title !== null && desc !== null){
+                                    route.params.user.idToken === null ? signIn() : create()
+                                  }
+                                  else{
+                                    if(startTime === null){
+                                      setShowErrorStartTime(true)
+                                    }
+                                    else{
+                                      setShowErrorStartTime(false) 
+                                    }
+                                    if(endTime === null){
+                                      setShowErrorEndTime(true)
+                                    }
+                                    else{
+                                      setShowErrorEndTime(false) 
+                                    }
+                                    if(title === null ){
+                                      setShowErrorTitle(true)
+                                    }
+                                    else{
+                                      setShowErrorTitle(false) 
+                                    }
+                                    if(desc === null ){
+                                      setShowErrorDesc(true)
+                                    }
+                                    else{
+                                      setShowErrorDesc(false) 
+                                    }
+                                  }
+                                }}
                             />
                           </View>}
+
                 </SafeAreaView>
             </ScrollView >
         </View>
@@ -292,14 +354,13 @@ const styles = StyleSheet.create({
     inputContainer2: {
         height: 50,
         marginHorizontal: 3,
-        marginVertical: 2,
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
         fontSize: 13,
         backgroundColor: 'white',
         flexDirection: 'row',
-        marginBottom: 20,
+        marginBottom: 10,
     },
 
     itemContainer: {
@@ -378,7 +439,6 @@ const styles = StyleSheet.create({
     errorMsg: {
         color: 'red',
         fontSize: 13,
-        marginHorizontal: 3,
         marginBottom: 10,
     },
     textTitle: {

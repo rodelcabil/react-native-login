@@ -22,6 +22,11 @@ import InquiriesTab from '../../Tabs/ReportsSummaryTab/InquiriesTab';
 import ConsultsTab from '../../Tabs/ReportsSummaryTab/consutsTab';
 import ProceduresTab from '../../Tabs/ReportsSummaryTab/proceduresTab';
 
+//Location
+import LocationInquiriesTab from '../../Tabs/LocationTab/InquiriesTabLocation';
+import LocationConsultsTab from '../../Tabs/LocationTab/consutsTabLocation';
+import LocationProceduresTab from '../../Tabs/LocationTab/proceduresTabLocation';
+
 // import BarChart from 'react-native-bar-chart';
 
 const black_theme = {
@@ -64,8 +69,10 @@ const Dashboard = ({ navigation, route }) => {
 
     const initialLayout = { width: Dimensions.get('window').width };
 
-    const [filterData, setFilterData] = useState([]);
-    const filters = ['Procedures', 'Surgeons', 'Location', 'Source of Inquiry', 'Leads Funnel'];
+    const [filterDataLocation, setFilterDataLocation] = useState([]);
+    const [filterDataSOI, setFilterDataSOI] = useState({});
+
+    const filters = ['Procedures','Surgeons','Location','Source of Inquiry','Leads Funnel'];
 
 
     useEffect(() => {
@@ -238,7 +245,7 @@ const Dashboard = ({ navigation, route }) => {
                 })
 
         }
-        const getFilteredQuery = async (filter) => {
+        const getFilteredQueryLocation = async (filter) => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
@@ -250,8 +257,6 @@ const Dashboard = ({ navigation, route }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
-
-
                     console.log("LOCATION DATA: ", response.data)
                     const temoArr = [];
                     temoArr.push(
@@ -272,12 +277,10 @@ const Dashboard = ({ navigation, route }) => {
                             legendFontSize: 15,
                         }
                     )
-                    setFilterData(temoArr)
-                    console.log(filterData);
+                    setFilterDataLocation(temoArr)
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
-
         const getSurgeons = async (filter) => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
@@ -299,18 +302,146 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
 
+        const getFilteredQuerySOI = async (filter) => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/charts?filter=${filter}`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    setFilterDataSOI(response.data)
+                    console.log("SOI DATA: ", response.data)
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+
         getMySchedule();
         getDashboardData();
         getReportSummaryInquiryData();
         getReportSummaryConsultsData();
         getReportSummaryProceduresData();
-        getFilteredQuery(filters[2]);
-        getSurgeons(filters[1])
+        getFilteredQueryLocation(filters[2]);
+        getFilteredQuerySOI(filters[3]);
     }, [])
 
-
-
-   
+    const ConsultFormRoute = () => (
+        <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
+            <LineChart
+                data={{
+                    labels: summary.labels,
+                    datasets: summaryData
+                }}
+                width={Dimensions.get("window").width - 44} // from react-native
+                height={230}
+                yAxisInterval={1}
+                
+                chartConfig={{
+                    backgroundColor: "#F6F7F9",
+                    backgroundGradientFrom: "#F6F7F9",
+                    backgroundGradientTo: "#F6F7F9",
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `gray`,
+                    labelColor: (opacity = 1) => `gray`,
+                   
+                    propsForDots: {
+                        r: "7",
+                        strokeWidth: "0",
+                    }
+                }}
+                bezier
+                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
+            />
+            <View style={styles.typesContainer}>
+                {summaryData.map((item, i) =>{
+                    return <View style={styles.types} key={i}>
+                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
+                        <Text style={styles.text2}>{item.name}</Text>
+                    </View>
+                })}
+            </View>
+        </View>
+    );
+    const ConsultsRoute = () => (
+        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
+            <LineChart
+                data={{
+                    labels: summary.labels,
+                    datasets: summaryData
+                }}
+                width={Dimensions.get("window").width - 44} // from react-native
+                height={230}
+                yAxisInterval={1}
+                
+                chartConfig={{
+                    backgroundColor: "#F6F7F9",
+                    backgroundGradientFrom: "#F6F7F9",
+                    backgroundGradientTo: "#F6F7F9",
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `gray`,
+                    labelColor: (opacity = 1) => `gray`,
+                   
+                    propsForDots: {
+                        r: "6",
+                        strokeWidth: "2",
+                        // stroke: "#ffa726"
+                    }
+                }}
+                bezier
+                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
+            />
+             <View style={styles.typesContainer}>
+                {summaryData.map((item, i) =>{
+                    return <View style={styles.types} key={i}>
+                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
+                        <Text style={styles.text2}>{item.name}</Text>
+                    </View>
+                })}
+            </View>
+        </View>
+    );
+    const ProceduresRoute = () => (
+        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
+            <LineChart
+                data={{
+                    labels: summary.labels,
+                    datasets: summaryData
+                }}
+                width={Dimensions.get("window").width - 44} // from react-native
+                height={230}
+                yAxisInterval={1}
+                
+                chartConfig={{
+                    backgroundColor: "#F6F7F9",
+                    backgroundGradientFrom: "#F6F7F9",
+                    backgroundGradientTo: "#F6F7F9",
+                    decimalPlaces: 0, // optional, defaults to 2dp
+                    color: (opacity = 1) => `gray`,
+                    labelColor: (opacity = 1) => `gray`,
+                    propsForDots: {
+                        r: "6",
+                        strokeWidth: "2",
+                        // stroke: "#ffa726"
+                    }
+                }}
+                bezier
+                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
+            />
+             <View style={styles.typesContainer}>
+                {summaryData.map((item, i) =>{
+                    return <View style={styles.types} key={i}>
+                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
+                        <Text style={styles.text2}>{item.name}</Text>
+                    </View>
+                })}
+            </View>
+        </View>
+    );
 
     const renderScene = SceneMap({
         first: () => <InquiriesTab summary={summaryInquiries} summaryData={summaryDataInquiries}/>,
@@ -318,6 +449,11 @@ const Dashboard = ({ navigation, route }) => {
         third:  () => <ProceduresTab summary={summaryProcedures} summaryData={summaryDataProcedures}/>
     });
 
+    const renderSceneLocation = SceneMap({
+        first: () => <LocationInquiriesTab locationdata={filterDataLocation}/>,
+        second: () => <LocationConsultsTab locationdata={filterDataLocation}/>,
+        third: () =><LocationProceduresTab locationdata={filterDataLocation}/>,
+    });
 
     const renderTabBar = props => (
         <TabBar
@@ -345,132 +481,7 @@ const Dashboard = ({ navigation, route }) => {
         />
     );
 
-
-    const chartConfig = {
-        backgroundGradientFrom: "#1E2923",
-        backgroundGradientFromOpacity: 0,
-        backgroundGradientTo: "#08130D",
-        backgroundGradientToOpacity: 0.5,
-        color: (opacity = 1) => `rgb(26, 255, 146, ${opacity})`,
-        strokeWidth: 2, // optional, default 3
-        barPercentage: 0.5,
-        useShadowColorFromDataset: false // optional
-    };
-
     const screenWidth = Dimensions.get("window").width;
-
-    const ConsultFormRouteLocation = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
-            <View style={styles.rowContainer}>
-                <View style={styles.typesContainer}>
-                    <PieChart
-                        data={filterData}
-                        width={screenWidth / 1.8}
-                        height={250}
-                        chartConfig={chartConfig}
-                        accessor={"counts"}
-                        backgroundColor={"transparent"}
-                        center={[50, 20]}
-                        hasLegend={false}
-                    />
-                </View>
-                <View style={styles.typesContainerPie}>
-                    {filterData.map((item, i) => {
-                        return (
-                            <View style={styles.typesPie} key={i}>
-                                <View style={{
-                                    marginRight: 10,
-                                    height: 20,
-                                    width: 20,
-                                    borderRadius: 15,
-                                    backgroundColor: item.color,
-                                }}></View>
-                                <Text style={styles.text2}>{item.name}</Text>
-                                <View style={{ marginBottom: 30 }} />
-                            </View>
-                        )
-                    })}
-                </View>
-            </View>
-        </View>
-    );
-
-    const ConsultsRouteLocation = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
-            <View style={styles.rowContainer}>
-                <View style={styles.typesContainer}>
-                    <PieChart
-                        data={filterData}
-                        width={screenWidth / 1.8}
-                        height={250}
-                        chartConfig={chartConfig}
-                        accessor={"counts"}
-                        backgroundColor={"transparent"}
-                        center={[50, 20]}
-                        hasLegend={false}
-                    />
-                </View>
-                <View style={styles.typesContainerPie}>
-                    {filterData.map((item, i) => {
-                        return (
-                            <View style={styles.typesPie} key={i}>
-                                <View style={{
-                                    marginRight: 10,
-                                    height: 20,
-                                    width: 20,
-                                    borderRadius: 15,
-                                    backgroundColor: item.color,
-                                }}></View>
-                                <Text style={styles.text2}>{item.name}</Text>
-                                <View style={{ marginBottom: 30 }} />
-                            </View>
-                        )
-                    })}
-                </View>
-            </View>
-        </View>
-    );
-    const ProceduresRouteLocation = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
-            <View style={styles.rowContainer}>
-                <View style={styles.typesContainer}>
-                    <PieChart
-                        data={filterData}
-                        width={screenWidth / 1.8}
-                        height={250}
-                        chartConfig={chartConfig}
-                        accessor={"counts"}
-                        backgroundColor={"transparent"}
-                        center={[50, 20]}
-                        hasLegend={false}
-                    />
-                </View>
-                <View style={styles.typesContainerPie}>
-                    {filterData.map((item, i) => {
-                        return (
-                            <View style={styles.typesPie} key={i}>
-                                <View style={{
-                                    marginRight: 10,
-                                    height: 20,
-                                    width: 20,
-                                    borderRadius: 15,
-                                    backgroundColor: item.color,
-                                }}></View>
-                                <Text style={styles.text2}>{item.name}</Text>
-                                <View style={{ marginBottom: 30 }} />
-                            </View>
-                        )
-                    })}
-                </View>
-            </View>
-        </View>
-    );
-
-    const renderSceneLocation = SceneMap({
-        first: ConsultFormRouteLocation,
-        second: ConsultsRouteLocation,
-        third: ProceduresRouteLocation
-    });
 
     const data = [
         [70, -5],
@@ -681,23 +692,24 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                <>
-                                    {/* <BarChart
-                                        data={{
-                                            labels: ["January", "February", "March", "April", "May", "June"],
-                                            datasets: [
-                                                {
-                                                    data: [20, 45, 28, 80, 99, 43]
-                                                }
-                                            ]
-                                        }}
+                               
+                            <BarChart
+                                style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3'}}
+                                data={filterDataSOI}
+                                width={screenWidth-20}
+                                height={300}
 
-                                        height={220}
-                                       
-                                        chartConfig={chartConfig}
-                                        verticalLabelRotation={30}
-                                    /> */}
-                                </>
+                                chartConfig={{
+                                    backgroundColor: "#F6F7F9",
+                                    backgroundGradientFrom: "#F6F7F9",
+                                    backgroundGradientTo: "#F6F7F9",
+                                    color: (opacity = 1) => `gray`,
+                                    labelColor: (opacity = 1) => `gray`,
+                                }}
+
+                                verticalLabelRotation={30}
+                                />
+
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />

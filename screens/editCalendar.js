@@ -41,8 +41,8 @@ const EditSchedule = ({ route, navigation }) => {
   const [startTime, setStartTime] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm"));
   const [endTime, setEndTime] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm"));
   const [datePickerTitle, setdatePickerTitle] = useState( route.params.item?.date_to);
-  const [datePickerTitleTime, setdatePickerTitleTime] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm A"));
-  const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
+  const [datePickerTitleTime, setdatePickerTitleTime] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
+  const [datePickerTitleTimeStart, setdatePickerTitleTimeStart] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm A"));
 
 
   const [title, setTitle] = useState(route.params.item?.title);
@@ -174,7 +174,7 @@ const EditSchedule = ({ route, navigation }) => {
   const handleConfirmTime = (time) => {
       var convTime = moment(time).format("HH:mm")
       setdatePickerTitleTime(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-      setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
+      setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
       hideDatePickerTime();
   };
 
@@ -189,7 +189,7 @@ const EditSchedule = ({ route, navigation }) => {
   const handleConfirmTimeStart = (time) => {
       var convTime = moment(time).format("HH:mm")
       setdatePickerTitleTimeStart(moment(convTime, ["HH.mm"]).format("hh:mm A"))
-      setEndTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
+      setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
       hideDatePickerTimeStart();
   };
   return (

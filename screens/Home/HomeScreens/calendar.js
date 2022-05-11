@@ -38,18 +38,7 @@ export function Calendar ({ navigation, route }) {
     
     const [loader, setLoader] = useState(true);
     const [gcSync, setGCSync] = useState(false);
-
-
-    GoogleSignin.configure({
-        scopes: [
-          "profile",
-          "email",
-          "https://www.googleapis.com/auth/calendar.events"
-        ],
-        webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
-        offlineAccess: true,
-        forceCodeForRefreshToken: true,
-      });
+    const [allowAdd, setAllowAdd] = useState(true);
       
     const getDeviceID = () => {
         var uniqueID = DeviceInfo.getUniqueId;
@@ -57,6 +46,17 @@ export function Calendar ({ navigation, route }) {
     }
 
     useEffect(() =>{
+        GoogleSignin.configure({
+            scopes: [
+              "profile",
+              "email",
+              "https://www.googleapis.com/auth/calendar.events"
+            ],
+            webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
+            offlineAccess: true,
+            forceCodeForRefreshToken: true,
+          });
+
         isSignedIn()
         getDeviceID()
         console.log("Items: ", items);
@@ -96,7 +96,7 @@ export function Calendar ({ navigation, route }) {
                 
                 const SyncGoogleCalendar = async (setAlert) =>{
                         const isSignedIn = await GoogleSignin.isSignedIn();
-                        if(isSignedIn === true){
+                        if(!!isSignedIn){
                             //setGCSync(true);
                             const userInfo = await GoogleSignin.signInSilently();
                             const userInfoToken = await GoogleSignin.getTokens();
@@ -547,6 +547,12 @@ export function Calendar ({ navigation, route }) {
                 renderEmptyData={renderEmptyDate}
                 onDayPress={day => {
                     setDay(day.dateString);
+                    if(day.dateString < moment(new Date(Date.now())).format("YYYY-MM-DD")){
+                        setAllowAdd(false);
+                    }
+                    else{
+                        setAllowAdd(true);
+                    }
                 }}
                 selected={Date.now()}
                 theme={{
@@ -555,7 +561,7 @@ export function Calendar ({ navigation, route }) {
 
             />
 
-         {checkSignIn !== false ?
+         {checkSignIn !== false & allowAdd === true ? 
             <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={
