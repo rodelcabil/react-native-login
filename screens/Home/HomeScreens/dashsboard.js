@@ -384,10 +384,10 @@ const Dashboard = ({ navigation, route }) => {
                             hasLegend={false}
                         />
                     </View>
-                    <View style={styles.typesContainer}>
-                        {filterData.map(item =>{
-                            return(
-                                <View style={styles.types}>
+                    <View style={styles.typesContainerPie}>
+                        {filterData.map((item, i) =>{
+                                    return(
+                                        <View style={styles.typesPie} key={i}>
                                     <View style={{
                                                 marginRight: 10,
                                                 height: 20,
@@ -420,10 +420,10 @@ const Dashboard = ({ navigation, route }) => {
                             hasLegend={false}
                         />
                     </View>
-                    <View style={styles.typesContainer}>
-                        {filterData.map(item =>{
-                            return(
-                                <View style={styles.types}>
+                    <View style={styles.typesContainerPie}>
+                        {filterData.map((item, i) =>{
+                                    return(
+                                        <View style={styles.typesPie} key={i}>
                                     <View style={{
                                                 marginRight: 10,
                                                 height: 20,
@@ -455,10 +455,10 @@ const Dashboard = ({ navigation, route }) => {
                             hasLegend={false}
                         />
                     </View>
-                    <View style={styles.typesContainer}>
-                        {filterData.map(item =>{
-                            return(
-                                <View style={styles.types}>
+                    <View style={styles.typesContainerPie}>
+                        {filterData.map((item, i) =>{
+                                    return(
+                                        <View style={styles.typesPie} key={i}>
                                     <View style={{
                                                 marginRight: 10,
                                                 height: 20,
@@ -803,6 +803,19 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
 
     },
+
+    typesPie: {
+        flexDirection: 'row',
+        display: 'flex',
+        marginBottom: 5,
+    },
+    typesContainerPie: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        display: 'flex',
+        marginTop: 20,
+    },
+
    
     text2: {
         fontSize: 12,
