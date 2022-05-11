@@ -17,7 +17,12 @@ import {
     ProgressChart,
     ContributionGraph,
     StackedBarChart
-  } from "react-native-chart-kit";
+} from "react-native-chart-kit";
+import InquiriesTab from '../../Tabs/ReportsSummaryTab/InquiriesTab';
+import ConsultsTab from '../../Tabs/ReportsSummaryTab/consutsTab';
+import ProceduresTab from '../../Tabs/ReportsSummaryTab/proceduresTab';
+
+// import BarChart from 'react-native-bar-chart';
 
 const black_theme = {
     ...DefaultTheme,
@@ -31,15 +36,16 @@ const black_theme = {
 
 
 
-
-
-
-
 const Dashboard = ({ navigation, route }) => {
 
     const [schedule, setSchedule] = useState([]);
     const [hasSched, setHasSched] = useState(false);
     const [dashboardData, setDashboardData] = useState([]);
+    const [surgeons, setSurgeons] = useState([])
+
+    const [dateFrom, setDateFrom] = useState("2022-01-01"); 
+    const [dateTo, setDateTo] = useState("2022-12-31");
+
     const [index, setIndex] = useState(0);
     const [indexL, setIndexL] = useState(0);
     const layout = useWindowDimensions();
@@ -49,15 +55,17 @@ const Dashboard = ({ navigation, route }) => {
         { key: 'third', title: 'Procedures' },
     ]);
 
-    const [summary, setSummary] = useState([]);
-    const [summaryData, setSummaryData] = useState();
-    const [summaryDetails, setSummaryDetails] = useState();
+    const [summaryInquiries, setSummaryInquiries] = useState([]);
+    const [summaryDataInquiries, setSummaryDataInquiries] = useState();
+    const [summaryConsults, setSummaryConsults] = useState([]);
+    const [summaryDataConsults, setSummaryDataConsults] = useState();
+    const [summaryProcedures, setSummaryProcedures] = useState([]);
+    const [summaryDataProcedures, setSummaryDataProcedures] = useState();
 
     const initialLayout = { width: Dimensions.get('window').width };
 
     const [filterData, setFilterData] = useState([]);
-
-    const filters = ['Procedures','Surgeons','Location','Source of Inquiry','Leads Funnel'];
+    const filters = ['Procedures', 'Surgeons', 'Location', 'Source of Inquiry', 'Leads Funnel'];
 
 
     useEffect(() => {
@@ -104,12 +112,12 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
             console.log("DASHBOARD DATA: ", dashboardData.data)
         }
-        const getReportSumamryData = async () => {
+        const getReportSummaryInquiryData = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
             await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/reports-summary`,
+                `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${dateFrom}&dateto=${dateTo}&filter=Inquiries`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -117,50 +125,118 @@ const Dashboard = ({ navigation, route }) => {
                     },
                 }).then(response => {
 
-                   
-                    setSummary(response.data)
 
+                    setSummaryInquiries(response.data)
+                    console.log("SUMMARY DATA INQUIRIES: ", response.data)
 
-                    let data= [];  
-                    for(var i = 0; i < response.data.datasets.length; i++){
-                        data[i] =  response.data.datasets[i].data;
-                            
-                    }
-
-                   
-                    
-
-                    
-                    let data2 = [];  
-                    for(var i = 0; i < response.data.datasets.length; i++){
-                       data2.push({
-                            data: response.data.datasets[i].data, 
-                            name: response.data.datasets[i].label, 
+                    let data2 = [];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                        data2.push({
+                            data: response.data.datasets[i].data,
+                            name: response.data.datasets[i].label,
                             color: response.data.datasets[i].backgroundColor
                         });
                     }
-                    
+
 
                     const mappedData = data2.map((data) => {
                         const color = data.color;
                         return {
                             ...data,
-                            color:() => data.name === 'Dr. Patrick Hsu (0)' ? "#03a9f3" : data.name === 'Dr. Kendall Roehl (0)' ? "#ed7d31" :  data.name === 'Dr. Vasileios Vasilakis (0)' ? "#ffc000" :  data.name === 'MedSpa Provider (0)' ? "#00c292" : '#000000',  
+                            color: () =>  color,
                             backgroundColor: color
                         };
                     });
-    
-                 
+                    setSummaryDataInquiries(mappedData)
+                  
 
-                    console.log("SUMMARY DATA: ", mappedData)
-                    setSummaryData(mappedData)
-                    // setSummaryDetails(mappedData)
-                   
 
                 })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-            // console.log("DASHBOARD DATA: ", dashboardData.data)
-       
+
+        }
+        const getReportSummaryConsultsData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${dateFrom}&dateto=${dateTo}&filter=Consults`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+
+                    setSummaryConsults(response.data)
+                    console.log("SUMMARY DATA CONSULTS: ", response.data)
+
+                    let data2 = [];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                        data2.push({
+                            data: response.data.datasets[i].data,
+                            name: response.data.datasets[i].label,
+                            color: response.data.datasets[i].backgroundColor
+                        });
+                    }
+
+
+                    const mappedData = data2.map((data) => {
+                        const color = data.color;
+                        return {
+                            ...data,
+                            color: () =>  color,
+                            backgroundColor: color
+                        };
+                    });
+                    setSummaryDataConsults(mappedData)
+                  
+
+
+                })
+
+        }
+        const getReportSummaryProceduresData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${dateFrom}&dateto=${dateTo}&filter=Procedures`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+
+                    setSummaryProcedures(response.data)
+                    console.log("SUMMARY DATA PROCEDURES: ", response.data)
+
+                    let data2 = [];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                        data2.push({
+                            data: response.data.datasets[i].data,
+                            name: response.data.datasets[i].label,
+                            color: response.data.datasets[i].backgroundColor
+                        });
+                    }
+
+
+                    const mappedData = data2.map((data) => {
+                        const color = data.color;
+                        return {
+                            ...data,
+                            color: () =>  color,
+                            backgroundColor: color
+                        };
+                    });
+                    setSummaryDataProcedures(mappedData)
+                  
+
+
+                })
+
         }
         const getFilteredQuery = async (filter) => {
             const token = await AsyncStorage.getItem('token');
@@ -175,7 +251,7 @@ const Dashboard = ({ navigation, route }) => {
                     },
                 }).then(response => {
 
-        
+
                     console.log("LOCATION DATA: ", response.data)
                     const temoArr = [];
                     temoArr.push(
@@ -201,131 +277,45 @@ const Dashboard = ({ navigation, route }) => {
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
-        getFilteredQuery(filters[2]);
+
+        const getSurgeons = async (filter) => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/charts?filter=${filter}`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    setSurgeons(response.data)
+                    console.log("SURGEONS: ", response.data.datasets.labels);
+
+                    console.log("DATA NOW: ", moment(Date.now()).format('YYYY-MM-DD'));
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+
         getMySchedule();
         getDashboardData();
-        getReportSumamryData();
+        getReportSummaryInquiryData();
+        getReportSummaryConsultsData();
+        getReportSummaryProceduresData();
+        getFilteredQuery(filters[2]);
+        getSurgeons(filters[1])
     }, [])
 
 
 
-    const ConsultFormRoute = () => (
-        <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
-            <LineChart
-                data={{
-                    labels: summary.labels,
-                    datasets: summaryData
-                }}
-                width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
-                yAxisInterval={1}
-                
-                chartConfig={{
-                    backgroundColor: "#F6F7F9",
-                    backgroundGradientFrom: "#F6F7F9",
-                    backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `gray`,
-                    labelColor: (opacity = 1) => `gray`,
-                   
-                    propsForDots: {
-                        r: "7",
-                        strokeWidth: "0",
-                    }
-                }}
-                bezier
-                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
-            />
-            <View style={styles.typesContainer}>
-                {summaryData.map((item, i) =>{
-                    return <View style={styles.types} key={i}>
-                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                    </View>
-                })}
-            </View>
-        </View>
-    );
-    const ConsultsRoute = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-            <LineChart
-                data={{
-                    labels: summary.labels,
-                    datasets: summaryData
-                }}
-                width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
-                yAxisInterval={1}
-                
-                chartConfig={{
-                    backgroundColor: "#F6F7F9",
-                    backgroundGradientFrom: "#F6F7F9",
-                    backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `gray`,
-                    labelColor: (opacity = 1) => `gray`,
-                   
-                    propsForDots: {
-                        r: "6",
-                        strokeWidth: "2",
-                        // stroke: "#ffa726"
-                    }
-                }}
-                bezier
-                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
-            />
-             <View style={styles.typesContainer}>
-                {summaryData.map((item, i) =>{
-                    return <View style={styles.types} key={i}>
-                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                    </View>
-                })}
-            </View>
-        </View>
-    );
-    const ProceduresRoute = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-            <LineChart
-                data={{
-                    labels: summary.labels,
-                    datasets: summaryData
-                }}
-                width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
-                yAxisInterval={1}
-                
-                chartConfig={{
-                    backgroundColor: "#F6F7F9",
-                    backgroundGradientFrom: "#F6F7F9",
-                    backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `gray`,
-                    labelColor: (opacity = 1) => `gray`,
-                    propsForDots: {
-                        r: "6",
-                        strokeWidth: "2",
-                        // stroke: "#ffa726"
-                    }
-                }}
-                bezier
-                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
-            />
-             <View style={styles.typesContainer}>
-                {summaryData.map((item, i) =>{
-                    return <View style={styles.types} key={i}>
-                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                    </View>
-                })}
-            </View>
-        </View>
-    );
+   
 
     const renderScene = SceneMap({
-        first: ConsultFormRoute,
-        second: ConsultsRoute,
-        third: ProceduresRoute
+        first: () => <InquiriesTab summary={summaryInquiries} summaryData={summaryDataInquiries}/>,
+        second:  () => <ConsultsTab summary={summaryConsults} summaryData={summaryDataConsults}/>,
+        third:  () => <ProceduresTab summary={summaryProcedures} summaryData={summaryDataProcedures}/>
     });
 
 
@@ -361,81 +351,81 @@ const Dashboard = ({ navigation, route }) => {
         backgroundGradientFromOpacity: 0,
         backgroundGradientTo: "#08130D",
         backgroundGradientToOpacity: 0.5,
-        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        color: (opacity = 1) => `rgb(26, 255, 146, ${opacity})`,
         strokeWidth: 2, // optional, default 3
         barPercentage: 0.5,
         useShadowColorFromDataset: false // optional
-      };
+    };
 
     const screenWidth = Dimensions.get("window").width;
 
     const ConsultFormRouteLocation = () => (
         <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
             <View style={styles.rowContainer}>
-                    <View style={styles.typesContainer}>
-                        <PieChart
-                            data={filterData}
-                            width={screenWidth/1.8}
-                            height={250}
-                            chartConfig={chartConfig}
-                            accessor={"counts"}
-                            backgroundColor={"transparent"}
-                            center={[50, 20]}
-                            hasLegend={false}
-                        />
-                    </View>
-                    <View style={styles.typesContainerPie}>
-                        {filterData.map((item, i) =>{
-                                    return(
-                                        <View style={styles.typesPie} key={i}>
-                                    <View style={{
-                                                marginRight: 10,
-                                                height: 20,
-                                                width: 20,
-                                                borderRadius: 15,
-                                                backgroundColor: item.color,
-                                    }}></View>
-                                    <Text style={styles.text2}>{item.name}</Text>
-                                    <View style={{marginBottom: 30}}/>
-                                </View>
-                            )
-                        })}
+                <View style={styles.typesContainer}>
+                    <PieChart
+                        data={filterData}
+                        width={screenWidth / 1.8}
+                        height={250}
+                        chartConfig={chartConfig}
+                        accessor={"counts"}
+                        backgroundColor={"transparent"}
+                        center={[50, 20]}
+                        hasLegend={false}
+                    />
+                </View>
+                <View style={styles.typesContainerPie}>
+                    {filterData.map((item, i) => {
+                        return (
+                            <View style={styles.typesPie} key={i}>
+                                <View style={{
+                                    marginRight: 10,
+                                    height: 20,
+                                    width: 20,
+                                    borderRadius: 15,
+                                    backgroundColor: item.color,
+                                }}></View>
+                                <Text style={styles.text2}>{item.name}</Text>
+                                <View style={{ marginBottom: 30 }} />
+                            </View>
+                        )
+                    })}
                 </View>
             </View>
         </View>
     );
-    
+
     const ConsultsRouteLocation = () => (
         <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
             <View style={styles.rowContainer}>
-                    <View style={styles.typesContainer}>
-                        <PieChart
-                            data={filterData}
-                            width={screenWidth/1.8}
-                            height={250}
-                            chartConfig={chartConfig}
-                            accessor={"counts"}
-                            backgroundColor={"transparent"}
-                            center={[50, 20]}
-                            hasLegend={false}
-                        />
-                    </View>
-                    <View style={styles.typesContainerPie}>
-                        {filterData.map((item, i) =>{
-                                    return(
-                                        <View style={styles.typesPie} key={i}>
-                                    <View style={{
-                                                marginRight: 10,
-                                                height: 20,
-                                                width: 20,
-                                                borderRadius: 15,
-                                                backgroundColor: item.color,
-                                    }}></View>
-                                    <Text style={styles.text2}>{item.name}</Text>
-                                    <View style={{marginBottom: 30}}/>
-                                </View>
-                            )
-                        })}
+                <View style={styles.typesContainer}>
+                    <PieChart
+                        data={filterData}
+                        width={screenWidth / 1.8}
+                        height={250}
+                        chartConfig={chartConfig}
+                        accessor={"counts"}
+                        backgroundColor={"transparent"}
+                        center={[50, 20]}
+                        hasLegend={false}
+                    />
+                </View>
+                <View style={styles.typesContainerPie}>
+                    {filterData.map((item, i) => {
+                        return (
+                            <View style={styles.typesPie} key={i}>
+                                <View style={{
+                                    marginRight: 10,
+                                    height: 20,
+                                    width: 20,
+                                    borderRadius: 15,
+                                    backgroundColor: item.color,
+                                }}></View>
+                                <Text style={styles.text2}>{item.name}</Text>
+                                <View style={{ marginBottom: 30 }} />
+                            </View>
+                        )
+                    })}
                 </View>
             </View>
         </View>
@@ -443,46 +433,55 @@ const Dashboard = ({ navigation, route }) => {
     const ProceduresRouteLocation = () => (
         <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
             <View style={styles.rowContainer}>
-                    <View style={styles.typesContainer}>
-                        <PieChart
-                            data={filterData}
-                            width={screenWidth/1.8}
-                            height={250}
-                            chartConfig={chartConfig}
-                            accessor={"counts"}
-                            backgroundColor={"transparent"}
-                            center={[50, 20]}
-                            hasLegend={false}
-                        />
-                    </View>
-                    <View style={styles.typesContainerPie}>
-                        {filterData.map((item, i) =>{
-                                    return(
-                                        <View style={styles.typesPie} key={i}>
-                                    <View style={{
-                                                marginRight: 10,
-                                                height: 20,
-                                                width: 20,
-                                                borderRadius: 15,
-                                                backgroundColor: item.color,
-                                    }}></View>
-                                    <Text style={styles.text2}>{item.name}</Text>
-                                    <View style={{marginBottom: 30}}/>
-                                </View>
-                            )
-                        })}
+                <View style={styles.typesContainer}>
+                    <PieChart
+                        data={filterData}
+                        width={screenWidth / 1.8}
+                        height={250}
+                        chartConfig={chartConfig}
+                        accessor={"counts"}
+                        backgroundColor={"transparent"}
+                        center={[50, 20]}
+                        hasLegend={false}
+                    />
+                </View>
+                <View style={styles.typesContainerPie}>
+                    {filterData.map((item, i) => {
+                        return (
+                            <View style={styles.typesPie} key={i}>
+                                <View style={{
+                                    marginRight: 10,
+                                    height: 20,
+                                    width: 20,
+                                    borderRadius: 15,
+                                    backgroundColor: item.color,
+                                }}></View>
+                                <Text style={styles.text2}>{item.name}</Text>
+                                <View style={{ marginBottom: 30 }} />
+                            </View>
+                        )
+                    })}
                 </View>
             </View>
         </View>
     );
-    
+
     const renderSceneLocation = SceneMap({
         first: ConsultFormRouteLocation,
         second: ConsultsRouteLocation,
         third: ProceduresRouteLocation
     });
 
-   
+    const data = [
+        [70, -5],
+        [80, -10],
+        [110, 0],
+        [100, 0],
+        [280, -60],
+    ];
+    // labels
+    const horizontalData = surgeons.labels;
+
     return (
         <PaperProvider theme={black_theme}>
             <View style={styles.container}>
@@ -659,21 +658,21 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                  <View style={{paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
-                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{marginRight: 10}}/>
-                                    <AntdIcon name="filter" size={25} color="#7e7e7e"/>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                        <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
+                                        <AntdIcon name="filter" size={25} color="#7e7e7e" />
+                                    </View>
+                                    <TabView
+                                        navigationState={{ index, routes }}
+                                        renderScene={renderSceneLocation}
+                                        onIndexChange={setIndexL}
+                                        initialLayout={{ initialLayout }}
+                                        renderTabBar={renderTabBarLocation}
+                                    />
+
+
                                 </View>
-                                <TabView
-                                    navigationState={{ index, routes }}
-                                    renderScene={renderSceneLocation}
-                                    onIndexChange={setIndexL}
-                                    initialLayout={{initialLayout}}
-                                    renderTabBar={renderTabBarLocation}
-                                />
-                              
-                               
-                            </View>
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
@@ -682,7 +681,23 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <>
+                                    {/* <BarChart
+                                        data={{
+                                            labels: ["January", "February", "March", "April", "May", "June"],
+                                            datasets: [
+                                                {
+                                                    data: [20, 45, 28, 80, 99, 43]
+                                                }
+                                            ]
+                                        }}
 
+                                        height={220}
+                                       
+                                        chartConfig={chartConfig}
+                                        verticalLabelRotation={30}
+                                    /> */}
+                                </>
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
@@ -816,7 +831,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
 
-   
+
     text2: {
         fontSize: 12,
         color: 'black'
