@@ -15,13 +15,13 @@ const ConsultsTab = ({summary, summaryData}) => {
                 }}
                 width={Dimensions.get("window").width - 44} // from react-native
                 height={230}
-                
-
+                fromZero={true}
+                segments={summary.length}
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
                     backgroundGradientFrom: "#F6F7F9",
                     backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
+                    decimalPlaces: 1,
                     color: (opacity = 1) => `gray`,
                     labelColor: (opacity = 1) => `gray`,
 
@@ -34,7 +34,7 @@ const ConsultsTab = ({summary, summaryData}) => {
                 style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
             />
             <View style={styles.typesContainer}>
-                {summaryData?.map((item, i) => {
+                {summaryData.map((item, i) => {
                     return <View style={styles.types} key={i}>
                         <View style={{ marginRight: 10, height: 15, width: 15, borderRadius: 15, backgroundColor: item.backgroundColor }}></View>
                         <Text style={styles.text2}>{item.name}</Text>

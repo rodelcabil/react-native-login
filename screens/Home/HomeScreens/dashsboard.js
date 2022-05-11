@@ -26,8 +26,13 @@ import ProceduresTab from '../../Tabs/ReportsSummaryTab/proceduresTab';
 import LocationInquiriesTab from '../../Tabs/LocationTab/InquiriesTabLocation';
 import LocationConsultsTab from '../../Tabs/LocationTab/consutsTabLocation';
 import LocationProceduresTab from '../../Tabs/LocationTab/proceduresTabLocation';
+import SurgeonsInquiriesTab from '../../Tabs/SurgeonsTab/surgeonInquiries';
+import SurgeonsConsultsTab from '../../Tabs/SurgeonsTab/surgeonConsults';
+import SurgeonsProceduresTab from '../../Tabs/SurgeonsTab/surgeonProcedures';
 
 // import BarChart from 'react-native-bar-chart';
+
+
 
 const black_theme = {
     ...DefaultTheme,
@@ -48,7 +53,7 @@ const Dashboard = ({ navigation, route }) => {
     const [dashboardData, setDashboardData] = useState([]);
     const [surgeons, setSurgeons] = useState([])
 
-    const [dateFrom, setDateFrom] = useState("2022-01-01"); 
+    const [dateFrom, setDateFrom] = useState("2022-01-01");
     const [dateTo, setDateTo] = useState("2022-12-31");
 
     const [index, setIndex] = useState(0);
@@ -63,16 +68,26 @@ const Dashboard = ({ navigation, route }) => {
     const [summaryInquiries, setSummaryInquiries] = useState([]);
     const [summaryDataInquiries, setSummaryDataInquiries] = useState();
     const [summaryConsults, setSummaryConsults] = useState([]);
+
     const [summaryDataConsults, setSummaryDataConsults] = useState();
     const [summaryProcedures, setSummaryProcedures] = useState([]);
     const [summaryDataProcedures, setSummaryDataProcedures] = useState();
+
+    const [surgeonInquiries, setSurgeonInquiries] = useState([]);
+    const [surgeonDataInquiries, setSurgeonDataInquiriess] = useState();
+
+    const [surgeonConsults, setSurgeonConsults] = useState([]);
+    const [surgeonDataConsults, setSurgeonDataConsults] = useState();
+
+    const [surgeonProcedures, setSurgeonProcedures] = useState([]);
+    const [surgeonDataProcedures, setSurgeonDataProcedures] = useState();
 
     const initialLayout = { width: Dimensions.get('window').width };
 
     const [filterDataLocation, setFilterDataLocation] = useState([]);
     const [filterDataSOI, setFilterDataSOI] = useState({});
 
-    const filters = ['Procedures','Surgeons','Location','Source of Inquiry','Leads Funnel'];
+    const filters = ['Procedures', 'Surgeons', 'Location', 'Source of Inquiry', 'Leads Funnel'];
 
 
     useEffect(() => {
@@ -134,7 +149,7 @@ const Dashboard = ({ navigation, route }) => {
 
 
                     setSummaryInquiries(response.data)
-                    console.log("SUMMARY DATA INQUIRIES: ", response.data)
+
 
                     let data2 = [];
                     for (var i = 0; i < response.data.datasets.length; i++) {
@@ -146,16 +161,16 @@ const Dashboard = ({ navigation, route }) => {
                     }
 
 
-                    const mappedData = data2.map((data) => {
+                    const mappedData = data2.reverse().map((data) => {
                         const color = data.color;
                         return {
                             ...data,
-                            color: () =>  color,
-                            backgroundColor: color
+                            color: () => color,
+                            backgroundColor: color,
                         };
                     });
                     setSummaryDataInquiries(mappedData)
-                  
+                    // console.log("SUMMARY DATA INQUIRIES: ", mappedData)
 
 
                 })
@@ -176,7 +191,7 @@ const Dashboard = ({ navigation, route }) => {
 
 
                     setSummaryConsults(response.data)
-                    console.log("SUMMARY DATA CONSULTS: ", response.data)
+
 
                     let data2 = [];
                     for (var i = 0; i < response.data.datasets.length; i++) {
@@ -188,16 +203,16 @@ const Dashboard = ({ navigation, route }) => {
                     }
 
 
-                    const mappedData = data2.map((data) => {
+                    const mappedData = data2.reverse().map((data) => {
                         const color = data.color;
                         return {
                             ...data,
-                            color: () =>  color,
+                            color: () => color,
                             backgroundColor: color
                         };
                     });
                     setSummaryDataConsults(mappedData)
-                  
+                    console.log("SUMMARY DATA CONSULTS: ", mappedData)
 
 
                 })
@@ -229,17 +244,16 @@ const Dashboard = ({ navigation, route }) => {
                         });
                     }
 
-
-                    const mappedData = data2.map((data) => {
+                    const mappedData = data2.reverse().map((data) => {
                         const color = data.color;
                         return {
                             ...data,
-                            color: () =>  color,
+                            color: () => color,
                             backgroundColor: color
                         };
                     });
                     setSummaryDataProcedures(mappedData)
-                  
+
 
 
                 })
@@ -321,6 +335,77 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
 
+        const getSurgeonInquiriesData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${dateFrom}&dateto=${dateTo}&category=surgeons&filter=Inquiries`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    setSurgeonInquiries(response.data)
+                    let data =[];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                       data[i] = {data: response.data.datasets[i].data};
+                    }
+                    setSurgeonDataInquiriess(data[0].data);
+                    console.log("SURGEON INQUIRIES: ", data[0].data)
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+
+        const getSurgeonConsultsData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${dateFrom}&dateto=${dateTo}&category=surgeons&filter=Consults`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    setSurgeonConsults(response.data)
+                    let data =[];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                       data[i] = {data: response.data.datasets[i].data};
+                    }
+                    setSurgeonDataConsults(data[0].data);
+                    console.log("SURGEON CONSULTS: ", data[0].data)
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+        const getSurgeonProceduresData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${dateFrom}&dateto=${dateTo}&category=surgeons&filter=Procedures`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    setSurgeonProcedures(response.data)
+                    let data =[];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                       data[i] = {data: response.data.datasets[i].data};
+                    }
+                    setSurgeonDataProcedures(data[0].data);
+                    console.log("SURGEON PROCEDURES: ", data[0].data)
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+
         getMySchedule();
         getDashboardData();
         getReportSummaryInquiryData();
@@ -328,131 +413,29 @@ const Dashboard = ({ navigation, route }) => {
         getReportSummaryProceduresData();
         getFilteredQueryLocation(filters[2]);
         getFilteredQuerySOI(filters[3]);
+        getSurgeonInquiriesData();
+        getSurgeonConsultsData();
+        getSurgeonProceduresData();
     }, [])
 
-    const ConsultFormRoute = () => (
-        <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
-            <LineChart
-                data={{
-                    labels: summary.labels,
-                    datasets: summaryData
-                }}
-                width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
-                yAxisInterval={1}
-                
-                chartConfig={{
-                    backgroundColor: "#F6F7F9",
-                    backgroundGradientFrom: "#F6F7F9",
-                    backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `gray`,
-                    labelColor: (opacity = 1) => `gray`,
-                   
-                    propsForDots: {
-                        r: "7",
-                        strokeWidth: "0",
-                    }
-                }}
-                bezier
-                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
-            />
-            <View style={styles.typesContainer}>
-                {summaryData.map((item, i) =>{
-                    return <View style={styles.types} key={i}>
-                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                    </View>
-                })}
-            </View>
-        </View>
-    );
-    const ConsultsRoute = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-            <LineChart
-                data={{
-                    labels: summary.labels,
-                    datasets: summaryData
-                }}
-                width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
-                yAxisInterval={1}
-                
-                chartConfig={{
-                    backgroundColor: "#F6F7F9",
-                    backgroundGradientFrom: "#F6F7F9",
-                    backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `gray`,
-                    labelColor: (opacity = 1) => `gray`,
-                   
-                    propsForDots: {
-                        r: "6",
-                        strokeWidth: "2",
-                        // stroke: "#ffa726"
-                    }
-                }}
-                bezier
-                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
-            />
-             <View style={styles.typesContainer}>
-                {summaryData.map((item, i) =>{
-                    return <View style={styles.types} key={i}>
-                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                    </View>
-                })}
-            </View>
-        </View>
-    );
-    const ProceduresRoute = () => (
-        <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 10 }}>
-            <LineChart
-                data={{
-                    labels: summary.labels,
-                    datasets: summaryData
-                }}
-                width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
-                yAxisInterval={1}
-                
-                chartConfig={{
-                    backgroundColor: "#F6F7F9",
-                    backgroundGradientFrom: "#F6F7F9",
-                    backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
-                    color: (opacity = 1) => `gray`,
-                    labelColor: (opacity = 1) => `gray`,
-                    propsForDots: {
-                        r: "6",
-                        strokeWidth: "2",
-                        // stroke: "#ffa726"
-                    }
-                }}
-                bezier
-                style={{borderRadius: 10, borderWidth:1, borderColor: '#e3e3e3'}}
-            />
-             <View style={styles.typesContainer}>
-                {summaryData.map((item, i) =>{
-                    return <View style={styles.types} key={i}>
-                        <View style={{marginRight: 10, height: 15, width: 15,borderRadius: 15, backgroundColor: item.backgroundColor}}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                    </View>
-                })}
-            </View>
-        </View>
-    );
+
 
     const renderScene = SceneMap({
-        first: () => <InquiriesTab summary={summaryInquiries} summaryData={summaryDataInquiries}/>,
-        second:  () => <ConsultsTab summary={summaryConsults} summaryData={summaryDataConsults}/>,
-        third:  () => <ProceduresTab summary={summaryProcedures} summaryData={summaryDataProcedures}/>
+        first: () => <InquiriesTab summary={summaryInquiries} summaryData={summaryDataInquiries} />,
+        second: () => <ConsultsTab summary={summaryConsults} summaryData={summaryDataConsults} />,
+        third: () => <ProceduresTab summary={summaryProcedures} summaryData={summaryDataProcedures} />
     });
 
     const renderSceneLocation = SceneMap({
-        first: () => <LocationInquiriesTab locationdata={filterDataLocation}/>,
-        second: () => <LocationConsultsTab locationdata={filterDataLocation}/>,
-        third: () =><LocationProceduresTab locationdata={filterDataLocation}/>,
+        first: () => <LocationInquiriesTab locationdata={filterDataLocation} />,
+        second: () => <LocationConsultsTab locationdata={filterDataLocation} />,
+        third: () => <LocationProceduresTab locationdata={filterDataLocation} />,
+    });
+
+    const renderSceneSurgeons = SceneMap({
+        first: () => <SurgeonsConsultsTab data={surgeonInquiries} surgeonData={surgeonDataConsults}/>,
+        second: () => <SurgeonsConsultsTab data={surgeonConsults} surgeonData={surgeonDataConsults}/>,
+        third: () => <SurgeonsProceduresTab data={surgeonProcedures} surgeonData={surgeonDataProcedures}/>,
     });
 
     const renderTabBar = props => (
@@ -659,7 +642,19 @@ const Dashboard = ({ navigation, route }) => {
                             title="Surgeons"
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 560, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
+                                    <AntdIcon name="filter" size={25} color="#7e7e7e" />
+                                </View>
+                                <TabView
+                                    navigationState={{ index, routes }}
+                                    renderScene={renderSceneSurgeons}
+                                    onIndexChange={setIndex}
+                                    initialLayout={{ initialLayout }}
+                                    renderTabBar={renderTabBar}
+                                />
+
 
                             </View>
                         </List.Accordion>
@@ -692,22 +687,22 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                               
-                            <BarChart
-                                style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3'}}
-                                data={filterDataSOI}
-                                width={screenWidth-20}
-                                height={300}
 
-                                chartConfig={{
-                                    backgroundColor: "#F6F7F9",
-                                    backgroundGradientFrom: "#F6F7F9",
-                                    backgroundGradientTo: "#F6F7F9",
-                                    color: (opacity = 1) => `gray`,
-                                    labelColor: (opacity = 1) => `gray`,
-                                }}
+                                <BarChart
+                                    style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
+                                    data={filterDataSOI}
+                                    width={screenWidth - 20}
+                                    height={300}
 
-                                verticalLabelRotation={30}
+                                    chartConfig={{
+                                        backgroundColor: "#F6F7F9",
+                                        backgroundGradientFrom: "#F6F7F9",
+                                        backgroundGradientTo: "#F6F7F9",
+                                        color: (opacity = 1) => `gray`,
+                                        labelColor: (opacity = 1) => `gray`,
+                                    }}
+
+                                    verticalLabelRotation={30}
                                 />
 
                             </View>
@@ -719,7 +714,7 @@ const Dashboard = ({ navigation, route }) => {
                             expanded="true"
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
+                                
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
@@ -788,8 +783,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         borderRadius: 500,
         display: 'flex',
-        // alignItems: 'center',
-        // justifyContent: 'center',
         padding: 10,
         marginRight: 10,
         paddingRight: 5
@@ -848,15 +841,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black'
     },
-    // types: {
-    //     flexDirection: 'row',
-    //     alignItems: 'flex-start',
-    // },
-    // typesContainer: {
-    //     alignItems: 'flex-start',
-    //     justifyContent: 'flex-start',
-    //     marginTop: 10
-    // },
+
 });
 
 export default Dashboard;

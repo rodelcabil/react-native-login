@@ -15,7 +15,7 @@ const InquiriesTab = ({summary, summaryData}) => {
                 }}
                 width={Dimensions.get("window").width - 44} // from react-native
                 height={230}
-
+                segments={summary.length}
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
                     backgroundGradientFrom: "#F6F7F9",
