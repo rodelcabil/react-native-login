@@ -52,7 +52,7 @@ const SurgeonsConsultsTab = ({ data, surgeonData }) => {
 
                         position: 'bottom',
                         xOffset: 15,
-                        decimals: 2,
+                        decimals: 1,
                         height: 100
                     }
                 }}

@@ -1,13 +1,29 @@
-import React, {useEffect, useState } from 'react';
-import { StyleSheet, View, Text,  Dimensions, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Dimensions, } from 'react-native';
 import {
     LineChart,
 } from "react-native-chart-kit";
 
-const ConsultsTab = ({summary, summaryData}) => {
 
-  return (
-    <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
+const ConsultsTab = ({ summary, summaryData }) => {
+ 
+
+    let arr = [];
+    for(var i = 0; i < summaryData.length; i++){
+        arr[i] = {data: summaryData[i].data}
+    }
+
+    function* yLabel() {
+        const min = Math.min(...arr[0].data); // minimum value of data array d
+        const max = Math.max(...arr[arr.length -1].data); // maximum value of data array d
+
+        yield* [min, '', max]; 
+    }
+
+    const yLabelIterator = yLabel();
+
+    return (
+        <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
             <LineChart
                 data={{
                     labels: summary.labels,
@@ -15,13 +31,14 @@ const ConsultsTab = ({summary, summaryData}) => {
                 }}
                 width={Dimensions.get("window").width - 44} // from react-native
                 height={230}
-                fromZero={true}
-                segments={summary.length}
+                fromZero={false}
+                segments={2}
+               
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
                     backgroundGradientFrom: "#F6F7F9",
                     backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 1,
+                    decimalPlaces:0, 
                     color: (opacity = 1) => `gray`,
                     labelColor: (opacity = 1) => `gray`,
 
@@ -32,6 +49,7 @@ const ConsultsTab = ({summary, summaryData}) => {
                 }}
                 bezier
                 style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
+                formatYLabel={() => yLabelIterator.next().value}
             />
             <View style={styles.typesContainer}>
                 {summaryData.map((item, i) => {
@@ -42,11 +60,11 @@ const ConsultsTab = ({summary, summaryData}) => {
                 })}
             </View>
         </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
-    
+
     types: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -69,7 +87,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         marginBottom: 5,
     },
-    
+
 
 
     text2: {
