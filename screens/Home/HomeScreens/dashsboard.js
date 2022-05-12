@@ -1,14 +1,17 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions, Button } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions, Button, Modal, Animated, TouchableOpacity } from 'react-native';
 import AppBar from '../../ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Card, Avatar, } from 'react-native-paper';
 import StatisticsComponent from '../../ReusableComponents/statisticsCoponent';
 import { List, DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Label } from 'react-native-form-component';
 import axios from 'axios';
 import moment from 'moment';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import * as Animatable from 'react-native-animatable';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import {
     LineChart,
@@ -18,8 +21,20 @@ import {
     ContributionGraph,
     StackedBarChart
 } from "react-native-chart-kit";
-
-
+import {
+    Menu,
+    MenuOptions,
+    MenuOption,
+    MenuTrigger,
+  } from 'react-native-popup-menu';
+  import Dialog, {
+    DialogFooter,
+    DialogButton,
+    DialogContent
+  } from "react-native-popup-dialog";
+import { MenuProvider } from 'react-native-popup-menu';
+import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph'
+import { VictoryBar, VictoryChart, VictoryGroup } from "victory-native";
 import InquiriesTab from '../../Tabs/ReportsSummaryTab/InquiriesTab';
 import ConsultsTab from '../../Tabs/ReportsSummaryTab/consutsTab';
 import ProceduresTab from '../../Tabs/ReportsSummaryTab/proceduresTab';
@@ -100,10 +115,23 @@ const Dashboard = ({ navigation, route }) => {
 
     const initialLayout = { width: Dimensions.get('window').width };
 
-    const [filterDataLocation, setFilterDataLocation] = useState([]);
-    const [filterDataSOI, setFilterDataSOI] = useState({});
+    const [locationConsultForm, setLocationConsultForm] = useState([]);
+    const [locationConsult, setLocationConsult] = useState([]);
+    const [locationProcedures, setLocationProcedures] = useState([]);
+
+    const [filterDataSOI, setFilterDataSOI] = useState([]);
+    const [filterDataSOIData, setFilterDataSOIData] = useState([]);
 
     const filters = ['Procedures', 'Surgeons', 'Location', 'Source of Inquiry', 'Leads Funnel'];
+
+    const dataBar = {
+        planned: [null, {x: 'Week 1', y: 20}],
+        actual: [
+            {x: 'Week 1', y: 50},
+            {x: 'Week 1', y: 80},
+            {x: 'Week 2', y: 20}
+        ]
+    }
 
 
     useEffect(() => {
@@ -275,42 +303,7 @@ const Dashboard = ({ navigation, route }) => {
                 })
 
         }
-        const getFilteredQueryLocation = async (filter) => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/charts?filter=${filter}`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    console.log("LOCATION DATA: ", response.data)
-                    const temoArr = [];
-                    temoArr.push(
-                        {
-                            name: response.data.labels[0],
-                            counts: response.data.datasets[0].data[0],
-                            //counts: 1,
-                            color: response.data.datasets[0].backgroundColor[0],
-                            legendFontColor: "#7F7F7F",
-                            legendFontSize: 15
-                        },
-                        {
-                            name: response.data.labels[1],
-                            counts: response.data.datasets[0].data[1],
-                            //counts: 2,
-                            color: response.data.datasets[0].backgroundColor[1],
-                            legendFontColor: "#7F7F7F",
-                            legendFontSize: 15,
-                        }
-                    )
-                    setFilterDataLocation(temoArr)
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        }
         const getSurgeons = async (filter) => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
@@ -344,9 +337,14 @@ const Dashboard = ({ navigation, route }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
-
                     setFilterDataSOI(response.data)
                     console.log("SOI DATA: ", response.data)
+                    let data =[];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                       data[i] = {data: response.data.datasets[i].data};
+                    }
+                    setFilterDataSOIData(data[0].data);
+                    console.log("SOI DATA 2: ", data[0].data)
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
@@ -499,7 +497,10 @@ const Dashboard = ({ navigation, route }) => {
         getReportSummaryInquiryData();
         getReportSummaryConsultsData();
         getReportSummaryProceduresData();
-        getFilteredQueryLocation(filters[2]);
+
+        //Location
+        getLocationAll("", "");
+
         getFilteredQuerySOI(filters[3]);
         getSurgeonInquiriesData();
         getSurgeonConsultsData();
@@ -518,9 +519,9 @@ const Dashboard = ({ navigation, route }) => {
     });
 
     const renderSceneLocation = SceneMap({
-        first: () => <LocationInquiriesTab locationdata={filterDataLocation} />,
-        second: () => <LocationConsultsTab locationdata={filterDataLocation} />,
-        third: () => <LocationProceduresTab locationdata={filterDataLocation} />,
+        first: () => <LocationInquiriesTab locationdata={locationConsultForm} />,
+        second: () => <LocationConsultsTab locationdata={locationConsult} />,
+        third: () => <LocationProceduresTab locationdata={locationProcedures} />,
     });
 
     const renderSceneSurgeons = SceneMap({
@@ -561,15 +562,902 @@ const Dashboard = ({ navigation, route }) => {
         />
     );
 
+
+    const getLocationAll = async (datefrom, dateto) => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        setFilterText('All');
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Procedures&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+                        console.log("LOCATION DATA CONSULT 3: ", response.data)
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+    
+                        }
+                        console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                        setLocationProcedures(temoArr)
+                    })
+
+    }
+
+    const getLocationThisWeek= async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now()));
+        const begginingOfCurrentWeek = today.startOf('week').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+    const getLocationThisMonth= async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now()));
+        const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+        
+        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+    const getLocationLastMonth= async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract(1, 'month');
+        const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+        
+        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+    const getLocationThisYear= async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now()));
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+        
+        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+    const getLocationLastYear= async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract(1, 'year');
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+    const getLocationLastTwoYears= async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract(2, 'year');
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+        
+        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+    const getLocationRangeDate = async (startDate, endDate) => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const setText = startDate + " - " + endDate;
+        setFilterText(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for(let x = 0; x < response.data.labels.length; x++){
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Consults&category=location`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    const temoArr = [];
+                    console.log("LOCATION DATA CONSULT 1: ", response.data)
+                    for(let x = 0; x < response.data.labels.length; x++){
+                        temoArr.push(
+                            {
+                                name: response.data.labels[x],
+                                counts: response.data.datasets[0].data[x],
+                                //counts: 1,
+                                color: response.data.datasets[0].backgroundColor[x],
+                                legendFontColor: "#7F7F7F",
+                                legendFontSize: 15
+                            }
+                        )
+    
+                    }
+                    console.log("LOCATION DATA CONSULT: ", temoArr)
+                    setLocationConsult(temoArr)
+                })
+
+                await axios.get(
+                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Consult Form&category=location`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+                        const temoArr = [];
+        
+                        for(let x = 0; x < response.data.labels.length; x++){
+                            temoArr.push(
+                                {
+                                    name: response.data.labels[x],
+                                    counts: response.data.datasets[0].data[x],
+                                    //counts: 1,
+                                    color: response.data.datasets[0].backgroundColor[x],
+                                    legendFontColor: "#7F7F7F",
+                                    legendFontSize: 15
+                                }
+                            )
+        
+                        }
+                        console.log("LOCATION DATA: ", temoArr)
+                        setLocationConsultForm(temoArr)
+                    })
+    }
+
+
     const screenWidth = Dimensions.get("window").width;
 
 
 
+    const [showDateRangePicker, setShowDateRangePicker] = useState(false);
+    const [isDatePickerVisibleStart, setDatePickerVisibilityStart] = useState(false);
+    const [isDatePickerVisibleEnd, setDatePickerVisibilityEnd] = useState(false);
+    const [datePickerTitleStart, setdatePickerTitleStart] = useState(null);
+    const [datePickerTitleEnd, setdatePickerTitleEnd] = useState(null);
+
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    const showDatePickerStart = () => {
+        setDatePickerVisibilityStart(true);
+    };
+    const showDatePickerEnd = () => {
+        setDatePickerVisibilityEnd(true);
+    };
+    
+    const hideDatePickerStart = () => {
+        setDatePickerVisibilityStart(false);
+    };
+    const hideDatePickerEnd = () => {
+        setDatePickerVisibilityEnd(false);
+    };
+    
+    const handleConfirmStart = (date) => {
+          setdatePickerTitleStart(moment(date).format("YYYY-MM-DD"))
+          setStartDate(moment(date).format("YYYY-MM-DD"));
+          hideDatePickerStart();
+    };
+
+    const handleConfirmEnd = (date) => {
+        setdatePickerTitleEnd(moment(date).format("YYYY-MM-DD"))
+        setEndDate(moment(date).format("YYYY-MM-DD"));
+        hideDatePickerEnd();
+    };
+
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [showErrorEmpSD, setShowErrorEmpSD] = useState(false);
+    const [showErrorEmpED, setShowErrorEmpED] = useState(false);
+    
+    const [filterText, setFilterText] = useState(null);
+
     return (
+        <MenuProvider>
         <PaperProvider theme={black_theme}>
             <View style={styles.container}>
-                <AppBar title={"Dashboard"} showMenuIcon={false} />
+            <Dialog
+                 visible={showDateRangePicker}
+                  width={300}
+                  footer={
+                      <DialogFooter>
+                         <DialogButton
+                             text="CANCEL"
+                             onPress={() => {
+                                setShowDateRangePicker(false);
+                                setdatePickerTitleStart(null);
+                                setdatePickerTitleEnd(null);
+                                setStartDate(null);
+                                setEndDate(null);
+                                setSelectedCategory(null)
+                              }}
+                            />
+                            <DialogButton text="Submit" onPress={() => {
+                                if(startDate === null){
+                                    setShowErrorEmpSD(true);
+                                }
+                                else{
+                                    setShowErrorEmpSD(false);
+                                }
+                                if(endDate === null){
+                                    setShowErrorEmpED(true);
+                                }
+                                else{
+                                    setShowErrorEmpED(false);
+                                }
+                                if(startDate !== null && endDate !== null){
+                                    if(moment(startDate).format("YYYY-MM-DD") > moment(endDate).format("YYYY-MM-DD") ){
+                                        alert('End Date must be after the selected Start Date');
+                                    }
+                                    else{
+                                        if(selectedCategory === "location"){
+                                            getLocationRangeDate(startDate, endDate);
+                                        }
+                                        setShowDateRangePicker(false);
+                                        setSelectedCategory(null);
+                                    }
+                                }
+                            }} />
+                        </DialogFooter>
+                       }>
+                      <DialogContent>
+                            <View>
+                                <View style={styles.dtrContainer}>
+                                     <Text style={{textAlign: 'center', fontSize: 15, fontWeight: "bold", color: 'white'}}>Date Range Picker</Text>
+                                     <Text style={{textAlign: 'center', fontSize: 15, fontWeight: "bold", color: 'white'}}>Category - {selectedCategory}</Text>
+                                </View>
 
+                             <Label text="Start Date" isRequired asterik />
+                                {showErrorEmpSD === true ? 
+                                    <Animatable.View animation='fadeInLeft' duration={500}>
+                                     <Text style={styles.errorMsg}>Please select Start Date</Text>
+                                    </Animatable.View>
+                                :<></>}
+                               <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={showDatePickerStart}
+                                >
+                               <View style={styles.inputContainer2}>
+                                  <Text style={styles.textPicker}>{datePickerTitleStart === null ? "Show Date Picker" : datePickerTitleStart}</Text>
+                                  <DateTimePickerModal
+                                      isVisible={isDatePickerVisibleStart}
+                                      mode="date"
+                                      value={startDate}
+                                      onConfirm={handleConfirmStart}
+                                      onCancel={hideDatePickerStart}
+                                  />
+                              </View>
+                              </TouchableOpacity>
+
+                              
+                             <Label text="End Date" isRequired asterik />
+                             {showErrorEmpED === true ? 
+                                    <Animatable.View animation='fadeInLeft' duration={500}>
+                                    <Text style={styles.errorMsg}>Please select End Date</Text>
+                                    </Animatable.View>
+                                :<></>}
+                              <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    onPress={showDatePickerEnd}
+                                >
+                              <View style={styles.inputContainer2}>
+                                  <Text style={styles.textPicker}>{datePickerTitleEnd === null ? "Show Date Picker" : datePickerTitleEnd}</Text>
+                                  <DateTimePickerModal
+                                      isVisible={isDatePickerVisibleEnd}
+                                      mode="date"
+                                      value={endDate}
+                                      onConfirm={handleConfirmEnd}
+                                      onCancel={hideDatePickerEnd}
+                                  />
+                              </View>
+                              </TouchableOpacity>
+                            </View>
+                     </DialogContent>
+                </Dialog>
+
+
+
+
+                <AppBar title={"Dashboard"} showMenuIcon={false} />
                 <ScrollView >
                     <View style={styles.wrapper} >
 
@@ -766,9 +1654,40 @@ const Dashboard = ({ navigation, route }) => {
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                 <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
-                                        <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
-                                        <AntdIcon name="filter" size={25} color="#7e7e7e" />
+                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between', }}>
+                                            <Text style={{fontSize: 14, fontWeight: 'bold'}}> {filterText}  </Text>
+                                            <Menu>
+                                                <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }}/></MenuTrigger>
+                                                <MenuOptions>
+                                                    <MenuOption onSelect={() => getLocationAll("","")} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationThisWeek} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationThisMonth} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationLastMonth} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationThisYear} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationLastYear} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationLastTwoYears} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {
+                                                        setSelectedCategory('location'); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
+                                                        setdatePickerTitleStart(null); setdatePickerTitleEnd(null); setStartDate(null);
+                                                        setEndDate(null); console.log(selectedCategory);}} >
+                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Custom Range</Text></View>
+                                                    </MenuOption>
+                                                </MenuOptions>
+                                            </Menu>
                                     </View>
                                     <TabView
                                         navigationState={{ index, routes }}
@@ -788,27 +1707,34 @@ const Dashboard = ({ navigation, route }) => {
                             titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
-                                <BarChart
-                                    style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
-                                    data={filterDataSOI}
-                                    width={screenWidth - 20}
-                                    height={300}
-
-                                    chartConfig={{
-                                        backgroundColor: "#F6F7F9",
-                                        backgroundGradientFrom: "#F6F7F9",
-                                        backgroundGradientTo: "#F6F7F9",
-                                        color: (opacity = 1) => `gray`,
-                                        labelColor: (opacity = 1) => `gray`,
-                                        propsForBackgroundLines: {
-                                            strokeWidth: 1,
-                                            stroke: '#BABFC4',
-                                            strokeDasharray: '0',
+                                <HorizontalBarGraph
+                                    //data={filterDataSOIData}
+                                    data={[1,1,1,1,5,2,3,3,3,10]}
+                                    labels={filterDataSOI.labels}
+                                    width={Dimensions.get("window").width - 44}
+                                    height={400}
+                                    barRadius={5}
+                                    barColor="#e3e3e3"
+                                    barWidthPercentage={0.5}
+                                    baseConfig={{
+                                        hasYAxisBackgroundLines: true,
+                                        hasXAxisBackgroundLines: true,
+                                        xAxisLabelStyle: {
+                                            rotation: 0,
+                                            fontSize: 12,
+                                            width: 150,
+                                            yOffset: 0,
+                                            xOffset: -60,
+                                            margin: 10,
                                         },
+                                        yAxisLabelStyle: {
+                                            fontSize: 13,
+                                            position: 'bottom',
+                                            xOffset: 15,
+                                            height: 100,
+                                            decimal: 1
+                                        }
                                     }}
-
-                                    verticalLabelRotation={30}
                                 />
 
                             </View>
@@ -829,6 +1755,7 @@ const Dashboard = ({ navigation, route }) => {
                 </ScrollView>
             </View>
         </PaperProvider>
+        </MenuProvider>
     );
 
 }
@@ -942,13 +1869,50 @@ const styles = StyleSheet.create({
         display: 'flex',
         marginTop: 20,
     },
-
-
     text2: {
         fontSize: 12,
         color: 'black'
     },
-
+    popupItem: {
+        backgroundColor: '#edeef0',
+        width: '100%',
+        borderRadius: 5,
+        padding: 10
+    },
+    popupItemText: {
+        fontSize: 13,
+        fontWeight: 'bold',
+        color: '#316fd4'
+    },
+    inputContainer2: {
+        height: 50,
+        width: '100%',
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        fontSize: 13,
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10
+    },    
+    textPicker: {
+        fontFamily: 'Roboto',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    dtrContainer: {
+        width: '100%',
+        padding: 10,
+        backgroundColor: '#075DA7',
+        marginBottom: 10
+    },
+    errorMsg: {
+        color: 'red',
+        fontSize: 13,
+        marginBottom: 10,
+    },
 });
 
 export default Dashboard;

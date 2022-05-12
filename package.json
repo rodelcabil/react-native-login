@@ -59,6 +59,7 @@
     "react-native-pie-chart": "^2.0.2",
     "react-native-popable": "^0.4.3",
     "react-native-popup-dialog": "^0.18.3",
+    "react-native-popup-menu": "^0.15.12",
     "react-native-push-notification": "^8.1.1",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-safe-area-context": "^4.2.4",
@@ -70,7 +71,8 @@
     "react-native-svg": "^12.3.0",
     "react-native-svg-charts": "^5.4.0",
     "react-native-tab-view": "^3.1.1",
-    "react-native-vector-icons": "^9.1.0"
+    "react-native-vector-icons": "^9.1.0",
+    "victory-native": "^36.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
