@@ -5,7 +5,20 @@ import {
 } from "react-native-chart-kit";
 
 const InquiriesTab = ({summary, summaryData}) => {
+    let arr = [];
+    for(var i = 0; i < summaryData.length; i++){
+        arr[i] = {data: summaryData[i].data}
+    }
 
+
+    function* yLabel() {
+        const min = Math.min(...arr[0].data); // minimum value of data array d
+        const max = Math.max(...arr[arr.length -1].data); // maximum value of data array d
+
+        yield* [min, '', max]; 
+    }
+
+    const yLabelIterator = yLabel();
   return (
     <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
             <LineChart
@@ -15,7 +28,7 @@ const InquiriesTab = ({summary, summaryData}) => {
                 }}
                 width={Dimensions.get("window").width - 44} // from react-native
                 height={230}
-                segments={summary.length}
+                segments={2}
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
                     backgroundGradientFrom: "#F6F7F9",
@@ -31,6 +44,7 @@ const InquiriesTab = ({summary, summaryData}) => {
                 }}
                 bezier
                 style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
+                formatYLabel={() => yLabelIterator.next().value}
             />
             <View style={styles.typesContainer}>
                 {summaryData?.map((item, i) => {
