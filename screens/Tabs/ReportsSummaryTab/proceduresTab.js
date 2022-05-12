@@ -43,7 +43,12 @@ const ProceduresTab = ({summary, summaryData}) => {
                     propsForDots: {
                         r: "7",
                         strokeWidth: "0",
-                    }
+                    },
+                    propsForBackgroundLines: {
+                        strokeWidth: 1,
+                        stroke: '#BABFC4',
+                        strokeDasharray: '0',
+                    },
                 }}
                 bezier
                 style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}

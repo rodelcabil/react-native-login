@@ -18,6 +18,8 @@ import {
     ContributionGraph,
     StackedBarChart
 } from "react-native-chart-kit";
+
+
 import InquiriesTab from '../../Tabs/ReportsSummaryTab/InquiriesTab';
 import ConsultsTab from '../../Tabs/ReportsSummaryTab/consutsTab';
 import ProceduresTab from '../../Tabs/ReportsSummaryTab/proceduresTab';
@@ -50,6 +52,8 @@ const black_theme = {
 
 
 const Dashboard = ({ navigation, route }) => {
+
+   
 
     const [schedule, setSchedule] = useState([]);
     const [hasSched, setHasSched] = useState(false);
@@ -411,6 +415,7 @@ const Dashboard = ({ navigation, route }) => {
                     for (var i = 0; i < response.data.datasets.length; i++) {
                         data[i] = { data: response.data.datasets[i].data };
                     }
+
                     setSurgeonDataProcedures(data[0].data);
                     console.log("SURGEON PROCEDURES: ", data[0].data)
                 })
@@ -796,6 +801,11 @@ const Dashboard = ({ navigation, route }) => {
                                         backgroundGradientTo: "#F6F7F9",
                                         color: (opacity = 1) => `gray`,
                                         labelColor: (opacity = 1) => `gray`,
+                                        propsForBackgroundLines: {
+                                            strokeWidth: 1,
+                                            stroke: '#BABFC4',
+                                            strokeDasharray: '0',
+                                        },
                                     }}
 
                                     verticalLabelRotation={30}
@@ -810,7 +820,8 @@ const Dashboard = ({ navigation, route }) => {
                             expanded="true"
                             style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                             <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
+                                
+                              
                             </View>
                         </List.Accordion>
                         <View style={{ marginBottom: 5 }} />
