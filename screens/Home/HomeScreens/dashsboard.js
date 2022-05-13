@@ -26,14 +26,15 @@ import {
     MenuOptions,
     MenuOption,
     MenuTrigger,
-  } from 'react-native-popup-menu';
-  import Dialog, {
+} from 'react-native-popup-menu';
+import Dialog, {
     DialogFooter,
     DialogButton,
     DialogContent
-  } from "react-native-popup-dialog";
+} from "react-native-popup-dialog";
 import { MenuProvider } from 'react-native-popup-menu';
 import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph'
+import VerticalBarGraph from '@chartiful/react-native-vertical-bar-graph';
 import { VictoryBar, VictoryChart, VictoryGroup } from "victory-native";
 import InquiriesTab from '../../Tabs/ReportsSummaryTab/InquiriesTab';
 import ConsultsTab from '../../Tabs/ReportsSummaryTab/consutsTab';
@@ -49,8 +50,7 @@ import SurgeonsProceduresTab from '../../Tabs/SurgeonsTab/surgeonProcedures';
 import ProceduresInquiriesTab from '../../Tabs/ProceduresTab/proceduresInquiriesTab';
 import ProceduresConsultsTab from '../../Tabs/ProceduresTab/proceduresConsultTab';
 import ProceduresProceduresTab from '../../Tabs/ProceduresTab/proceduresProceduresTab';
-
-// import BarChart from 'react-native-bar-chart';
+import { ar } from 'date-fns/locale';
 
 
 
@@ -68,7 +68,7 @@ const black_theme = {
 
 const Dashboard = ({ navigation, route }) => {
 
-   
+
 
     const [schedule, setSchedule] = useState([]);
     const [hasSched, setHasSched] = useState(false);
@@ -125,11 +125,11 @@ const Dashboard = ({ navigation, route }) => {
     const filters = ['Procedures', 'Surgeons', 'Location', 'Source of Inquiry', 'Leads Funnel'];
 
     const dataBar = {
-        planned: [null, {x: 'Week 1', y: 20}],
+        planned: [null, { x: 'Week 1', y: 20 }],
         actual: [
-            {x: 'Week 1', y: 50},
-            {x: 'Week 1', y: 80},
-            {x: 'Week 2', y: 20}
+            { x: 'Week 1', y: 50 },
+            { x: 'Week 1', y: 80 },
+            { x: 'Week 2', y: 20 }
         ]
     }
 
@@ -214,7 +214,7 @@ const Dashboard = ({ navigation, route }) => {
                         };
                     });
                     setSummaryDataInquiries(mappedData)
-                    // console.log("SUMMARY DATA INQUIRIES: ", mappedData)
+                    console.log("SUMMARY DATA INQUIRIES: ", mappedData)
 
 
                 })
@@ -339,9 +339,9 @@ const Dashboard = ({ navigation, route }) => {
                 }).then(response => {
                     setFilterDataSOI(response.data)
                     console.log("SOI DATA: ", response.data)
-                    let data =[];
+                    let data = [];
                     for (var i = 0; i < response.data.datasets.length; i++) {
-                       data[i] = {data: response.data.datasets[i].data};
+                        data[i] = { data: response.data.datasets[i].data };
                     }
                     setFilterDataSOIData(data[0].data);
                     console.log("SOI DATA 2: ", data[0].data)
@@ -492,6 +492,48 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
 
+        const getLeadsFunnelData = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/dashboard/charts?filter=Leads Funnel`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    //  setProceduresProcedures(response.data)
+                    let data = [];
+                    for (var i = 0; i < response.data.datasets.length; i++) {
+                        data.push({
+                            data: response.data.datasets[i].data,
+                            name: response.data.datasets[i].label,
+                        });
+                    }
+
+
+                    const mappedData = data.map((data) => {
+                        return {
+                            // ...data,
+
+                            seriesname: data.name,
+                            data: data.data.map((item) => {
+                                return { values: item }
+                            }),
+
+                        };
+                    });
+                    // setProcedureDataProcedures(data[0].data);
+                    // console.log("PROCEDURES CONSULTS: ", response.data)
+
+                    console.log("LEADS FUNNEL DATA: ", mappedData[0].data)
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+
         getMySchedule();
         getDashboardData();
         getReportSummaryInquiryData();
@@ -508,6 +550,7 @@ const Dashboard = ({ navigation, route }) => {
         getProceduresInquiriesData();
         getProceduresConsultsData();
         getProceduresProceduresData();
+        getLeadsFunnelData()
     }, [])
 
 
@@ -579,7 +622,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
 
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -596,63 +639,63 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationConsultForm(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Procedures&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-                        console.log("LOCATION DATA CONSULT 3: ", response.data)
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-    
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA CONSULT 3: ", temoArr)
-                        setLocationProcedures(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Procedures&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 3: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT 3: ", temoArr)
+                setLocationProcedures(temoArr)
+            })
 
     }
 
-    const getLocationThisWeek= async () => {
+    const getLocationThisWeek = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
@@ -674,7 +717,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -691,62 +734,62 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
-    const getLocationThisMonth= async () => {
+    const getLocationThisMonth = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
@@ -754,7 +797,7 @@ const Dashboard = ({ navigation, route }) => {
         const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
-        
+
         const setText = begginingOfCurrentWeek + " - " + endOfWeek;
         setFilterText(setText);
 
@@ -768,7 +811,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -785,62 +828,62 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
-    const getLocationLastMonth= async () => {
+    const getLocationLastMonth = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
@@ -848,7 +891,7 @@ const Dashboard = ({ navigation, route }) => {
         const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
-        
+
         const setText = begginingOfCurrentWeek + " - " + endOfWeek;
         setFilterText(setText);
 
@@ -862,7 +905,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -879,62 +922,62 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
-    const getLocationThisYear= async () => {
+    const getLocationThisYear = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
@@ -942,7 +985,7 @@ const Dashboard = ({ navigation, route }) => {
         const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
-        
+
         const setText = begginingOfCurrentWeek + " - " + endOfWeek;
         setFilterText(setText);
 
@@ -956,7 +999,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -973,62 +1016,62 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
-    const getLocationLastYear= async () => {
+    const getLocationLastYear = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
@@ -1050,7 +1093,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -1067,62 +1110,62 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
-    const getLocationLastTwoYears= async () => {
+    const getLocationLastTwoYears = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
@@ -1130,7 +1173,7 @@ const Dashboard = ({ navigation, route }) => {
         const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
-        
+
         const setText = begginingOfCurrentWeek + " - " + endOfWeek;
         setFilterText(setText);
 
@@ -1144,7 +1187,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -1161,59 +1204,59 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
     const getLocationRangeDate = async (startDate, endDate) => {
@@ -1233,7 +1276,7 @@ const Dashboard = ({ navigation, route }) => {
             }).then(response => {
                 const temoArr = [];
                 console.log("LOCATION DATA CONSULT 3: ", response.data)
-                for(let x = 0; x < response.data.labels.length; x++){
+                for (let x = 0; x < response.data.labels.length; x++) {
                     temoArr.push(
                         {
                             name: response.data.labels[x],
@@ -1250,59 +1293,59 @@ const Dashboard = ({ navigation, route }) => {
                 setLocationProcedures(temoArr)
             })
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Consults&category=location`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    const temoArr = [];
-                    console.log("LOCATION DATA CONSULT 1: ", response.data)
-                    for(let x = 0; x < response.data.labels.length; x++){
-                        temoArr.push(
-                            {
-                                name: response.data.labels[x],
-                                counts: response.data.datasets[0].data[x],
-                                //counts: 1,
-                                color: response.data.datasets[0].backgroundColor[x],
-                                legendFontColor: "#7F7F7F",
-                                legendFontSize: 15
-                            }
-                        )
-    
-                    }
-                    console.log("LOCATION DATA CONSULT: ", temoArr)
-                    setLocationConsult(temoArr)
-                })
-
-                await axios.get(
-                    `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Consult Form&category=location`,
-                    {
-                        headers: {
-                            'Accept': 'application/json',
-                            'Authorization': 'Bearer ' + tokenget
-                        },
-                    }).then(response => {
-                        const temoArr = [];
-        
-                        for(let x = 0; x < response.data.labels.length; x++){
-                            temoArr.push(
-                                {
-                                    name: response.data.labels[x],
-                                    counts: response.data.datasets[0].data[x],
-                                    //counts: 1,
-                                    color: response.data.datasets[0].backgroundColor[x],
-                                    legendFontColor: "#7F7F7F",
-                                    legendFontSize: 15
-                                }
-                            )
-        
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Consults&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+                console.log("LOCATION DATA CONSULT 1: ", response.data)
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
                         }
-                        console.log("LOCATION DATA: ", temoArr)
-                        setLocationConsultForm(temoArr)
-                    })
+                    )
+
+                }
+                console.log("LOCATION DATA CONSULT: ", temoArr)
+                setLocationConsult(temoArr)
+            })
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&filter=Consult Form&category=location`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                const temoArr = [];
+
+                for (let x = 0; x < response.data.labels.length; x++) {
+                    temoArr.push(
+                        {
+                            name: response.data.labels[x],
+                            counts: response.data.datasets[0].data[x],
+                            //counts: 1,
+                            color: response.data.datasets[0].backgroundColor[x],
+                            legendFontColor: "#7F7F7F",
+                            legendFontSize: 15
+                        }
+                    )
+
+                }
+                console.log("LOCATION DATA: ", temoArr)
+                setLocationConsultForm(temoArr)
+            })
     }
 
 
@@ -1325,18 +1368,18 @@ const Dashboard = ({ navigation, route }) => {
     const showDatePickerEnd = () => {
         setDatePickerVisibilityEnd(true);
     };
-    
+
     const hideDatePickerStart = () => {
         setDatePickerVisibilityStart(false);
     };
     const hideDatePickerEnd = () => {
         setDatePickerVisibilityEnd(false);
     };
-    
+
     const handleConfirmStart = (date) => {
-          setdatePickerTitleStart(moment(date).format("YYYY-MM-DD"))
-          setStartDate(moment(date).format("YYYY-MM-DD"));
-          hideDatePickerStart();
+        setdatePickerTitleStart(moment(date).format("YYYY-MM-DD"))
+        setStartDate(moment(date).format("YYYY-MM-DD"));
+        hideDatePickerStart();
     };
 
     const handleConfirmEnd = (date) => {
@@ -1348,178 +1391,159 @@ const Dashboard = ({ navigation, route }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [showErrorEmpSD, setShowErrorEmpSD] = useState(false);
     const [showErrorEmpED, setShowErrorEmpED] = useState(false);
-    
+
     const [filterText, setFilterText] = useState(null);
 
     return (
         <MenuProvider>
-        <PaperProvider theme={black_theme}>
-            <View style={styles.container}>
-            <Dialog
-                 visible={showDateRangePicker}
-                  width={300}
-                  footer={
-                      <DialogFooter>
-                         <DialogButton
-                             text="CANCEL"
-                             onPress={() => {
-                                setShowDateRangePicker(false);
-                                setdatePickerTitleStart(null);
-                                setdatePickerTitleEnd(null);
-                                setStartDate(null);
-                                setEndDate(null);
-                                setSelectedCategory(null)
-                              }}
-                            />
-                            <DialogButton text="Submit" onPress={() => {
-                                if(startDate === null){
-                                    setShowErrorEmpSD(true);
-                                }
-                                else{
-                                    setShowErrorEmpSD(false);
-                                }
-                                if(endDate === null){
-                                    setShowErrorEmpED(true);
-                                }
-                                else{
-                                    setShowErrorEmpED(false);
-                                }
-                                if(startDate !== null && endDate !== null){
-                                    if(moment(startDate).format("YYYY-MM-DD") > moment(endDate).format("YYYY-MM-DD") ){
-                                        alert('End Date must be after the selected Start Date');
-                                    }
-                                    else{
-                                        if(selectedCategory === "location"){
-                                            getLocationRangeDate(startDate, endDate);
-                                        }
+            <PaperProvider theme={black_theme}>
+                <View style={styles.container}>
+                    <Dialog
+                        visible={showDateRangePicker}
+                        width={300}
+                        footer={
+                            <DialogFooter>
+                                <DialogButton
+                                    text="Cancel"
+                                    onPress={() => {
                                         setShowDateRangePicker(false);
-                                        setSelectedCategory(null);
+                                        setdatePickerTitleStart(null);
+                                        setdatePickerTitleEnd(null);
+                                        setStartDate(null);
+                                        setEndDate(null);
+                                        setSelectedCategory(null)
+                                    }}
+                                />
+                                <DialogButton text="Submit" onPress={() => {
+                                    if (startDate === null) {
+                                        setShowErrorEmpSD(true);
                                     }
-                                }
-                            }} />
-                        </DialogFooter>
-                       }>
-                      <DialogContent>
+                                    else {
+                                        setShowErrorEmpSD(false);
+                                    }
+                                    if (endDate === null) {
+                                        setShowErrorEmpED(true);
+                                    }
+                                    else {
+                                        setShowErrorEmpED(false);
+                                    }
+                                    if (startDate !== null && endDate !== null) {
+                                        if (moment(startDate).format("YYYY-MM-DD") > moment(endDate).format("YYYY-MM-DD")) {
+                                            alert('End Date must be after the selected Start Date');
+                                        }
+                                        else {
+                                            if (selectedCategory === "location") {
+                                                getLocationRangeDate(startDate, endDate);
+                                            }
+                                            setShowDateRangePicker(false);
+                                            setSelectedCategory(null);
+                                        }
+                                    }
+                                }} />
+                            </DialogFooter>
+                        }>
+                        <DialogContent>
                             <View>
                                 <View style={styles.dtrContainer}>
-                                     <Text style={{textAlign: 'center', fontSize: 15, fontWeight: "bold", color: 'white'}}>Date Range Picker</Text>
-                                     <Text style={{textAlign: 'center', fontSize: 15, fontWeight: "bold", color: 'white'}}>Category - {selectedCategory}</Text>
+                                    <Text style={{ textAlign: 'center', fontSize: 15, fontWeight: "bold", color: 'white' }}>Date Range Picker</Text>
+                                    <Text style={{ textAlign: 'center', fontSize: 15, fontWeight: "bold", color: 'white' }}>Category - {selectedCategory}</Text>
                                 </View>
 
-                             <Label text="Start Date" isRequired asterik />
-                                {showErrorEmpSD === true ? 
+                                <Label text="Start Date" isRequired asterik />
+                                {showErrorEmpSD === true ?
                                     <Animatable.View animation='fadeInLeft' duration={500}>
-                                     <Text style={styles.errorMsg}>Please select Start Date</Text>
+                                        <Text style={styles.errorMsg}>Please select Start Date</Text>
                                     </Animatable.View>
-                                :<></>}
-                               <TouchableOpacity
+                                    : <></>}
+                                <TouchableOpacity
                                     activeOpacity={0.7}
                                     onPress={showDatePickerStart}
                                 >
-                               <View style={styles.inputContainer2}>
-                                  <Text style={styles.textPicker}>{datePickerTitleStart === null ? "Show Date Picker" : datePickerTitleStart}</Text>
-                                  <DateTimePickerModal
-                                      isVisible={isDatePickerVisibleStart}
-                                      mode="date"
-                                      value={startDate}
-                                      onConfirm={handleConfirmStart}
-                                      onCancel={hideDatePickerStart}
-                                  />
-                              </View>
-                              </TouchableOpacity>
+                                    <View style={styles.inputContainer2}>
+                                        <Text style={styles.textPicker}>{datePickerTitleStart === null ? "Show Date Picker" : datePickerTitleStart}</Text>
+                                        <DateTimePickerModal
+                                            isVisible={isDatePickerVisibleStart}
+                                            mode="date"
+                                            value={startDate}
+                                            onConfirm={handleConfirmStart}
+                                            onCancel={hideDatePickerStart}
+                                        />
+                                    </View>
+                                </TouchableOpacity>
 
-                              
-                             <Label text="End Date" isRequired asterik />
-                             {showErrorEmpED === true ? 
+
+                                <Label text="End Date" isRequired asterik />
+                                {showErrorEmpED === true ?
                                     <Animatable.View animation='fadeInLeft' duration={500}>
-                                    <Text style={styles.errorMsg}>Please select End Date</Text>
+                                        <Text style={styles.errorMsg}>Please select End Date</Text>
                                     </Animatable.View>
-                                :<></>}
-                              <TouchableOpacity
+                                    : <></>}
+                                <TouchableOpacity
                                     activeOpacity={0.7}
                                     onPress={showDatePickerEnd}
                                 >
-                              <View style={styles.inputContainer2}>
-                                  <Text style={styles.textPicker}>{datePickerTitleEnd === null ? "Show Date Picker" : datePickerTitleEnd}</Text>
-                                  <DateTimePickerModal
-                                      isVisible={isDatePickerVisibleEnd}
-                                      mode="date"
-                                      value={endDate}
-                                      onConfirm={handleConfirmEnd}
-                                      onCancel={hideDatePickerEnd}
-                                  />
-                              </View>
-                              </TouchableOpacity>
+                                    <View style={styles.inputContainer2}>
+                                        <Text style={styles.textPicker}>{datePickerTitleEnd === null ? "Show Date Picker" : datePickerTitleEnd}</Text>
+                                        <DateTimePickerModal
+                                            isVisible={isDatePickerVisibleEnd}
+                                            mode="date"
+                                            value={endDate}
+                                            onConfirm={handleConfirmEnd}
+                                            onCancel={hideDatePickerEnd}
+                                        />
+                                    </View>
+                                </TouchableOpacity>
                             </View>
-                     </DialogContent>
-                </Dialog>
+                        </DialogContent>
+                    </Dialog>
 
 
 
 
-                <AppBar title={"Dashboard"} showMenuIcon={false} />
-                <ScrollView >
-                    <View style={styles.wrapper} >
+                    <AppBar title={"Dashboard"} showMenuIcon={false} />
+                    <ScrollView >
+                        <View style={styles.wrapper} >
 
-                        <View>
-                            <Text style={styles.text}>Today's schedule</Text>
+                            <View>
+                                <Text style={styles.text}>Today's schedule</Text>
 
-                            {hasSched === false ?
-                                <View style={styles.itemEmptyContainer}>
-                                    <Image
-                                        style={styles.logoImg}
-                                        source={require('../../../assets/calendar.png')}
-                                    />
-                                    <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
-                                </View>
-                                :
-                                <>
-                                    {schedule?.map((item, i) => {
-                                        return <TouchableHighlight
-                                            key={i}
-                                            style={{ marginBottom: 10, }}
-                                            activeOpacity={0.6}
-                                            underlayColor="#DDDDDD"
-                                            onPress={() => navigation.navigate('View Schedule', {
-                                                item: item,
-                                            })
+                                {hasSched === false ?
+                                    <View style={styles.itemEmptyContainer}>
+                                        <Image
+                                            style={styles.logoImg}
+                                            source={require('../../../assets/calendar.png')}
+                                        />
+                                        <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
+                                    </View>
+                                    :
+                                    <>
+                                        {schedule?.map((item, i) => {
+                                            return <TouchableHighlight
+                                                key={i}
+                                                style={{ marginBottom: 10, }}
+                                                activeOpacity={0.6}
+                                                underlayColor="#DDDDDD"
+                                                onPress={() => navigation.navigate('View Schedule', {
+                                                    item: item,
+                                                })
 
-                                            }
-                                        >
+                                                }
+                                            >
 
-                                            <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
+                                                <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
 
-                                                {item.category === 'reminder' ?
-                                                    <Card.Content key={i}>
-                                                        <View style={styles.columnContainer}>
-                                                            <Text style={styles.titleStyle}>{item.title}</Text>
-                                                            <View style={styles.rowSchedContainer}>
-                                                                <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                                                <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
-
-                                                            </View>
-
-                                                            <View style={styles.rowSchedContainer}>
-                                                                <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
-                                                            </View>
-                                                        </View>
-                                                    </Card.Content>
-
-                                                    :
-
-                                                    item.category === 'procedures' ?
+                                                    {item.category === 'reminder' ?
                                                         <Card.Content key={i}>
                                                             <View style={styles.columnContainer}>
-                                                                <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                                                <Text style={styles.titleStyle}>{item.title}</Text>
                                                                 <View style={styles.rowSchedContainer}>
-                                                                    <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                                                    <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
+                                                                    <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                                                    <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
 
                                                                 </View>
 
                                                                 <View style={styles.rowSchedContainer}>
-                                                                    <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                                    <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
                                                                     <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                                 </View>
                                                             </View>
@@ -1527,18 +1551,18 @@ const Dashboard = ({ navigation, route }) => {
 
                                                         :
 
-                                                        item.category === 'consults' ?
+                                                        item.category === 'procedures' ?
                                                             <Card.Content key={i}>
                                                                 <View style={styles.columnContainer}>
                                                                     <Text style={styles.titleStyle}>{item.procedures}</Text>
                                                                     <View style={styles.rowSchedContainer}>
-                                                                        <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
-                                                                        <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
+                                                                        <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                                        <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
 
                                                                     </View>
 
                                                                     <View style={styles.rowSchedContainer}>
-                                                                        <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                                        <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
                                                                         <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                                     </View>
                                                                 </View>
@@ -1546,215 +1570,244 @@ const Dashboard = ({ navigation, route }) => {
 
                                                             :
 
-                                                            <Card.Content key={i}>
-                                                                <View style={styles.columnContainer}>
-                                                                    <Text style={styles.titleStyle}>{item.title}</Text>
-                                                                    <View style={styles.rowSchedContainer}>
-                                                                        <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+                                                            item.category === 'consults' ?
+                                                                <Card.Content key={i}>
+                                                                    <View style={styles.columnContainer}>
+                                                                        <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                                                        <View style={styles.rowSchedContainer}>
+                                                                            <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                                            <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
 
+                                                                        </View>
+
+                                                                        <View style={styles.rowSchedContainer}>
+                                                                            <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                                            <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                                                        </View>
                                                                     </View>
+                                                                </Card.Content>
 
-                                                                    <View style={styles.rowSchedContainer}>
-                                                                        <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                                                        <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                                                :
+
+                                                                <Card.Content key={i}>
+                                                                    <View style={styles.columnContainer}>
+                                                                        <Text style={styles.titleStyle}>{item.title}</Text>
+                                                                        <View style={styles.rowSchedContainer}>
+                                                                            <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                                            <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+
+                                                                        </View>
+
+                                                                        <View style={styles.rowSchedContainer}>
+                                                                            <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                                            <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                                                        </View>
                                                                     </View>
-                                                                </View>
-                                                            </Card.Content>
-                                                }
+                                                                </Card.Content>
+                                                    }
 
-                                            </Card>
-                                        </TouchableHighlight>
-                                    }
-                                    )}
-                                </>
-                            }
-                        </View>
-                        <View>
-                            <StatisticsComponent bgColor="#03A9F3" title="CONSULT FORM" count={dashboardData?.total_inquiries} iconName="email-newsletter" iconFolder="Icon" popOverContent={'Overall consult from submitted'} />
-                            <StatisticsComponent bgColor="#ED7D31" title="BOOK CONSULTS" count={dashboardData?.total_booked_consults} iconName="book-online" iconFolder="MaterialIcon" popOverContent={'Overall booked consults'} />
-                            <StatisticsComponent bgColor="#FFC000" title="BOOK PROCEDURES" count={dashboardData?.total_booked_procedures} iconName="procedures" iconFolder="FAIcon5" popOverContent={'Overall booked procedures'} />
-                            <StatisticsComponent bgColor="#00C292" title="COMPLETED PROCEDURES" count={dashboardData?.total_completed_procedures} iconName="check-circle" iconFolder="FeatherIcon" popOverContent={'Overall completed procedures'} />
-                        </View>
-                        <List.Accordion
-                            title="Report Summary"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold' }}
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 430, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
-                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
-                                    <AntdIcon name="filter" size={25} color="#7e7e7e" />
-                                </View>
-                                <TabView
-                                    navigationState={{ index, routes }}
-                                    renderScene={renderScene}
-                                    onIndexChange={setIndex}
-                                    initialLayout={{ initialLayout }}
-                                    renderTabBar={renderTabBar}
-                                />
-
-
+                                                </Card>
+                                            </TouchableHighlight>
+                                        }
+                                        )}
+                                    </>
+                                }
                             </View>
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                        <List.Accordion
-                            title="Monthly Calendar"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
+                            <View>
+                                <StatisticsComponent bgColor="#03A9F3" title="CONSULT FORM" count={dashboardData?.total_inquiries} iconName="email-newsletter" iconFolder="Icon" popOverContent={'Overall consult from submitted'} />
+                                <StatisticsComponent bgColor="#ED7D31" title="BOOK CONSULTS" count={dashboardData?.total_booked_consults} iconName="book-online" iconFolder="MaterialIcon" popOverContent={'Overall booked consults'} />
+                                <StatisticsComponent bgColor="#FFC000" title="BOOK PROCEDURES" count={dashboardData?.total_booked_procedures} iconName="procedures" iconFolder="FAIcon5" popOverContent={'Overall booked procedures'} />
+                                <StatisticsComponent bgColor="#00C292" title="COMPLETED PROCEDURES" count={dashboardData?.total_completed_procedures} iconName="check-circle" iconFolder="FeatherIcon" popOverContent={'Overall completed procedures'} />
                             </View>
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                        <List.Accordion
-                            title="Procedures"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 1040, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
-                                <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
-                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
-                                    <AntdIcon name="filter" size={25} color="#7e7e7e" />
-                                </View>
-                                <TabView
-                                    navigationState={{ index, routes }}
-                                    renderScene={renderSceneProcedures}
-                                    onIndexChange={setIndex}
-                                    initialLayout={{ initialLayout }}
-                                    renderTabBar={renderTabBar}
-                                />
-                            </View>
-
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                        <List.Accordion
-                            title="Surgeons"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 430, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
-                                    <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
-                                    <AntdIcon name="filter" size={25} color="#7e7e7e" />
-                                </View>
-                                <TabView
-                                    navigationState={{ index, routes }}
-                                    renderScene={renderSceneSurgeons}
-                                    onIndexChange={setIndex}
-                                    initialLayout={{ initialLayout }}
-                                    renderTabBar={renderTabBar}
-                                />
-
-
-                            </View>
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                        <List.Accordion
-                            title="Location"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between', }}>
-                                            <Text style={{fontSize: 14, fontWeight: 'bold'}}> {filterText}  </Text>
-                                            <Menu>
-                                                <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }}/></MenuTrigger>
-                                                <MenuOptions>
-                                                    <MenuOption onSelect={() => getLocationAll("","")} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={getLocationThisWeek} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={getLocationThisMonth} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={getLocationLastMonth} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={getLocationThisYear} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={getLocationLastYear} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={getLocationLastTwoYears} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
-                                                    </MenuOption>
-                                                    <MenuOption onSelect={() => {
-                                                        setSelectedCategory('location'); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
-                                                        setdatePickerTitleStart(null); setdatePickerTitleEnd(null); setStartDate(null);
-                                                        setEndDate(null); console.log(selectedCategory);}} >
-                                                      <View style={styles.popupItem}><Text style={styles.popupItemText}>Custom Range</Text></View>
-                                                    </MenuOption>
-                                                </MenuOptions>
-                                            </Menu>
+                            <List.Accordion
+                                title="Report Summary"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold' }}
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 430, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                        <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
+                                        <AntdIcon name="filter" size={25} color="#7e7e7e" />
                                     </View>
                                     <TabView
                                         navigationState={{ index, routes }}
-                                        renderScene={renderSceneLocation}
-                                        onIndexChange={setIndexL}
+                                        renderScene={renderScene}
+                                        onIndexChange={setIndex}
                                         initialLayout={{ initialLayout }}
-                                        renderTabBar={renderTabBarLocation}
+                                        renderTabBar={renderTabBar}
                                     />
 
 
                                 </View>
-                            </View>
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                        <List.Accordion
-                            title="Source of Inquiry"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                <HorizontalBarGraph
-                                    //data={filterDataSOIData}
-                                    data={[1,1,1,1,5,2,3,3,3,10]}
-                                    labels={filterDataSOI.labels}
-                                    width={Dimensions.get("window").width - 44}
-                                    height={400}
-                                    barRadius={5}
-                                    barColor="#e3e3e3"
-                                    barWidthPercentage={0.5}
-                                    baseConfig={{
-                                        hasYAxisBackgroundLines: true,
-                                        hasXAxisBackgroundLines: true,
-                                        xAxisLabelStyle: {
-                                            rotation: 0,
-                                            fontSize: 12,
-                                            width: 150,
-                                            yOffset: 0,
-                                            xOffset: -60,
-                                            margin: 10,
-                                        },
-                                        yAxisLabelStyle: {
-                                            fontSize: 13,
-                                            position: 'bottom',
-                                            xOffset: 15,
-                                            height: 100,
-                                            decimal: 1
-                                        }
-                                    }}
-                                />
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                            <List.Accordion
+                                title="Monthly Calendar"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
 
-                            </View>
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                        <List.Accordion
-                            title="Leads Funnel"
-                            titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            expanded="true"
-                            style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                            <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                
-                              
-                            </View>
-                        </List.Accordion>
-                        <View style={{ marginBottom: 5 }} />
-                    </View>
-                </ScrollView>
-            </View>
-        </PaperProvider>
+                                </View>
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                            <List.Accordion
+                                title="Procedures"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 1040, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+
+                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                        <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
+                                        <AntdIcon name="filter" size={25} color="#7e7e7e" />
+                                    </View>
+                                    <TabView
+                                        navigationState={{ index, routes }}
+                                        renderScene={renderSceneProcedures}
+                                        onIndexChange={setIndex}
+                                        initialLayout={{ initialLayout }}
+                                        renderTabBar={renderTabBar}
+                                    />
+                                </View>
+
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                            <List.Accordion
+                                title="Surgeons"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 430, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
+                                        <AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} />
+                                        <AntdIcon name="filter" size={25} color="#7e7e7e" />
+                                    </View>
+                                    <TabView
+                                        navigationState={{ index, routes }}
+                                        renderScene={renderSceneSurgeons}
+                                        onIndexChange={setIndex}
+                                        initialLayout={{ initialLayout }}
+                                        renderTabBar={renderTabBar}
+                                    />
+
+
+                                </View>
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                            <List.Accordion
+                                title="Location"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                        <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between', }}>
+                                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}> {filterText}  </Text>
+                                            <Menu>
+                                                <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
+                                                <MenuOptions>
+                                                    <MenuOption onSelect={() => getLocationAll("", "")} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationThisWeek} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationThisMonth} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationLastMonth} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationThisYear} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationLastYear} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={getLocationLastTwoYears} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {
+                                                        setSelectedCategory('location'); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
+                                                        setdatePickerTitleStart(null); setdatePickerTitleEnd(null); setStartDate(null);
+                                                        setEndDate(null); console.log(selectedCategory);
+                                                    }} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Custom Range</Text></View>
+                                                    </MenuOption>
+                                                </MenuOptions>
+                                            </Menu>
+                                        </View>
+                                        <TabView
+                                            navigationState={{ index, routes }}
+                                            renderScene={renderSceneLocation}
+                                            onIndexChange={setIndexL}
+                                            initialLayout={{ initialLayout }}
+                                            renderTabBar={renderTabBarLocation}
+                                        />
+
+
+                                    </View>
+                                </View>
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                            <List.Accordion
+                                title="Source of Inquiry"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <HorizontalBarGraph
+                                        //data={filterDataSOIData}
+                                        data={[1, 1, 1, 1, 5, 2, 3, 3, 3, 10]}
+                                        labels={filterDataSOI.labels}
+                                        width={Dimensions.get("window").width - 44}
+                                        height={400}
+                                        barRadius={5}
+                                        barColor="#e3e3e3"
+                                        barWidthPercentage={0.5}
+                                        baseConfig={{
+                                            hasYAxisBackgroundLines: true,
+                                            hasXAxisBackgroundLines: true,
+                                            xAxisLabelStyle: {
+                                                rotation: 0,
+                                                fontSize: 12,
+                                                width: 150,
+                                                yOffset: 0,
+                                                xOffset: -60,
+                                                margin: 10,
+                                            },
+                                            yAxisLabelStyle: {
+                                                fontSize: 13,
+                                                position: 'bottom',
+                                                xOffset: 15,
+                                                height: 100,
+                                                decimal: 1
+                                            }
+                                        }}
+                                    />
+
+                                </View>
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                            <List.Accordion
+                                title="Leads Funnel"
+                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
+                                expanded="true"
+                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
+                                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <VerticalBarGraph
+                                        data={[20, 45, 28, 80, 99, 43, 50]}
+                                        labels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul']}
+                                        width={375}
+                                        height={300}
+                                        barRadius={5}
+                                        barWidthPercentage={0.65}
+                                        barColor="#e3e3e3"
+                                        style={styles.chart}
+                                    />
+
+                                </View>
+                            </List.Accordion>
+                            <View style={{ marginBottom: 5 }} />
+                        </View>
+                    </ScrollView>
+                </View>
+            </PaperProvider>
         </MenuProvider>
     );
 
@@ -1896,7 +1949,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 10
-    },    
+    },
     textPicker: {
         fontFamily: 'Roboto',
         fontSize: 16,
