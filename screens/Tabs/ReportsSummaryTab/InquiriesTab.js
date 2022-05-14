@@ -1,42 +1,59 @@
-import React, {useEffect, useState } from 'react';
-import { StyleSheet, View, Text,  Dimensions, } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, Text, Dimensions, } from 'react-native';
 import {
     LineChart,
 } from "react-native-chart-kit";
 
-const InquiriesTab = ({summary, summaryData}) => {
+const InquiriesTab = ({ summary, summaryData, monthSelected }) => {
+
+    const monthLabel = [];
+
+    if (monthSelected === true) {
+        for (var i = 0; i < summary.labels.length; i++) {
+            if (i % 3 === 0) {
+                monthLabel[i] = summary.labels[i]
+            }
+            else {
+                monthLabel[i] = ""
+            }
+        }
+    }
+
+
     let arr = [];
-    for(var i = 0; i < summaryData.length; i++){
-        arr[i] = {data: summaryData[i].data}
+    for (var i = 0; i < summaryData.length; i++) {
+        arr[i] = { data: summaryData[i].data }
     }
 
 
     function* yLabel() {
         const min = Math.min(...arr[0].data); // minimum value of data array d
-        const max = Math.max(...arr[arr.length -1].data); // maximum value of data array d
+        const max = Math.max(...arr[arr.length - 1].data);  // maximum value of data array d
 
-        yield* [min, '', max]; 
+        yield* [min, '', max];
     }
 
     const yLabelIterator = yLabel();
-  return (
-    <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
+    return (
+        <View style={{ flex: 1, height: 320, backgroundColor: '#fff', padding: 10 }}>
             <LineChart
                 data={{
-                    labels: summary.labels,
+                    labels: monthSelected === true ? monthLabel : summary.labels,
                     datasets: summaryData
                 }}
                 width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
+                height={monthSelected === true ? 350 : 230}
+                fromZero={false}
                 segments={2}
+                verticalLabelRotation={monthSelected === true ? 90 : 0}
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
                     backgroundGradientFrom: "#F6F7F9",
                     backgroundGradientTo: "#F6F7F9",
-                    decimalPlaces: 0, // optional, defaults to 2dp
+                    decimalPlaces: 0,
                     color: (opacity = 1) => `gray`,
                     labelColor: (opacity = 1) => `gray`,
-
+                    verticalLabelRotation: 60,
                     propsForDots: {
                         r: "7",
                         strokeWidth: "0",
@@ -52,7 +69,7 @@ const InquiriesTab = ({summary, summaryData}) => {
                 formatYLabel={() => yLabelIterator.next().value}
             />
             <View style={styles.typesContainer}>
-                {summaryData?.map((item, i) => {
+                {summaryData.map((item, i) => {
                     return <View style={styles.types} key={i}>
                         <View style={{ marginRight: 10, height: 15, width: 15, borderRadius: 15, backgroundColor: item.backgroundColor }}></View>
                         <Text style={styles.text2}>{item.name}</Text>
@@ -60,11 +77,11 @@ const InquiriesTab = ({summary, summaryData}) => {
                 })}
             </View>
         </View>
-  )
+    )
 }
 
 const styles = StyleSheet.create({
-    
+
     types: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -87,7 +104,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         marginBottom: 5,
     },
-    
+
 
 
     text2: {

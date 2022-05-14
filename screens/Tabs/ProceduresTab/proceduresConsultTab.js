@@ -40,6 +40,7 @@ const ProceduresConsultsTab = ({ data, proceduresData }) => {
                     baseConfig={{
                         hasYAxisBackgroundLines: true,
                         hasXAxisBackgroundLines: true,
+                       
                         xAxisLabelStyle: {
                             rotation: 0,
                             fontSize: 10,
@@ -51,10 +52,9 @@ const ProceduresConsultsTab = ({ data, proceduresData }) => {
                         yAxisLabelStyle: {
 
                             fontSize: 13,
-
                             position: 'bottom',
                             xOffset: 15,
-                            decimals: 0,
+                            decimals: 1,
                             height: 100
                         }
                     }}

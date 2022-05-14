@@ -5,8 +5,21 @@ import {
 } from "react-native-chart-kit";
 
 
-const ConsultsTab = ({ summary, summaryData }) => {
+const ConsultsTab = ({ summary, summaryData, monthSelected }) => {
  
+    const monthLabel = [];
+
+    if (monthSelected === true) {
+        for (var i = 0; i < summary.labels.length; i++) {
+            if (i % 3 === 0) {
+                monthLabel[i] = summary.labels[i]
+            }
+            else {
+                monthLabel[i] = ""
+            }
+        }
+    }
+    console.log('MONTH LABELS: ', monthLabel)
 
     let arr = [];
     for(var i = 0; i < summaryData.length; i++){
@@ -15,25 +28,28 @@ const ConsultsTab = ({ summary, summaryData }) => {
 
     function* yLabel() {
         const min = Math.min(...arr[0].data); // minimum value of data array d
-        const max = Math.max(...arr[arr.length -1].data); // maximum value of data array d
+        const max = Math.max(...arr[arr.length - 1].data);  // maximum value of data array d
 
         yield* [min, '', max]; 
     }
 
+  
+   
+
     const yLabelIterator = yLabel();
 
     return (
-        <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
+        <View style={{ flex: 1, height: 320, backgroundColor: '#fff', padding: 10 }}>
             <LineChart
                 data={{
-                    labels: summary.labels,
+                    labels: monthSelected === true ? monthLabel : summary.labels,
                     datasets: summaryData
                 }}
                 width={Dimensions.get("window").width - 44} // from react-native
-                height={230}
+                height={monthSelected === true ? 350 : 230}
                 fromZero={false}
                 segments={2}
-               
+                verticalLabelRotation={monthSelected === true ? 90 : 0}
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
                     backgroundGradientFrom: "#F6F7F9",
@@ -41,7 +57,7 @@ const ConsultsTab = ({ summary, summaryData }) => {
                     decimalPlaces:0, 
                     color: (opacity = 1) => `gray`,
                     labelColor: (opacity = 1) => `gray`,
-
+                    verticalLabelRotation: 60,
                     propsForDots: {
                         r: "7",
                         strokeWidth: "0",
