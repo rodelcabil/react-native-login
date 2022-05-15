@@ -1,12 +1,13 @@
 import React, {useEffect, useState } from 'react';
 import { StyleSheet, View, Text,  Dimensions, } from 'react-native';
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import {
     LineChart,
     PieChart
 } from "react-native-chart-kit";
 
 
-const LocationProceduresTab = ({locationdata}) => {
+const LocationProceduresTab = ({locationdata, loader}) => {
     const screenWidth = Dimensions.get("window").width;
     const chartConfig = {
         backgroundGradientFrom: "#1E2923",
@@ -21,6 +22,7 @@ const LocationProceduresTab = ({locationdata}) => {
 
 
   return (
+    loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
     <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
     <View style={styles.rowContainer}>
         <View style={styles.typesContainer}>

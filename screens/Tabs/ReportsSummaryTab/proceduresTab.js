@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Dimensions, } from 'react-native';
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import {
     LineChart,
 } from "react-native-chart-kit";
 
-const ProceduresTab = ({ summary, summaryData, monthSelected }) => {
+const ProceduresTab = ({ summary, summaryData, monthSelected, loader }) => {
 
     const monthLabel = [];
 
@@ -37,6 +38,7 @@ const ProceduresTab = ({ summary, summaryData, monthSelected }) => {
     const yLabelIterator = yLabel();
 
     return (
+        loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
         <View style={{ flex: 1, height: 320, backgroundColor: '#fff', padding: 10 }}>
             <LineChart
                 data={{

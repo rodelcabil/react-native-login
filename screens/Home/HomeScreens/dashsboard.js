@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions, Button, Animated, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions, Button, Animated, TouchableOpacity, LogBox } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import AppBar from '../../ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,6 +15,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import * as Animatable from 'react-native-animatable';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import {
     LineChart,
     BarChart,
@@ -52,6 +53,8 @@ import SurgeonsProceduresTab from '../../Tabs/SurgeonsTab/surgeonProcedures';
 import ProceduresInquiriesTab from '../../Tabs/ProceduresTab/proceduresInquiriesTab';
 import ProceduresConsultsTab from '../../Tabs/ProceduresTab/proceduresConsultTab';
 import ProceduresProceduresTab from '../../Tabs/ProceduresTab/proceduresProceduresTab';
+import MonthlyCTab from '../../Tabs/MonthlyCalendar/monthly';
+import WeeklyCTab from '../../Tabs/MonthlyCalendar/weekly';
 import { ar } from 'date-fns/locale';
 
 
@@ -69,7 +72,10 @@ const black_theme = {
 
 
 const Dashboard = ({ navigation, route }) => {
-
+    LogBox.ignoreLogs([
+        "ViewPropTypes will be removed",
+        "ColorPropType will be removed",
+        ])
 
     const [summaryDataNames, setSummaryDatanames] = useState([]);
     const [toggleCheckBox1, setToggleCheckBox1] = useState(false)
@@ -90,6 +96,7 @@ const Dashboard = ({ navigation, route }) => {
     const [index, setIndex] = useState(0);
     const [indexL, setIndexL] = useState(0);
     const layout = useWindowDimensions();
+
     const [routes] = useState([
         { key: 'first', title: 'Consult Form' },
         { key: 'second', title: 'Consults' },
@@ -134,16 +141,8 @@ const Dashboard = ({ navigation, route }) => {
 
     const filters = ['Procedures', 'Surgeons', 'Location', 'Source of Inquiry', 'Leads Funnel'];
 
-    const dataBar = {
-        planned: [null, { x: 'Week 1', y: 20 }],
-        actual: [
-            { x: 'Week 1', y: 50 },
-            { x: 'Week 1', y: 80 },
-            { x: 'Week 2', y: 20 }
-        ]
-    }
-
    
+    const [ifZeroDataSOI, setIfZeroDataSOI] = useState(false);
 
     useEffect(() => {
         const getMySchedule = async () => {
@@ -165,6 +164,7 @@ const Dashboard = ({ navigation, route }) => {
                     else {
                         setHasSched(false)
                     }
+                    setTodaySchedLoader(false);
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
             console.log("HAS SCHED?: ", hasSched)
@@ -212,29 +212,6 @@ const Dashboard = ({ navigation, route }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
 
-        const getFilteredQuerySOI = async (filter) => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/charts?filter=${filter}`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    setFilterDataSOI(response.data)
-                    console.log("SOI DATA: ", response.data)
-                    let data = [];
-                    for (var i = 0; i < response.data.datasets.length; i++) {
-                        data[i] = { data: response.data.datasets[i].data };
-                    }
-                    setFilterDataSOIData(data[0].data);
-                    console.log("SOI DATA 2: ", data[0].data)
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        }
 
         const getSurgeonInquiriesData = async () => {
             const token = await AsyncStorage.getItem('token');
@@ -429,7 +406,7 @@ const Dashboard = ({ navigation, route }) => {
         //Location
         getLocationAll("", "");
 
-        getFilteredQuerySOI(filters[3]);
+        getSOI();
         getSurgeonInquiriesData();
         getSurgeonConsultsData();
         getSurgeonProceduresData();
@@ -565,25 +542,21 @@ const Dashboard = ({ navigation, route }) => {
                     setSummaryDataProcedures(mappedData)
                     console.log("FILTER REPORT SUMMARY PROCEDURES: ", mappedData)
     
-    
+                    setReportSummaryLoader(false)
                 })
     }
 
-    
-
-
-
 
     const renderScene = SceneMap({
-        first: () => <InquiriesTab summary={summaryInquiries} summaryData={summaryDataInquiries} monthSelected={monthSelected} />,
-        second: () => <ConsultsTab summary={summaryConsults} summaryData={summaryDataConsults} monthSelected={monthSelected} />,
-        third: () => <ProceduresTab summary={summaryProcedures} summaryData={summaryDataProcedures} monthSelected={monthSelected} />
+        first: () => <InquiriesTab summary={summaryInquiries} summaryData={summaryDataInquiries} monthSelected={monthSelected} loader={reportSummaryLoader} />,
+        second: () => <ConsultsTab summary={summaryConsults} summaryData={summaryDataConsults} monthSelected={monthSelected} loader={reportSummaryLoader} />,
+        third: () => <ProceduresTab summary={summaryProcedures} summaryData={summaryDataProcedures} monthSelected={monthSelected} loader={reportSummaryLoader} />
     });
 
     const renderSceneLocation = SceneMap({
-        first: () => <LocationInquiriesTab locationdata={locationConsultForm} />,
-        second: () => <LocationConsultsTab locationdata={locationConsult} />,
-        third: () => <LocationProceduresTab locationdata={locationProcedures} />,
+        first: () => <LocationInquiriesTab locationdata={locationConsultForm} loader={locationLoader}/>,
+        second: () => <LocationConsultsTab locationdata={locationConsult} loader={locationLoader} />,
+        third: () => <LocationProceduresTab locationdata={locationProcedures} loader={locationLoader}/>,
     });
 
     const renderSceneSurgeons = SceneMap({
@@ -597,6 +570,14 @@ const Dashboard = ({ navigation, route }) => {
         second: () => <ProceduresConsultsTab data={proceduresConsults} proceduresData={procedureDataConsults} />,
         third: () => <ProceduresProceduresTab data={proceduresProcedures} proceduresData={procedureDataProcedures} />,
     });
+
+    const renderSceneMonthlyCalendar = SceneMap({
+        first: () => <MonthlyCTab />,
+        second: () => <WeeklyCTab/>,
+    });
+
+
+    
 
     const renderTabBar = props => (
         <TabBar
@@ -624,6 +605,24 @@ const Dashboard = ({ navigation, route }) => {
         />
     );
 
+    const [routesMonthlyCalendar] = useState([
+        { key: 'first', title: 'Weekly' },
+        { key: 'second', title: 'Monthly' },
+    ]);
+
+    const renderTabBarMonthlyCalendar = props => (
+        <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: '#da7331' }}
+            style={{ backgroundColor: '#fff', }}
+            renderLabel={({ routesMonthlyCalendar }) => (
+                <Text style={{ color: 'black', margin: 8, textTransform: 'uppercase', fontSize: 12 }}>
+                    {routesMonthlyCalendar.title}
+                </Text>
+            )}
+        />
+    );
+
     const clearFilter = () =>{
         getReportSummaryData("","");
         setToggleCheckBox1(false);
@@ -632,6 +631,7 @@ const Dashboard = ({ navigation, route }) => {
         setToggleCheckBox4(false);
         setToggleCheckBox5(false); 
         setSummaryDatanames([])
+        setReportSummaryLoader(false)
        
     }
 
@@ -639,13 +639,11 @@ const Dashboard = ({ navigation, route }) => {
 
     const getReportSummaryData = async (datefrom, dateto) => {
        
-
         setmonthSelected(false)
 
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
-       
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${datefrom}&dateto=${dateto}&filter=Inquiries&`,
@@ -752,9 +750,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -768,6 +764,9 @@ const Dashboard = ({ navigation, route }) => {
         const today = moment(new Date(Date.now()));
         const begginingOfCurrentWeek = today.startOf('week').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -876,9 +875,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -891,6 +888,9 @@ const Dashboard = ({ navigation, route }) => {
         const today = moment(new Date(Date.now()));
         const begginingOfMonth = today.startOf('month').format("YYYY-MM-DD");
         const endOfMonth = today.endOf('month').format("YYYY-MM-DD");
+
+        const setText = " DATE (" + begginingOfMonth + " - " + endOfMonth + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -999,9 +999,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -1013,6 +1011,9 @@ const Dashboard = ({ navigation, route }) => {
         const today = moment(new Date(Date.now())).subtract(1, 'month');
         const begginingOfLastMonth = today.startOf('month').format("YYYY-MM-DD");
         const endOfLastMonth = today.endOf('month').format("YYYY-MM-DD");
+
+        const setText = " DATE (" + begginingOfLastMonth + " - " + endOfLastMonth + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -1121,9 +1122,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -1136,6 +1135,9 @@ const Dashboard = ({ navigation, route }) => {
         const today = moment(new Date(Date.now()));
         const begginingOfYear = today.startOf('year').format("YYYY-MM-DD");
         const endOfYear = today.endOf('year').format("YYYY-MM-DD");
+
+        const setText = " DATE (" + begginingOfYear + " - " + endOfYear + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -1244,9 +1246,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -1259,6 +1259,9 @@ const Dashboard = ({ navigation, route }) => {
         const today = moment(new Date(Date.now())).subtract(1, 'year');
         const begginingOfLastYear = today.startOf('year').format("YYYY-MM-DD");
         const endOfLastYear = today.endOf('year').format("YYYY-MM-DD");
+
+        const setText = " DATE (" + begginingOfLastYear + " - " + endOfLastYear + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -1367,9 +1370,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -1382,6 +1383,9 @@ const Dashboard = ({ navigation, route }) => {
         const today = moment(new Date(Date.now())).subtract(2, 'year');
         const begginingOfLastTwoYears = today.startOf('year').format("YYYY-MM-DD");
         const endOfLastTwoYears = today.endOf('year').format("YYYY-MM-DD");
+
+        const setText = " DATE (" + begginingOfLastTwoYears + " - " + endOfLastTwoYears + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -1490,9 +1494,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -1502,6 +1504,9 @@ const Dashboard = ({ navigation, route }) => {
         setmonthSelected(false)
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
+
+        const setText = " DATE (" + startDate + " - " + endDate + ")";
+        setFilterTextRS(setText);
 
         removeComma = mappedNames.toString().replace(/,/g, '')
 
@@ -1610,9 +1615,7 @@ const Dashboard = ({ navigation, route }) => {
                     };
                 });
                 setSummaryDataProcedures(mappedData)
-
-
-
+                setReportSummaryLoader(false);
             })
 
     }
@@ -1622,8 +1625,6 @@ const Dashboard = ({ navigation, route }) => {
     const getLocationAll = async (datefrom, dateto) => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
-
-        setFilterText('All');
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${datefrom}&dateto=${dateto}&filter=Consult Form&category=location`,
@@ -1705,7 +1706,7 @@ const Dashboard = ({ navigation, route }) => {
                 console.log("LOCATION DATA CONSULT 3: ", temoArr)
                 setLocationProcedures(temoArr)
             })
-
+            setLocationLoader(false);
     }
 
     const getLocationThisWeek = async () => {
@@ -1717,7 +1718,7 @@ const Dashboard = ({ navigation, route }) => {
         const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
 
-        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -1799,6 +1800,7 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
     }
 
@@ -1811,7 +1813,7 @@ const Dashboard = ({ navigation, route }) => {
         const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
 
-        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -1893,6 +1895,7 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
     }
 
@@ -1905,7 +1908,7 @@ const Dashboard = ({ navigation, route }) => {
         const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
 
-        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -1987,6 +1990,7 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
     }
 
@@ -1999,7 +2003,7 @@ const Dashboard = ({ navigation, route }) => {
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
 
-        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -2081,6 +2085,7 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
     }
 
@@ -2093,7 +2098,7 @@ const Dashboard = ({ navigation, route }) => {
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
 
-        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -2175,6 +2180,7 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
     }
 
@@ -2187,7 +2193,7 @@ const Dashboard = ({ navigation, route }) => {
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
         console.log(begginingOfCurrentWeek, endOfWeek);
 
-        const setText = begginingOfCurrentWeek + " - " + endOfWeek;
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -2269,6 +2275,7 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
     }
 
@@ -2276,7 +2283,7 @@ const Dashboard = ({ navigation, route }) => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
-        const setText = startDate + " - " + endDate;
+        const setText = " DATE (" + startDate + " - " + endDate + ")";
         setFilterText(setText);
 
         await axios.get(
@@ -2358,7 +2365,362 @@ const Dashboard = ({ navigation, route }) => {
                 }
                 console.log("LOCATION DATA: ", temoArr)
                 setLocationConsultForm(temoArr)
+                setLocationLoader(false);
             })
+    }
+
+    const getSOI = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/charts?filter=Source of Inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+        // console.log("DASHBOARD - SCHEDULES: ", schedule)
+    }
+
+    const getSOIThisWeek = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now()));
+        const begginingOfCurrentWeek = today.startOf('week').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
+    }
+
+    const getSOIThisMonth = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now()));
+        const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
+    }
+
+    const getSOILastMonth = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract(1, 'month');
+        const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
+    }
+
+    const getSOIThisYear = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now()));
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
+    }
+
+    const getSOILastYear = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract(1, 'year');
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
+    }
+
+    const getSOILastTwoYear = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract(2, 'year');
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
+    }
+
+    const getSOIDateRange = async (startDate, endDate) => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const setText = " DATE (" + startDate + " - " + endDate + ")";
+        setFilterTextSOI(setText);
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${startDate}&dateto=${endDate}&category=source_of_inquiry`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+
+                setFilterDataSOI(response.data)
+                console.log("SOI DATA: ", response.data)
+                let data = [];
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data[i] = { data: response.data.datasets[i].data };
+                }
+                setFilterDataSOIData(data[0].data);
+                console.log("SOI DATA 2: ", data[0].data)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setIfZeroDataSOI(false);
+                }
+                else{
+                    setIfZeroDataSOI(true);
+                }
+                setSourceofinquiryLoader(false)
+            })
+
+       
     }
 
 
@@ -2406,6 +2768,14 @@ const Dashboard = ({ navigation, route }) => {
     const [showErrorEmpED, setShowErrorEmpED] = useState(false);
 
     const [filterText, setFilterText] = useState(null);
+    const [filterTextRS, setFilterTextRS] = useState(null);
+    const [filterTextSOI, setFilterTextSOI] = useState(null);
+
+    const [locationLoader, setLocationLoader] = useState(true);
+    const [reportSummaryLoader, setReportSummaryLoader] = useState(true);
+    const [sourceofinquiryLoader, setSourceofinquiryLoader] = useState(true);
+    const [todaySchedLoader, setTodaySchedLoader] = useState(true);
+
 
     return (
         <MenuProvider>
@@ -2447,6 +2817,12 @@ const Dashboard = ({ navigation, route }) => {
                                         else {
                                             if (selectedCategory === "location") {
                                                 getLocationRangeDate(startDate, endDate);
+                                            }
+                                            else if(selectedCategory === "Source of Inquiry"){
+                                                getSOIDateRange(startDate, endDate);
+                                            }
+                                            else if(selectedCategory === "Report Summary"){
+                                                getReportSummaryDataRangeDate(startDate, endDate);
                                             }
                                             setShowDateRangePicker(false);
                                             setSelectedCategory(null);
@@ -2516,7 +2892,8 @@ const Dashboard = ({ navigation, route }) => {
                             <View>
                                 <Text style={styles.text}>Today's schedule</Text>
 
-                                {hasSched === false ?
+                                {todaySchedLoader === true ? <View style={{ justifyContent: 'center', borderRadius: 30, marginBottom: 10, padding: 10}}><LoaderSmall/></View> :
+                                hasSched === false ?
                                     <View style={styles.itemEmptyContainer}>
                                         <Image
                                             style={styles.logoImg}
@@ -2633,33 +3010,35 @@ const Dashboard = ({ navigation, route }) => {
                                 titleStyle={{ color: '#fff', fontWeight: 'bold' }}
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', backgroundColor: '#2A2B2F', }}>
                                 <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: monthSelected === true ? 550 : 430, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                    <View style={{ paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between', }}>
+                                    <View style={{marginTop: 10}}><Text style={{ fontSize: 14, fontWeight: 'bold' }}> {filterTextRS} </Text></View> 
                                     <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'flex-end', }}>
                                         <Menu>
                                             <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
                                             <MenuOptions>
-                                                <MenuOption onSelect={() => getReportSummaryData("", "")} >
+                                                <MenuOption onSelect={() => {getReportSummaryData("", ""), setReportSummaryLoader(true) }} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                                 </MenuOption>
-                                                <MenuOption onSelect={getReportSummaryDataThisWeek} >
+                                                <MenuOption onSelect={() => {getReportSummaryDataThisWeek(), setReportSummaryLoader(true)}} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
                                                 </MenuOption>
-                                                <MenuOption onSelect={getReportSummaryDataThisMonth} >
+                                                <MenuOption onSelect={() => {getReportSummaryDataThisMonth(), setReportSummaryLoader(true)}} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
                                                 </MenuOption>
-                                                <MenuOption onSelect={getReportSummaryDataLastMonth} >
+                                                <MenuOption onSelect={() => {getReportSummaryDataLastMonth(), setReportSummaryLoader(true)}} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
                                                 </MenuOption>
-                                                <MenuOption onSelect={getReportSummaryDataThisYear} >
+                                                <MenuOption onSelect={() => {getReportSummaryDataThisYear(), setReportSummaryLoader(true)}} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
                                                 </MenuOption>
-                                                <MenuOption onSelect={getReportSummaryDataLastYear} >
+                                                <MenuOption onSelect={() => {getReportSummaryDataLastYear(), setReportSummaryLoader(true)}} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
                                                 </MenuOption>
-                                                <MenuOption onSelect={getReportSummaryDataLastTwoYears} >
+                                                <MenuOption onSelect={() => {getReportSummaryDataLastTwoYears(), setReportSummaryLoader(true)}} >
                                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
                                                 </MenuOption>
                                                 <MenuOption onSelect={() => {
-                                                    setSelectedCategory('location'); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
+                                                    setSelectedCategory('Report Summary'); setReportSummaryLoader(true); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
                                                     setdatePickerTitleStart(null); setdatePickerTitleEnd(null); setStartDate(null);
                                                     setEndDate(null); console.log(selectedCategory);
                                                 }} >
@@ -2779,13 +3158,13 @@ const Dashboard = ({ navigation, route }) => {
                                                 </View>
 
                                                 <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, justifyContent: 'space-between' }}>
-                                                    <TouchableHighlight onPress={()=>{clearFilter()}} style={{bodrderRadius: 5}}>
+                                                    <TouchableHighlight onPress={()=>{{clearFilter(), setReportSummaryLoader(true)}}} style={{bodrderRadius: 5}}>
                                                         <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, borderRadius: 5, backgroundColor: '#FFC000', justifyContent: 'space-evenly' }}>
                                                             <AntdIcon name='close' size={15} style={{marginRight: 3}}/>
                                                             <Text style={{fontWeight: 'bold'}}>CLEAR</Text> 
                                                         </View>
                                                     </TouchableHighlight>
-                                                    <TouchableHighlight onPress={()=>getSummaryFilterData()} style={{bodrderRadius: 5}}>
+                                                    <TouchableHighlight onPress={()=>{getSummaryFilterData(), setReportSummaryLoader(true)}} style={{bodrderRadius: 5}}>
                                                         <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, borderRadius: 5, color: '#fff', backgroundColor: '#00C292', justifyContent: 'space-evenly' }}>
                                                             <FeatherIcon name='send' size={15} style={{marginRight: 3}} color="#fff"/>
                                                             <Text style={{fontWeight: 'bold', color: '#fff'}}>SUBMIT</Text> 
@@ -2796,6 +3175,7 @@ const Dashboard = ({ navigation, route }) => {
                                         </Menu>
 
                                     </View>
+                                </View>
                                     <TabView
                                         navigationState={{ index, routes }}
                                         renderScene={renderScene}
@@ -2808,13 +3188,23 @@ const Dashboard = ({ navigation, route }) => {
                                 </View>
                             </List.Accordion>
                             <View style={{ marginBottom: 5 }} />
+
                             <List.Accordion
                                 title="Monthly Calendar"
                                 titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                                <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 300, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
 
+                                <TabView
+                                    navigationState={{ index, routesMonthlyCalendar }}
+                                    renderScene={renderSceneMonthlyCalendar}
+                                    onIndexChange={setIndex}
+                                    initialLayout={{ initialLayout }}
+                                    renderTabBar={renderTabBarMonthlyCalendar}
+                                />
                                 </View>
+
+
                             </List.Accordion>
                             <View style={{ marginBottom: 5 }} />
                             <List.Accordion
@@ -2859,40 +3249,41 @@ const Dashboard = ({ navigation, route }) => {
                                 </View>
                             </List.Accordion>
                             <View style={{ marginBottom: 5 }} />
+
                             <List.Accordion
                                 title="Location"
                                 titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                                 <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
                                     <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-                                        <View style={{ paddingHorizontal: 20, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <View style={{ paddingHorizontal: 10, paddingVertical: 5, flexDirection: 'row', justifyContent: 'space-between', }}>
                                             <Text style={{ fontSize: 14, fontWeight: 'bold' }}> {filterText}  </Text>
                                             <Menu>
                                                 <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
                                                 <MenuOptions>
-                                                    <MenuOption onSelect={() => getLocationAll("", "")} >
+                                                    <MenuOption onSelect={() => {getLocationAll("", ""), setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={getLocationThisWeek} >
+                                                    <MenuOption onSelect={() => {getLocationThisWeek(),  setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={getLocationThisMonth} >
+                                                    <MenuOption onSelect={() => {getLocationThisMonth(), setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={getLocationLastMonth} >
+                                                    <MenuOption onSelect={() => {getLocationLastMonth(), setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={getLocationThisYear} >
+                                                    <MenuOption onSelect={() => {getLocationThisYear(), setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={getLocationLastYear} >
+                                                    <MenuOption onSelect={() => {getLocationLastYear(), setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={getLocationLastTwoYears} >
+                                                    <MenuOption onSelect={() => {getLocationLastTwoYears(), setLocationLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
                                                     </MenuOption>
                                                     <MenuOption onSelect={() => {
-                                                        setSelectedCategory('location'); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
+                                                        setSelectedCategory('location'); setLocationLoader(true); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
                                                         setdatePickerTitleStart(null); setdatePickerTitleEnd(null); setStartDate(null);
                                                         setEndDate(null); console.log(selectedCategory);
                                                     }} >
@@ -2913,15 +3304,86 @@ const Dashboard = ({ navigation, route }) => {
                                     </View>
                                 </View>
                             </List.Accordion>
+
                             <View style={{ marginBottom: 5 }} />
+
                             <List.Accordion
                                 title="Source of Inquiry"
                                 titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                                 <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <View style={{ paddingHorizontal: 10, paddingVertical: 5, marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between', }}>
+                                            <Text style={{ fontSize: 14, fontWeight: 'bold' }}> {filterTextSOI}  </Text>
+                                            <Menu>
+                                                <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
+                                                <MenuOptions>
+                                                    <MenuOption onSelect={() => {getSOI(), setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {getSOIThisWeek(),  setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {getSOIThisMonth(), setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {getSOILastMonth(), setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {getSOIThisYear(), setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {getSOILastYear(), setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {getSOILastTwoYear(), setSourceofinquiryLoader(true)}} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
+                                                    </MenuOption>
+                                                    <MenuOption onSelect={() => {
+                                                        setSelectedCategory('Source of Inquiry'); setSourceofinquiryLoader(true); setShowDateRangePicker(true); setShowErrorEmpSD(false), setShowErrorEmpED(false)
+                                                        setdatePickerTitleStart(null); setdatePickerTitleEnd(null); setStartDate(null);
+                                                        setEndDate(null); console.log(selectedCategory);
+                                                    }} >
+                                                        <View style={styles.popupItem}><Text style={styles.popupItemText}>Custom Range</Text></View>
+                                                    </MenuOption>
+                                                </MenuOptions>
+                                            </Menu>
+                                        </View>
+                                 <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: 5, }}>
+                                { sourceofinquiryLoader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
+                                    ifZeroDataSOI === true ?
                                     <HorizontalBarGraph
                                         //data={filterDataSOIData}
                                         data={[1, 1, 1, 1, 5, 2, 3, 3, 3, 10]}
+                                        labels={filterDataSOI.labels}
+                                        width={Dimensions.get("window").width - 44}
+                                        height={400}
+                                        barRadius={5}
+                                        barColor="transparent"
+                                        barWidthPercentage={0.5}
+                                        baseConfig={{
+                                            hasYAxisBackgroundLines: true,
+                                            hasXAxisBackgroundLines: true,
+                                            xAxisLabelStyle: {
+                                                rotation: 0,
+                                                fontSize: 12,
+                                                width: 150,
+                                                yOffset: 0,
+                                                xOffset: -60,
+                                                margin: 10,
+                                            },
+                                            yAxisLabelStyle: {
+                                                fontSize: 13,
+                                                position: 'bottom',
+                                                xOffset: 15,
+                                                height: 100,
+                                                decimal: 1
+                                            }
+                                        }}
+                                    />
+                                    :
+                                    <HorizontalBarGraph
+                                        //data={filterDataSOIData}
+                                        data={filterDataSOIData}
                                         labels={filterDataSOI.labels}
                                         width={Dimensions.get("window").width - 44}
                                         height={400}
@@ -2948,6 +3410,8 @@ const Dashboard = ({ navigation, route }) => {
                                             }
                                         }}
                                     />
+                                }
+                                </View>
 
                                 </View>
                             </List.Accordion>

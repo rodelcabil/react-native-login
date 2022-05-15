@@ -6,7 +6,8 @@ import {
     PieChart
 } from "react-native-chart-kit";
 
-const LocationConsultsTab = ({locationdata, loader}) => {
+
+const WeeklyCTab = ({locationdata, loader}) => {
     const screenWidth = Dimensions.get("window").width;
     const chartConfig = {
         backgroundGradientFrom: "#1E2923",
@@ -24,35 +25,7 @@ const LocationConsultsTab = ({locationdata, loader}) => {
     loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
     <View style={{ flex: 1, height: 200, backgroundColor: '#fff', padding: 5, alignItems: 'center' }}>
     <View style={styles.rowContainer}>
-        <View style={styles.typesContainer}>
-            <PieChart
-                data={locationdata}
-                width={screenWidth / 1.8}
-                height={250}
-                chartConfig={chartConfig}
-                accessor={"counts"}
-                backgroundColor={"transparent"}
-                center={[50, 20]}
-                hasLegend={false}
-            />
-        </View>
-        <View style={styles.typesContainerPie}>
-            {locationdata.map((item, i) => {
-                return (
-                    <View style={styles.typesPie} key={i}>
-                        <View style={{
-                            marginRight: 10,
-                            height: 20,
-                            width: 20,
-                            borderRadius: 15,
-                            backgroundColor: item.color,
-                        }}></View>
-                        <Text style={styles.text2}>{item.name}</Text>
-                        <View style={{ marginBottom: 30 }} />
-                    </View>
-                )
-            })}
-        </View>
+
     </View>
 </View>
   )
@@ -83,6 +56,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'black'
     },
-});
+}); 
 
-export default LocationConsultsTab
+export default WeeklyCTab
