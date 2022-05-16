@@ -389,7 +389,7 @@ const SurgeonsChart = ({ route }) => {
         removeComma = mappedNames.toString().replace(/,/g, '');
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=surgeons&filter=Procedures&${removeComma}`,
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=2022-05-15&dateto=2022-05-21&category=surgeons&filter=Procedures&${removeComma}`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -435,7 +435,7 @@ const SurgeonsChart = ({ route }) => {
             })
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=surgeons&filter=Inquiries&${removeComma}`,
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=2022-05-15&dateto=2022-05-21&category=surgeons&filter=Inquiries&${removeComma}`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -481,7 +481,7 @@ const SurgeonsChart = ({ route }) => {
             });
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&category=surgeons&filter=Consults&${removeComma}`,
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=2022-05-15&dateto=2022-05-21&category=surgeons&filter=Consults&${removeComma}`,
             {
                 headers: {
                     'Accept': 'application/json',

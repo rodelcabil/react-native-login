@@ -77,8 +77,11 @@ const SurgeonsInquiriesTab = ({ data, surgeonData, isZero, loader }) => {
                 />
                 
 
-            }
-        </View>
+            
+            
+
+        }
+    </View>
     )
 }
 
