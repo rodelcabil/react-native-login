@@ -122,16 +122,21 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataInquiriess(data[0].data);
                 console.log("SURGEON INQUIRIES: ", data[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
+               // const isAllZero = data[0].data.every(item => item === 0);
                 
-                if (isAllZero ===  true) {
-                    setInquiriesZero(true);
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
                 }
-                else {
+                if(count !== 0){
                     setInquiriesZero(false);
                 }
+                else{
+                    setInquiriesZero(true);
+                }
 
+                
+              //  console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
             })
 
         await axios.get(
@@ -151,15 +156,25 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataConsults(data[0].data);
                 console.log("SURGEON CONSULTS: ", data[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS CONSULTS ALL ZERO? ",isAllZero)
+                // const isAllZero = data[0].data.every(item => item === 0);
+                // console.log("IS CONSULTS ALL ZERO? ",isAllZero)
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setConsultsZero(false);
+                }
+                else{
+                    setConsultsZero(true);
+                }
                 
-                if (isAllZero ===  true) {
+                /*if (isAllZero ===  true) {
                     setConsultsZero(true);
                 }
                 else {
                     setConsultsZero(false);
-                }
+                }*/
             })
 
         await axios.get(
@@ -180,15 +195,28 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataProcedures(data[0].data);
                 console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+               // const isAllZero = data[0].data.every(item => item === 0);
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setProceduresZero(false);
+                }
+                else{
+                    setProceduresZero(true);
+                }
+
                 
-                if (isAllZero ===  true) {
+                // console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+                
+             /*   if (isAllZero ===  true) {
                     setProceduresZero(true);
                 }
                 else {
                     setProceduresZero(false);
-                }
+                }*/
 
                 
             })
@@ -222,15 +250,26 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataConsults(data[0].data);
                 console.log("SURGEON CONSULTS: ", data[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS CONSULTS ALL ZERO? ",isAllZero)
+               // const isAllZero = data[0].data.every(item => item === 0);
+               // console.log("IS CONSULTS ALL ZERO? ",isAllZero)
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setConsultsZero(false);
+                }
+                else{
+                    setConsultsZero(true);
+                }
                 
-                if (isAllZero ===  true) {
+              /*  if (isAllZero ===  true) {
                     setConsultsZero(true);
                 }
                 else {
                     setConsultsZero(false);
-                }
+                }*/
 
             });
 
@@ -252,15 +291,26 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataProcedures(data[0].data);
                 console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+              //  const isAllZero = data[0].data.every(item => item === 0);
+              let count = 0;
+              for(let x = 0; x<data[0].data.length; x++){
+                  count = count +  data[0].data[x];
+              }
+              if(count !== 0){
+                setProceduresZero(false);
+              }
+              else{
+                setProceduresZero(true);
+              }
+
+              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
                 
-                if (isAllZero ===  false) {
+               /* if (isAllZero ===  false) {
                     setProceduresZero(false);
                 }
                 else {
                     setProceduresZero(true);
-                }
+                }*/
 
             });
 
@@ -281,15 +331,26 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataInquiriess(data[0].data);
                 console.log("SURGEON INQUIRIES: ", response.data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
+              //  const isAllZero = data[0].data.every(item => item === 0);
+              //  console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
                 
-                if (isAllZero ===  false) {
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setInquiriesZero(false);
+                }
+                else{
+                    setInquiriesZero(true);
+                }
+
+                /*if (isAllZero ===  false) {
                     setInquiriesZero(false);
                 }
                 else {
                     setInquiriesZero(true);
-                }
+                }*/
             });
 
 
@@ -345,14 +406,25 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataProcedures(data[0].data);
                 console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+              //  const isAllZero = data[0].data.every(item => item === 0);
+              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
                 
-                if (isAllZero ===  true) {
+               /* if (isAllZero ===  true) {
                     setProceduresZero(true);
                 }
                 else {
                     setProceduresZero(false);
+                }*/
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setProceduresZero(false);
+                }
+                else{
+                    setProceduresZero(true);
                 }
 
 
@@ -380,14 +452,25 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataInquiriess(data[0].data)
 
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+              //  const isAllZero = data[0].data.every(item => item === 0);
+              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
                 
-                if (isAllZero ===  true) {
+              /*  if (isAllZero ===  true) {
                     setProceduresZero(true);
                 }
                 else {
                     setProceduresZero(false);
+                }*/
+
+                let count = 0;
+                for(let x = 0; x<data[0].data.length; x++){
+                    count = count +  data[0].data[x];
+                }
+                if(count !== 0){
+                    setProceduresZero(false);
+                }
+                else{
+                    setProceduresZero(true);
                 }
 
 
@@ -413,20 +496,31 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataConsults(data2[0].data);
                 console.log("SURGEON CONSULTS: ", data2[0].data)
 
-                const isAllZero = data[0].data.every(item => item === 0);
-                console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+               // const isAllZero = data[0].data.every(item => item === 0);
+              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
                 
-                if (isAllZero ===  true) {
+               /* if (isAllZero ===  true) {
                     setProceduresZero(true);
                 }
                 else {
                     setProceduresZero(false);
+                }*/
+                let count = 0;
+                for(let x = 0; x<data2[0].data.length; x++){
+                    count = count +  data2[0].data[x];
                 }
-
-
+                if(count !== 0){
+                    setProceduresZero(false);
+                }
+                else{
+                    setProceduresZero(true);
+                }
+                
             });
 
     }
+
+    
     const getSurgeonDataThisMonth = async () => {
 
         setmonthSelected(false)
