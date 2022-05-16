@@ -233,6 +233,12 @@ const ReportSummary = ({route}) => {
 
     const getReportSummaryData = async () => {
 
+        const today = moment(new Date(Date.now()));
+        const begginingOfYear = today.startOf('year').format("YYYY-MM-DD");
+        const endOfYear = today.endOf('year').format("YYYY-MM-DD");
+
+        setDateFrom(begginingOfYear);
+        setDateTo(endOfYear)
 
         setmonthSelected(false)
 
@@ -242,7 +248,7 @@ const ReportSummary = ({route}) => {
 
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${dateFrom}&dateto=${dateTo}&filter=Inquiries&`,
+            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfYear}&dateto=${endOfYear}&filter=Inquiries&`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -279,7 +285,7 @@ const ReportSummary = ({route}) => {
             });
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${dateFrom}&dateto=${dateTo}&filter=Consults`,
+            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfYear}&dateto=${endOfYear}&filter=Consults`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -316,7 +322,7 @@ const ReportSummary = ({route}) => {
             })
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${dateFrom}&dateto=${dateTo}&filter=Procedures`,
+            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfYear}&dateto=${endOfYear}&filter=Procedures`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -1253,7 +1259,7 @@ const ReportSummary = ({route}) => {
                         <Menu>
                             <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
                             <MenuOptions>
-                                <MenuOption onSelect={() => {getReportSummaryData("", ""), setReportSummaryLoader(true)}} >
+                                <MenuOption onSelect={() => {getReportSummaryData(), setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                 </MenuOption>
                                 <MenuOption onSelect={() => {getReportSummaryDataThisWeek(),  setReportSummaryLoader(true)}} >
@@ -1395,13 +1401,13 @@ const ReportSummary = ({route}) => {
                                 </View>
 
                                 <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, justifyContent: 'space-between' }}>
-                                    <TouchableHighlight onPress={() => { clearFilter() }} style={{ bodrderRadius: 5 }}>
+                                    <TouchableHighlight onPress={() => { clearFilter(); setReportSummaryLoader(true) }} style={{ bodrderRadius: 5 }}>
                                         <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, borderRadius: 5, backgroundColor: '#FFC000', justifyContent: 'space-evenly' }}>
                                             <AntdIcon name='close' size={15} style={{ marginRight: 3 }} />
                                             <Text style={{ fontWeight: 'bold' }}>CLEAR</Text>
                                         </View>
                                     </TouchableHighlight>
-                                    <TouchableHighlight onPress={() => getSummaryFilterData()} style={{ bodrderRadius: 5 }}>
+                                    <TouchableHighlight onPress={() => {getSummaryFilterData(); setReportSummaryLoader(true) }} style={{ bodrderRadius: 5 }}>
                                         <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, borderRadius: 5, color: '#fff', backgroundColor: '#00C292', justifyContent: 'space-evenly' }}>
                                             <FeatherIcon name='send' size={15} style={{ marginRight: 3 }} color="#fff" />
                                             <Text style={{ fontWeight: 'bold', color: '#fff' }}>SUBMIT</Text>

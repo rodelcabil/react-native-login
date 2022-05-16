@@ -64,6 +64,7 @@ const ConsultsTab = ({ summary, summaryData, monthSelected, loader }) => {
                         r: "7",
                         strokeWidth: "0",
                     },
+                    
                     propsForBackgroundLines: {
                         strokeWidth: 1,
                         stroke: '#BABFC4',
