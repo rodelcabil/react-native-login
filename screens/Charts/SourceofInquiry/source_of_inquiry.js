@@ -594,13 +594,21 @@ const SourceOfInquiry = ({ route }) => {
                                                     </MenuOption>
                                                 </MenuOptions>
                                             </Menu>
-                                        </View>
-                                 <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 400, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: 5, }}>
-                                { sourceofinquiryLoader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
+                                </View>
+                                <View
+                                    style={{
+                                        borderBottomColor: '#bdbdbd',
+                                        borderBottomWidth: 1,
+                                        marginBottom: 15
+                                    }}
+                                    />
+                                        
+                                 <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 320, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: 5, }}>
+                                    { sourceofinquiryLoader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
                                     ifZeroDataSOI === true ?
                                     <HorizontalBarGraph
                                         //data={filterDataSOIData}
-                                        data={[1, 1, 1, 1, 5, 2, 3, 3, 3, 10]}
+                                        data={[1,2,3,4,5,6,7,8,9,10]}
                                         labels={filterDataSOI.labels}
                                         width={Dimensions.get("window").width - 44}
                                         height={400}
@@ -662,7 +670,6 @@ const SourceOfInquiry = ({ route }) => {
 
                                 </View>
                             </List.Accordion>
-                    <View style={{ marginBottom: 5 }} />
             </View>
         </PaperProvider>
     )
