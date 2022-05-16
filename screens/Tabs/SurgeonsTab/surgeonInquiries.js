@@ -48,7 +48,7 @@ const SurgeonsInquiriesTab = ({ data, surgeonData, isZero, loader }) => {
                 />
                 :
                 <HorizontalBarGraph
-                       data={[1, 1, 1, 1, 5, 2, 3, 3, 3, 10]}
+                    data={[1, 1, 1, 1, 5]}
                     labels={data.labels}
                     width={Dimensions.get("window").width - 44}
                     height={400}
@@ -56,24 +56,26 @@ const SurgeonsInquiriesTab = ({ data, surgeonData, isZero, loader }) => {
                     barColor="transparent"
                     barWidthPercentage={0.5}
                     baseConfig={{
-                      hasYAxisBackgroundLines: true,
-                      hasXAxisBackgroundLines: true,
-                      xAxisLabelStyle: {
-                          rotation: 0,
-                          fontSize: 12,
-                          width: 150,
-                          yOffset: 0,
-                          xOffset: -60,
-                          margin: 10,
-                      },
-                      yAxisLabelStyle: {
-                          fontSize: 13,
-                          position: 'bottom',
-                          xOffset: 15,
-                          height: 100,
-                          decimal: 1
-                      }
-                  }}
+                        hasYAxisBackgroundLines: true,
+                        hasXAxisBackgroundLines: true,
+                        xAxisLabelStyle: {
+                            rotation: 0,
+                            fontSize: 12,
+                            width: 150,
+                            yOffset: 0,
+                            xOffset: -60,
+                            margin: 10,
+                           
+                        },
+                        yAxisLabelStyle: {
+                            fontSize: 13,
+                            position: 'bottom',
+                            xOffset: 15,
+                            height: 100,
+                            decimal: 1,
+                            color: 'transparent'
+                        }
+                    }}
                 />
                 
 

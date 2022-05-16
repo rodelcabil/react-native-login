@@ -123,21 +123,21 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataInquiriess(data[0].data);
                 console.log("SURGEON INQUIRIES: ", data[0].data)
 
-               // const isAllZero = data[0].data.every(item => item === 0);
-                
+                // const isAllZero = data[0].data.every(item => item === 0);
+
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
-                if(count !== 0){
+                if (count !== 0) {
                     setInquiriesZero(false);
                 }
-                else{
+                else {
                     setInquiriesZero(true);
                 }
 
-                
-              //  console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
+
+                //  console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
             })
 
         await axios.get(
@@ -160,16 +160,16 @@ const SurgeonsChart = ({ route }) => {
                 // const isAllZero = data[0].data.every(item => item === 0);
                 // console.log("IS CONSULTS ALL ZERO? ",isAllZero)
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
-                if(count !== 0){
+                if (count !== 0) {
                     setConsultsZero(false);
                 }
-                else{
+                else {
                     setConsultsZero(true);
                 }
-                
+
                 /*if (isAllZero ===  true) {
                     setConsultsZero(true);
                 }
@@ -196,30 +196,30 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataProcedures(data[0].data);
                 console.log("SURGEON PROCEDURES: ", data[0].data)
 
-               // const isAllZero = data[0].data.every(item => item === 0);
+                // const isAllZero = data[0].data.every(item => item === 0);
 
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
-                if(count !== 0){
+                if (count !== 0) {
                     setProceduresZero(false);
                 }
-                else{
+                else {
                     setProceduresZero(true);
                 }
 
-                
+
                 // console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
-                
-             /*   if (isAllZero ===  true) {
-                    setProceduresZero(true);
-                }
-                else {
-                    setProceduresZero(false);
-                }*/
-                setLoader(false)
-                
+
+                /*   if (isAllZero ===  true) {
+                       setProceduresZero(true);
+                   }
+                   else {
+                       setProceduresZero(false);
+                   }*/
+
+                setLoader(false);
             })
     }
 
@@ -251,26 +251,26 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataConsults(data[0].data);
                 console.log("SURGEON CONSULTS: ", data[0].data)
 
-               // const isAllZero = data[0].data.every(item => item === 0);
-               // console.log("IS CONSULTS ALL ZERO? ",isAllZero)
+                // const isAllZero = data[0].data.every(item => item === 0);
+                // console.log("IS CONSULTS ALL ZERO? ",isAllZero)
 
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
-                if(count !== 0){
+                if (count !== 0) {
                     setConsultsZero(false);
-                }
-                else{
-                    setConsultsZero(true);
-                }
-                
-              /*  if (isAllZero ===  true) {
-                    setConsultsZero(true);
                 }
                 else {
-                    setConsultsZero(false);
-                }*/
+                    setConsultsZero(true);
+                }
+
+                /*  if (isAllZero ===  true) {
+                      setConsultsZero(true);
+                  }
+                  else {
+                      setConsultsZero(false);
+                  }*/
 
             });
 
@@ -292,26 +292,26 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataProcedures(data[0].data);
                 console.log("SURGEON PROCEDURES: ", data[0].data)
 
-              //  const isAllZero = data[0].data.every(item => item === 0);
-              let count = 0;
-              for(let x = 0; x<data[0].data.length; x++){
-                  count = count +  data[0].data[x];
-              }
-              if(count !== 0){
-                setProceduresZero(false);
-              }
-              else{
-                setProceduresZero(true);
-              }
-
-              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
-                
-               /* if (isAllZero ===  false) {
+                //  const isAllZero = data[0].data.every(item => item === 0);
+                let count = 0;
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
+                }
+                if (count !== 0) {
                     setProceduresZero(false);
                 }
                 else {
                     setProceduresZero(true);
-                }*/
+                }
+
+                //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+
+                /* if (isAllZero ===  false) {
+                     setProceduresZero(false);
+                 }
+                 else {
+                     setProceduresZero(true);
+                 }*/
 
             });
 
@@ -332,17 +332,17 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataInquiriess(data[0].data);
                 console.log("SURGEON INQUIRIES: ", response.data)
 
-              //  const isAllZero = data[0].data.every(item => item === 0);
-              //  console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
-                
+                //  const isAllZero = data[0].data.every(item => item === 0);
+                //  console.log("IS INQUIRIES ALL ZERO? ",isAllZero)
+
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
-                if(count !== 0){
+                if (count !== 0) {
                     setInquiriesZero(false);
                 }
-                else{
+                else {
                     setInquiriesZero(true);
                 }
 
@@ -365,7 +365,8 @@ const SurgeonsChart = ({ route }) => {
         setToggleCheckBox3(false);
         setToggleCheckBox4(false);
         setToggleCheckBox5(false);
-        setSummaryDatanames([])
+        setSummaryDatanames([]);
+
 
     }
 
@@ -408,25 +409,25 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataProcedures(data[0].data);
                 console.log("SURGEON PROCEDURES: ", data[0].data)
 
-              //  const isAllZero = data[0].data.every(item => item === 0);
-              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
-                
-               /* if (isAllZero ===  true) {
-                    setProceduresZero(true);
-                }
-                else {
-                    setProceduresZero(false);
-                }*/
+                //  const isAllZero = data[0].data.every(item => item === 0);
+                //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+
+                /* if (isAllZero ===  true) {
+                     setProceduresZero(true);
+                 }
+                 else {
+                     setProceduresZero(false);
+                 }*/
 
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 console.log('Procedures Count', count);
-                if(count !== 0){
+                if (count !== 0) {
                     setProceduresZero(false);
                 }
-                else{
+                else {
                     setProceduresZero(true);
                 }
 
@@ -455,25 +456,25 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataInquiriess(data[0].data)
 
 
-              //  const isAllZero = data[0].data.every(item => item === 0);
-              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
-                
-              /*  if (isAllZero ===  true) {
-                    setProceduresZero(true);
-                }
-                else {
-                    setProceduresZero(false);
-                }*/
+                //  const isAllZero = data[0].data.every(item => item === 0);
+                //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+
+                /*  if (isAllZero ===  true) {
+                      setProceduresZero(true);
+                  }
+                  else {
+                      setProceduresZero(false);
+                  }*/
 
                 let count = 0;
-                for(let x = 0; x<data[0].data.length; x++){
-                    count = count +  data[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 console.log('Inquiries Count', count);
-                if(count !== 0){
+                if (count !== 0) {
                     setInquiriesZero(false);
                 }
-                else{
+                else {
                     setInquiriesZero(true);
                 }
 
@@ -497,24 +498,24 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonDataConsults(data2[0].data);
                 console.log("SURGEON CONSULTS: ", data2[0].data)
 
-               // const isAllZero = data[0].data.every(item => item === 0);
-              //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
-                
-               /* if (isAllZero ===  true) {
-                    setProceduresZero(true);
-                }
-                else {
-                    setProceduresZero(false);
-                }*/
+                // const isAllZero = data[0].data.every(item => item === 0);
+                //  console.log("IS PROCEDURES ALL ZERO? ",isAllZero)
+
+                /* if (isAllZero ===  true) {
+                     setProceduresZero(true);
+                 }
+                 else {
+                     setProceduresZero(false);
+                 }*/
                 let count = 0;
-                for(let x = 0; x<data2[0].data.length; x++){
-                    count = count +  data2[0].data[x];
+                for (let x = 0; x < data2[0].data.length; x++) {
+                    count = count + data2[0].data[x];
                 }
                 console.log('Consults Count', count);
-                if(count !== 0){
+                if (count !== 0) {
                     setConsultsZero(false);
                 }
-                else{
+                else {
                     setConsultsZero(true);
                 }
                 setLoader(false)
@@ -673,7 +674,7 @@ const SurgeonsChart = ({ route }) => {
                     };
                 });
                 setSurgeonDataProcedures(mappedData)
-                setReportSummaryLoader(false);
+
 
                 let count = 0;
                 for (let x = 0; x < mappedData[0].data.length; x++) {
@@ -685,7 +686,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setProceduresZero(true);
                 }
-
+                setLoader(false)
 
             })
 
@@ -718,36 +719,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonInquiries(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataInquiriess(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color,
-                    };
-                });
-
-                setSurgeonDataInquiriess(mappedData)
-
-                console.log("SUMMARY DATA INQUIRIES: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setInquiriesZero(false);
@@ -755,6 +739,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setInquiriesZero(true);
                 }
+
 
 
 
@@ -771,32 +756,18 @@ const SurgeonsChart = ({ route }) => {
 
 
                 setSurgeonConsults(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataConsults(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataConsults(mappedData)
-                console.log("SUMMARY DATA CONSULTS: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setConsultsZero(false);
@@ -818,31 +789,18 @@ const SurgeonsChart = ({ route }) => {
 
 
                 setSurgeonProcedures(response.data)
-                console.log("SUMMARY DATA PROCEDURES: ", response.data)
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataProcedures(mappedData)
-                setReportSummaryLoader(false);
+                setSurgeonDataProcedures(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setProceduresZero(false);
@@ -850,6 +808,8 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setProceduresZero(true);
                 }
+
+                setLoader(false)
             })
 
     }
@@ -881,36 +841,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonInquiries(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataInquiriess(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color,
-                    };
-                });
-
-                setSurgeonDataInquiriess(mappedData)
-
-                console.log("SUMMARY DATA INQUIRIES: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setInquiriesZero(false);
@@ -918,6 +861,10 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setInquiriesZero(true);
                 }
+
+
+
+
             });
 
         await axios.get(
@@ -929,34 +876,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonConsults(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataConsults(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataConsults(mappedData)
-                console.log("SUMMARY DATA CONSULTS: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setConsultsZero(false);
@@ -964,6 +896,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setConsultsZero(true);
                 }
+
 
             })
 
@@ -976,33 +909,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonProcedures(response.data)
-                console.log("SUMMARY DATA PROCEDURES: ", response.data)
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataProcedures(mappedData)
-                setReportSummaryLoader(false);
+                setSurgeonDataProcedures(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setProceduresZero(false);
@@ -1011,6 +930,7 @@ const SurgeonsChart = ({ route }) => {
                     setProceduresZero(true);
                 }
 
+                setLoader(false)
             })
 
     }
@@ -1042,36 +962,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonInquiries(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataInquiriess(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color,
-                    };
-                });
-
-                setSurgeonDataInquiriess(mappedData)
-
-                console.log("SUMMARY DATA INQUIRIES: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setInquiriesZero(false);
@@ -1079,6 +982,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setInquiriesZero(true);
                 }
+
 
             });
 
@@ -1091,34 +995,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonConsults(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataConsults(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataConsults(mappedData)
-                console.log("SUMMARY DATA CONSULTS: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setConsultsZero(false);
@@ -1126,6 +1015,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setConsultsZero(true);
                 }
+
 
             })
 
@@ -1138,33 +1028,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonProcedures(response.data)
-                console.log("SUMMARY DATA PROCEDURES: ", response.data)
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataProcedures(mappedData)
-                setReportSummaryLoader(false);
+                setSurgeonDataProcedures(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setProceduresZero(false);
@@ -1173,6 +1049,8 @@ const SurgeonsChart = ({ route }) => {
                     setProceduresZero(true);
                 }
 
+
+                setLoader(false)
             })
 
     }
@@ -1204,36 +1082,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonInquiries(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataInquiriess(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color,
-                    };
-                });
-
-                setSurgeonDataInquiriess(mappedData)
-
-                console.log("SUMMARY DATA INQUIRIES: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setInquiriesZero(false);
@@ -1241,6 +1102,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setInquiriesZero(true);
                 }
+
 
             });
 
@@ -1253,34 +1115,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonConsults(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataConsults(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataConsults(mappedData)
-                console.log("SUMMARY DATA CONSULTS: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setConsultsZero(false);
@@ -1289,7 +1136,8 @@ const SurgeonsChart = ({ route }) => {
                     setConsultsZero(true);
                 }
 
-            })
+
+            });
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?datefrom=${begginingOfLastTwoYears}&dateto=${endOfLastTwoYears}&category=surgeons&filter=Procedures&${removeComma}`,
@@ -1300,33 +1148,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonProcedures(response.data)
-                console.log("SUMMARY DATA PROCEDURES: ", response.data)
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataProcedures(mappedData)
-                setReportSummaryLoader(false);
+                setSurgeonDataProcedures(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setProceduresZero(false);
@@ -1335,6 +1169,7 @@ const SurgeonsChart = ({ route }) => {
                     setProceduresZero(true);
                 }
 
+                setLoader(false)
             })
 
     }
@@ -1367,34 +1202,18 @@ const SurgeonsChart = ({ route }) => {
 
 
                 setSurgeonInquiries(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataInquiriess(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color,
-                    };
-                });
-
-                setSurgeonDataInquiriess(mappedData)
-
-                console.log("SUMMARY DATA INQUIRIES: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setInquiriesZero(false);
@@ -1414,34 +1233,19 @@ const SurgeonsChart = ({ route }) => {
                 },
             }).then(response => {
 
-
                 setSurgeonConsults(response.data)
-
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
+                setSurgeonDataConsults(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataConsults(mappedData)
-                console.log("SUMMARY DATA CONSULTS: ", mappedData)
-
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setConsultsZero(false);
@@ -1463,31 +1267,18 @@ const SurgeonsChart = ({ route }) => {
 
 
                 setSurgeonProcedures(response.data)
-                console.log("SUMMARY DATA PROCEDURES: ", response.data)
-
-                let data2 = [];
+                let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data2.push({
-                        data: response.data.datasets[i].data,
-                        name: response.data.datasets[i].label,
-                        color: response.data.datasets[i].backgroundColor
-                    });
+                    data[i] = { data: response.data.datasets[i].data };
                 }
 
-                const mappedData = data2.reverse().map((data) => {
-                    const color = data.color;
-                    return {
-                        ...data,
-                        color: () => color,
-                        backgroundColor: color
-                    };
-                });
-                setSurgeonDataProcedures(mappedData)
-                setReportSummaryLoader(false);
+                setSurgeonDataProcedures(data[0].data);
+                console.log("SURGEON PROCEDURES: ", data[0].data)
 
+                //  const isAllZero = data[0].data.every(item => item === 0);
                 let count = 0;
-                for (let x = 0; x < mappedData[0].data.length; x++) {
-                    count = count + mappedData[0].data[x];
+                for (let x = 0; x < data[0].data.length; x++) {
+                    count = count + data[0].data[x];
                 }
                 if (count !== 0) {
                     setProceduresZero(false);
@@ -1496,6 +1287,7 @@ const SurgeonsChart = ({ route }) => {
                     setProceduresZero(true);
                 }
 
+                setLoader(false)
             })
 
     }
@@ -1514,9 +1306,9 @@ const SurgeonsChart = ({ route }) => {
     );
 
     const renderSceneSurgeons = SceneMap({
-        first: () =>    <SurgeonsInquiriesTab data={surgeonInquiries} surgeonData={surgeonDataInquiries} isZero={isInquiriesZero} loader={loader}/>,
-        second: () =>   <SurgeonsConsultsTab data={surgeonConsults} surgeonData={surgeonDataConsults} isZero={isConsultsZero} loader={loader}/>,
-        third: () =>    <SurgeonsProceduresTab data={surgeonProcedures} surgeonData={surgeonDataProcedures} isZero={isProceduresZero} loader={loader}/>,
+        first: () => <SurgeonsInquiriesTab data={surgeonInquiries} surgeonData={surgeonDataInquiries} isZero={isInquiriesZero} loader={loader} />,
+        second: () => <SurgeonsConsultsTab data={surgeonConsults} surgeonData={surgeonDataConsults} isZero={isConsultsZero} loader={loader} />,
+        third: () => <SurgeonsProceduresTab data={surgeonProcedures} surgeonData={surgeonDataProcedures} isZero={isProceduresZero} loader={loader} />,
     });
 
 
@@ -1533,25 +1325,25 @@ const SurgeonsChart = ({ route }) => {
                             <Menu>
                                 <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
                                 <MenuOptions>
-                                    <MenuOption onSelect={getSurgeonData} >
+                                    <MenuOption onSelect={() => { getSurgeonData(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={() => { getSurgeonDataThisWeek(), setLoader(true) }} >
+                                    <MenuOption onSelect={() => { getSurgeonDataThisWeek(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={getSurgeonDataThisMonth} >
+                                    <MenuOption onSelect={() => { getSurgeonDataThisMonth(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={getSurgeonDataLastMonth} >
+                                    <MenuOption onSelect={() => { getSurgeonDataLastMonth(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={getSurgeonDataThisYear} >
+                                    <MenuOption onSelect={() => { getSurgeonDataThisYear(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={getSurgeonDataLastYear} >
+                                    <MenuOption onSelect={() => { getSurgeonDataLastYear(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={getSurgeonDataLastTwoYear} >
+                                    <MenuOption onSelect={() => { getSurgeonDataLastTwoYear(); setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
                                     </MenuOption>
                                     {/* <MenuOption onSelect={() => {
@@ -1675,13 +1467,13 @@ const SurgeonsChart = ({ route }) => {
                                     </View>
 
                                     <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, justifyContent: 'space-between' }}>
-                                        <TouchableHighlight onPress={() => { clearFilter() }} style={{ bodrderRadius: 5 }}>
+                                        <TouchableHighlight onPress={() => { clearFilter(); setLoader(true) }} style={{ bodrderRadius: 5 }}>
                                             <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, borderRadius: 5, backgroundColor: '#FFC000', justifyContent: 'space-evenly' }}>
                                                 <AntdIcon name='close' size={15} style={{ marginRight: 3 }} />
                                                 <Text style={{ fontWeight: 'bold' }}>CLEAR</Text>
                                             </View>
                                         </TouchableHighlight>
-                                        <TouchableHighlight onPress={() => getSurgeonFilterData()} style={{ bodrderRadius: 5 }}>
+                                        <TouchableHighlight onPress={() => { getSurgeonFilterData(); setLoader(true) }} style={{ bodrderRadius: 5 }}>
                                             <View style={{ alignItems: 'center', flexDirection: 'row', flex: 1, padding: 10, borderRadius: 5, color: '#fff', backgroundColor: '#00C292', justifyContent: 'space-evenly' }}>
                                                 <FeatherIcon name='send' size={15} style={{ marginRight: 3 }} color="#fff" />
                                                 <Text style={{ fontWeight: 'bold', color: '#fff' }}>SUBMIT</Text>

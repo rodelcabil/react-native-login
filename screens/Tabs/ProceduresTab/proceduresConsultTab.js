@@ -5,62 +5,83 @@ import {
     BarChart
 } from "react-native-chart-kit";
 import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph'
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
+const ProceduresConsultsTab = ({ data, proceduresData, isZero, loader }) => {
 
-const ProceduresConsultsTab = ({ data, proceduresData }) => {
 
-    
 
     return (
-        <ScrollView>
-            <View style={{ flex: 1, height: 1000, backgroundColor: '#fff', padding: 10 }}>
-                
-                {/* <BarChart
-                    style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
-                    data={data}
-                    width={Dimensions.get("window").width - 44}
-                    height={450}
+     
+        <View style={{ flex: 1, height: 1000, backgroundColor: '#fff', padding: 10 }}>
+            {loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
+                isZero === false ?
 
-                    chartConfig={{
-                        backgroundColor: "#F6F7F9",
-                        backgroundGradientFrom: "#F6F7F9",
-                        backgroundGradientTo: "#F6F7F9",
-                        color: (opacity = 1) => `gray`,
-                        labelColor: (opacity = 1) => `gray`,
-                    }}
+                    <HorizontalBarGraph
+                        //data={filterDataSOIData}
+                        data={proceduresData.reverse()}
+                        labels={data.labels.reverse()}
+                        width={Dimensions.get("window").width - 44}
+                        height={1000}
+                        barRadius={5}
+                        barColor="#e3e3e3"
+                        barWidthPercentage={0.5}
+                        baseConfig={{
+                            hasYAxisBackgroundLines: true,
+                            hasXAxisBackgroundLines: true,
+                            xAxisLabelStyle: {
+                                rotation: 0,
+                                fontSize: 12,
+                                width: 200,
+                                yOffset: 0,
+                                xOffset: -90,
+                                margin: 10,
+                            },
+                            yAxisLabelStyle: {
+                                fontSize: 13,
+                                position: 'bottom',
+                                xOffset: 15,
+                                height: 100,
+                                decimal: 1
+                            }
+                        }}
 
-                    verticalLabelRotation={30}
-                /> */}
-                <HorizontalBarGraph
-                    data={proceduresData}
-                    labels={data.labels.reverse()}
-                    width={Dimensions.get("window").width - 44}
-                    height={1000}
-                    barColor="#e3e3e3"
-                    barWidthPercentage={0.6}
-                    baseConfig={{
-                        hasYAxisBackgroundLines: true,
-                        hasXAxisBackgroundLines: true,
-                       
-                        xAxisLabelStyle: {
-                            rotation: 0,
-                            fontSize: 10,
-                            width: 200,
-                            yOffset: 0,
-                            xOffset: -90,
-                            margin: 10
-                        },
-                        yAxisLabelStyle: {
+                    />
+                    :
+                    <HorizontalBarGraph
+                     data={[1, 1, 1, 1, 5, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]}
+                        labels={data.labels}
+                        width={Dimensions.get("window").width - 44}
+                        height={1000}
+                        barRadius={5}
+                        barColor="transparent"
+                        barWidthPercentage={0.5}
+                        baseConfig={{
+                            hasYAxisBackgroundLines: true,
+                            hasXAxisBackgroundLines: true,
+                            xAxisLabelStyle: {
+                                rotation: 0,
+                                fontSize: 12,
+                                width: 200,
+                                yOffset: 0,
+                                xOffset: -90,
+                                margin: 10,
 
-                            fontSize: 13,
-                            position: 'bottom',
-                            xOffset: 15,
-                            decimals: 1,
-                            height: 100
-                        }
-                    }}
-                />
-            </View>
-        </ScrollView>
+                            },
+                            yAxisLabelStyle: {
+                                fontSize: 13,
+                                position: 'bottom',
+                                xOffset: 15,
+                                height: 100,
+                                decimal: 1,
+                                color: 'transparent'
+                            }
+                        }}
+                    />
+
+
+            }
+        </View>
+        
     )
 }
 
