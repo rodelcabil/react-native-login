@@ -1253,25 +1253,25 @@ const ReportSummary = ({route}) => {
                         <Menu>
                             <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
                             <MenuOptions>
-                                <MenuOption onSelect={() => getReportSummaryData("", "")} >
+                                <MenuOption onSelect={() => {getReportSummaryData("", ""), setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                 </MenuOption>
-                                <MenuOption onSelect={getReportSummaryDataThisWeek} >
+                                <MenuOption onSelect={() => {getReportSummaryDataThisWeek(),  setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
                                 </MenuOption>
-                                <MenuOption onSelect={getReportSummaryDataThisMonth} >
+                                <MenuOption onSelect={() => {getReportSummaryDataThisMonth(),  setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>This Month</Text></View>
                                 </MenuOption>
-                                <MenuOption onSelect={getReportSummaryDataLastMonth} >
+                                <MenuOption onSelect={() => {getReportSummaryDataLastMonth(),  setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
                                 </MenuOption>
-                                <MenuOption onSelect={getReportSummaryDataThisYear} >
+                                <MenuOption onSelect={() => {getReportSummaryDataThisYear(),  setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
                                 </MenuOption>
-                                <MenuOption onSelect={getReportSummaryDataLastYear} >
+                                <MenuOption onSelect={() => {getReportSummaryDataLastYear(),  setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Year</Text></View>
                                 </MenuOption>
-                                <MenuOption onSelect={getReportSummaryDataLastTwoYears} >
+                                <MenuOption onSelect={() => {getReportSummaryDataLastTwoYears(),  setReportSummaryLoader(true)}} >
                                     <View style={styles.popupItem}><Text style={styles.popupItemText}>Last 2 Years</Text></View>
                                 </MenuOption>
                                 <MenuOption onSelect={() => {
