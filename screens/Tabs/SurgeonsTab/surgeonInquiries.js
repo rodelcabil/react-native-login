@@ -5,14 +5,16 @@ import {
     BarChart
 } from "react-native-chart-kit";
 import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph'
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
-const SurgeonsInquiriesTab = ({ data, surgeonData, isZero }) => {
+const SurgeonsInquiriesTab = ({ data, surgeonData, isZero, loader }) => {
     useEffect(()=>{
         console.log('SUGEON INQUIRIES TAB: ', isZero)
     },[])
     return (
         <View style={{ flex: 1, height: 300, backgroundColor: '#fff', padding: 10 }}>
-          {isZero === false ?
+        { loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
+          isZero === false ?
                 
                 <HorizontalBarGraph
                     //data={filterDataSOIData}

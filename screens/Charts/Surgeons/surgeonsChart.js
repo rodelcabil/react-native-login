@@ -73,6 +73,7 @@ const SurgeonsChart = ({ route }) => {
     const [monthSelected, setmonthSelected] = useState(false);
     const initialLayout = { width: Dimensions.get('window').width };
 
+    const [loader, setLoader] = useState(true);
     useEffect(() => {
 
         getSurgeonData();
@@ -217,7 +218,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setProceduresZero(false);
                 }*/
-
+                setLoader(false)
                 
             })
     }
@@ -351,6 +352,7 @@ const SurgeonsChart = ({ route }) => {
                 else {
                     setInquiriesZero(true);
                 }*/
+                setLoader(false)
             });
 
 
@@ -420,6 +422,7 @@ const SurgeonsChart = ({ route }) => {
                 for(let x = 0; x<data[0].data.length; x++){
                     count = count +  data[0].data[x];
                 }
+                console.log('Procedures Count', count);
                 if(count !== 0){
                     setProceduresZero(false);
                 }
@@ -466,11 +469,12 @@ const SurgeonsChart = ({ route }) => {
                 for(let x = 0; x<data[0].data.length; x++){
                     count = count +  data[0].data[x];
                 }
+                console.log('Inquiries Count', count);
                 if(count !== 0){
-                    setProceduresZero(false);
+                    setInquiriesZero(false);
                 }
                 else{
-                    setProceduresZero(true);
+                    setInquiriesZero(true);
                 }
 
 
@@ -484,9 +488,6 @@ const SurgeonsChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-
-
-
                 console.log("SURGEON CONSULTS THIS WEEK: ", response.data)
                 setSurgeonConsults(response.data)
                 let data2 = [];
@@ -509,18 +510,19 @@ const SurgeonsChart = ({ route }) => {
                 for(let x = 0; x<data2[0].data.length; x++){
                     count = count +  data2[0].data[x];
                 }
+                console.log('Consults Count', count);
                 if(count !== 0){
-                    setProceduresZero(false);
+                    setConsultsZero(false);
                 }
                 else{
-                    setProceduresZero(true);
+                    setConsultsZero(true);
                 }
-                
+                setLoader(false)
             });
 
     }
 
-    
+
     const getSurgeonDataThisMonth = async () => {
 
         setmonthSelected(false)
@@ -1512,9 +1514,9 @@ const SurgeonsChart = ({ route }) => {
     );
 
     const renderSceneSurgeons = SceneMap({
-        first: () =>    <SurgeonsInquiriesTab data={surgeonInquiries} surgeonData={surgeonDataInquiries} isZero={isInquiriesZero} />,
-        second: () =>   <SurgeonsConsultsTab data={surgeonConsults} surgeonData={surgeonDataConsults} isZero={isConsultsZero} />,
-        third: () =>    <SurgeonsProceduresTab data={surgeonProcedures} surgeonData={surgeonDataProcedures} isZero={isProceduresZero} />,
+        first: () =>    <SurgeonsInquiriesTab data={surgeonInquiries} surgeonData={surgeonDataInquiries} isZero={isInquiriesZero} loader={loader}/>,
+        second: () =>   <SurgeonsConsultsTab data={surgeonConsults} surgeonData={surgeonDataConsults} isZero={isConsultsZero} loader={loader}/>,
+        third: () =>    <SurgeonsProceduresTab data={surgeonProcedures} surgeonData={surgeonDataProcedures} isZero={isProceduresZero} loader={loader}/>,
     });
 
 
@@ -1534,7 +1536,7 @@ const SurgeonsChart = ({ route }) => {
                                     <MenuOption onSelect={getSurgeonData} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                     </MenuOption>
-                                    <MenuOption onSelect={() => { getSurgeonDataThisWeek() }} >
+                                    <MenuOption onSelect={() => { getSurgeonDataThisWeek(), setLoader(true) }} >
                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Week</Text></View>
                                     </MenuOption>
                                     <MenuOption onSelect={getSurgeonDataThisMonth} >
