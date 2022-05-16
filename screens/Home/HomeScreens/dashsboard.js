@@ -378,7 +378,7 @@ const Dashboard = ({ navigation, route }) => {
                             </View>
                             {/* REPORT SUMMARY CHART*/}
                             <ReportSummary route={route}/>
-
+                            <MonthlyChart route={route} />
                             <View style={{ marginBottom: 5 }} />
                             <ProceduresChart route={route} />
                              {/* SURGEONS CHART */}
