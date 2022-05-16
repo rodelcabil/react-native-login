@@ -10,11 +10,14 @@ import {
     LineChart,
     PieChart
 } from "react-native-chart-kit";
+import { useNavigation } from '@react-navigation/native';
 
-const WeeklyCTab = ({ navigation, loader, weeklyData, empty}) => {
+const WeeklyCTab = ({loader, weeklyData, empty}) => {
+  const navigation = useNavigation(); 
+
   return (
     loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
-        <View style={{ height: '100%',}}>
+        <View style={{ flex: 1 , padding: 20}}>
              {empty === true ? 
                                  <View style={styles.itemEmptyContainer}>
                                         <Image

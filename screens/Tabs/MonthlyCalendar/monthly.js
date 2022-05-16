@@ -10,11 +10,14 @@ import {
     LineChart,
     PieChart
 } from "react-native-chart-kit";
+import { useNavigation } from '@react-navigation/native';
 
-const MonthlyCTab = ({ navigation, loader, monthlyData, empty}) => {
+const MonthlyCTab = ({loader, monthlyData, empty}) => {
+  const navigation = useNavigation(); 
+
   return (
     loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
-        <View style={{ height: '100%',}}>
+     <View style={{ flex: 1}}>
             {empty === true ?
             <View style={styles.itemEmptyContainer}>
             <Image
@@ -24,70 +27,36 @@ const MonthlyCTab = ({ navigation, loader, monthlyData, empty}) => {
             <Text style={styles.text1}>You have no schedule at the moment for this Month</Text>
         </View>
         :
-        <ScrollView>
-        {monthlyData?.map((item, i) => {
-            return <TouchableHighlight
-            key={i}
-            style={{ marginBottom: 10, }}
-            activeOpacity={0.6}
-            underlayColor="#DDDDDD"
-            onPress={() => navigation.navigate('View Schedule', {
-                item: item,
-            })
+        <ScrollView  contentContainerStyle={{ flexGrow: 1, height: '100%'}}>
+               {monthlyData?.map((item, i) => {
+                    return <TouchableOpacity
+                    key={i}
+                    style={{ marginBottom: 10, }}
+                    activeOpacity={0.6}
+                    underlayColor="#DDDDDD"
+                    onPress={() => navigation.navigate('View Schedule', {
+                        item: item,
+                    })
 
-            }
-        >
-            <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
-                {item.category === 'reminder' ?
-                    <Card.Content key={i}>
-                        <View style={styles.columnContainer}>
-                            <Text style={styles.titleStyle}>{item.title}</Text>
-                            <View style={styles.rowSchedContainer}>
-                                <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
-
-                            </View>
-
-                            <View style={styles.rowSchedContainer}>
-                                <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
-                            </View>
-                        </View>
-                    </Card.Content>
-
-                    :
-
-                    item.category === 'procedures' ?
-                        <Card.Content key={i}>
-                            <View style={styles.columnContainer}>
-                                <Text style={styles.titleStyle}>{item.procedures}</Text>
-                                <View style={styles.rowSchedContainer}>
-                                    <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                    <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
-
-                                </View>
-
-                                <View style={styles.rowSchedContainer}>
-                                    <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                    <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
-                                </View>
-                            </View>
-                        </Card.Content>
-
-                        :
-
-                        item.category === 'consults' ?
+                    }
+                >
+                    <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}
+                                onPress={() => navigation.navigate('View Schedule', {
+                        item: item,
+                    })}
+                    >
+                        {item.category === 'reminder' ?
                             <Card.Content key={i}>
                                 <View style={styles.columnContainer}>
-                                    <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                    <Text style={styles.titleStyle}>{item.title}</Text>
                                     <View style={styles.rowSchedContainer}>
-                                        <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
-                                        <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
+                                        <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
 
                                     </View>
 
                                     <View style={styles.rowSchedContainer}>
-                                        <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                        <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
                                         <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                     </View>
                                 </View>
@@ -95,27 +64,65 @@ const MonthlyCTab = ({ navigation, loader, monthlyData, empty}) => {
 
                             :
 
-                            <Card.Content key={i}>
-                                <View style={styles.columnContainer}>
-                                    <Text style={styles.titleStyle}>{item.title}</Text>
-                                    <View style={styles.rowSchedContainer}>
-                                        <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+                            item.category === 'procedures' ?
+                                <Card.Content key={i}>
+                                    <View style={styles.columnContainer}>
+                                        <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                        <View style={styles.rowSchedContainer}>
+                                            <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                            <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
 
+                                        </View>
+
+                                        <View style={styles.rowSchedContainer}>
+                                            <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                            <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                        </View>
                                     </View>
+                                </Card.Content>
 
-                                    <View style={styles.rowSchedContainer}>
-                                        <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                        <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
-                                    </View>
-                                </View>
-                            </Card.Content>
-                }
+                                :
 
-            </Card>
-        </TouchableHighlight>
-    }
-        )}
+                                item.category === 'consults' ?
+                                    <Card.Content key={i}>
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                            <View style={styles.rowSchedContainer}>
+                                                <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
+
+                                            </View>
+
+                                            <View style={styles.rowSchedContainer}>
+                                                <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                            </View>
+                                        </View>
+                                    </Card.Content>
+
+                                    :
+
+                                    <Card.Content key={i}>
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.titleStyle}>{item.title}</Text>
+                                            <View style={styles.rowSchedContainer}>
+                                                <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+
+                                            </View>
+
+                                            <View style={styles.rowSchedContainer}>
+                                                <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                            </View>
+                                        </View>
+                                    </Card.Content>
+                        }
+
+                    </Card>
+                </TouchableOpacity>
+            }
+                )}
         </ScrollView>
         }
     </View>
@@ -124,6 +131,10 @@ const MonthlyCTab = ({ navigation, loader, monthlyData, empty}) => {
 }
 
 const styles = StyleSheet.create({
+    wrapper: {
+        padding: 10,
+        flex: 1,
+    },
     columnContainer: {
         flexDirection: 'column',
 

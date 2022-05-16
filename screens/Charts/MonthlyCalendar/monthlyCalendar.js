@@ -54,8 +54,8 @@ const MonthlySchedChart = ({ navigation, route }) => {
                     headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
                 }).then(response => {
                     const filteredSchedule = response.data.filter(item => 
-                        moment(item.date_from).format("YYYY-MM-DD") >= begginingOfCurrentMonth &&
-                        moment(item.date_to).format("YYYY-MM-DD") <= endOfMonth);
+                        moment(item.date_from).format("YYYY-MM-DD") >= "2022-04-23" &&
+                        moment(item.date_to).format("YYYY-MM-DD") <= "2022-04-30");
 
                     console.log("Monthly - SCHEDULES: ", filteredSchedule)
                     if (filteredSchedule.length !== 0) {
@@ -128,7 +128,7 @@ const MonthlySchedChart = ({ navigation, route }) => {
                                 title="Monthly Calendar"
                                 titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 600, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 350, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
 
                                 <TabView
                                     navigationState={{ index, routes }}
