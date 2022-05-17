@@ -72,7 +72,7 @@ const Dashboard = ({ navigation, route }) => {
     const [surgeons, setSurgeons] = useState([])
 
     const layout = useWindowDimensions();
-   
+
     const initialLayout = { width: Dimensions.get('window').width };
 
     const dataBar = {
@@ -83,7 +83,9 @@ const Dashboard = ({ navigation, route }) => {
             { x: 'Week 2', y: 20 }
         ]
     }
+
    
+
 
     useEffect(() => {
         const getMySchedule = async () => {
@@ -191,7 +193,7 @@ const Dashboard = ({ navigation, route }) => {
                     // setProcedureDataProcedures(data[0].data);
                     // console.log("PROCEDURES CONSULTS: ", response.data)
 
-                    console.log("LEADS FUNNEL DATA: ", mappedData[0].data)
+                    console.log("LEADS FUNNEL DATA: ", data[0].data, data[1].data, data[2].data, data[3].data, data[4].data)
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
@@ -248,7 +250,7 @@ const Dashboard = ({ navigation, route }) => {
     const [showErrorEmpED, setShowErrorEmpED] = useState(false);
 
     const [filterTextRS, setFilterTextRS] = useState(null);
-    
+
     const [todaySchedLoader, setTodaySchedLoader] = useState(true);
 
 
@@ -263,63 +265,44 @@ const Dashboard = ({ navigation, route }) => {
                             <View>
                                 <Text style={styles.text}>Today's schedule</Text>
 
-                                {todaySchedLoader === true ? <View style={{ justifyContent: 'center', borderRadius: 30, marginBottom: 10, }}><LoaderSmall/></View> :
-                                hasSched === false ?
-                                    <View style={styles.itemEmptyContainer}>
-                                        <Image
-                                            style={styles.logoImg}
-                                            source={require('../../../assets/calendar.png')}
-                                        />
-                                        <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
-                                    </View>
-                                    :
-                                    <>
-                                        {schedule?.map((item, i) => {
-                                            return <TouchableHighlight
-                                                key={i}
-                                                style={{ marginBottom: 10, }}
-                                                activeOpacity={0.6}
-                                                underlayColor="#DDDDDD"
-                                                onPress={() => navigation.navigate('View Schedule', {
-                                                    item: item,
-                                                })
+                                {todaySchedLoader === true ? <View style={{ justifyContent: 'center', borderRadius: 30, marginBottom: 10, }}><LoaderSmall /></View> :
+                                    hasSched === false ?
+                                        <View style={styles.itemEmptyContainer}>
+                                            <Image
+                                                style={styles.logoImg}
+                                                source={require('../../../assets/calendar.png')}
+                                            />
+                                            <Text style={styles.text1}>You have no schedule at the moment for this day</Text>
+                                        </View>
+                                        :
+                                        <>
+                                            {schedule?.map((item, i) => {
+                                                return <TouchableHighlight
+                                                    key={i}
+                                                    style={{ marginBottom: 10, }}
+                                                    activeOpacity={0.6}
+                                                    underlayColor="#DDDDDD"
+                                                    onPress={() => navigation.navigate('View Schedule', {
+                                                        item: item,
+                                                    })
 
-                                                }
-                                            >
+                                                    }
+                                                >
 
-                                                <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
+                                                    <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
 
-                                                    {item.category === 'reminder' ?
-                                                        <Card.Content key={i}>
-                                                            <View style={styles.columnContainer}>
-                                                                <Text style={styles.titleStyle}>{item.title}</Text>
-                                                                <View style={styles.rowSchedContainer}>
-                                                                    <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                                                    <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
-
-                                                                </View>
-
-                                                                <View style={styles.rowSchedContainer}>
-                                                                    <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
-                                                                    <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
-                                                                </View>
-                                                            </View>
-                                                        </Card.Content>
-
-                                                        :
-
-                                                        item.category === 'procedures' ?
+                                                        {item.category === 'reminder' ?
                                                             <Card.Content key={i}>
                                                                 <View style={styles.columnContainer}>
-                                                                    <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                                                    <Text style={styles.titleStyle}>{item.title}</Text>
                                                                     <View style={styles.rowSchedContainer}>
-                                                                        <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
-                                                                        <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
+                                                                        <Icon name="information" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                                                        <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
 
                                                                     </View>
 
                                                                     <View style={styles.rowSchedContainer}>
-                                                                        <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                                        <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
                                                                         <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                                     </View>
                                                                 </View>
@@ -327,18 +310,18 @@ const Dashboard = ({ navigation, route }) => {
 
                                                             :
 
-                                                            item.category === 'consults' ?
+                                                            item.category === 'procedures' ?
                                                                 <Card.Content key={i}>
                                                                     <View style={styles.columnContainer}>
                                                                         <Text style={styles.titleStyle}>{item.procedures}</Text>
                                                                         <View style={styles.rowSchedContainer}>
-                                                                            <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
-                                                                            <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
+                                                                            <Icon name="information" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                                            <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
 
                                                                         </View>
 
                                                                         <View style={styles.rowSchedContainer}>
-                                                                            <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                                            <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
                                                                             <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                                         </View>
                                                                     </View>
@@ -346,28 +329,47 @@ const Dashboard = ({ navigation, route }) => {
 
                                                                 :
 
-                                                                <Card.Content key={i}>
-                                                                    <View style={styles.columnContainer}>
-                                                                        <Text style={styles.titleStyle}>{item.title}</Text>
-                                                                        <View style={styles.rowSchedContainer}>
-                                                                            <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                                                            <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+                                                                item.category === 'consults' ?
+                                                                    <Card.Content key={i}>
+                                                                        <View style={styles.columnContainer}>
+                                                                            <Text style={styles.titleStyle}>{item.procedures}</Text>
+                                                                            <View style={styles.rowSchedContainer}>
+                                                                                <Icon name="information" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                                                <Text style={styles.tagStyle}>{item.notes}&nbsp;</Text>
 
+                                                                            </View>
+
+                                                                            <View style={styles.rowSchedContainer}>
+                                                                                <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
+                                                                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                                                            </View>
                                                                         </View>
+                                                                    </Card.Content>
 
-                                                                        <View style={styles.rowSchedContainer}>
-                                                                            <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
-                                                                            <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                                                    :
+
+                                                                    <Card.Content key={i}>
+                                                                        <View style={styles.columnContainer}>
+                                                                            <Text style={styles.titleStyle}>{item.title}</Text>
+                                                                            <View style={styles.rowSchedContainer}>
+                                                                                <Icon name="information" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                                                <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
+
+                                                                            </View>
+
+                                                                            <View style={styles.rowSchedContainer}>
+                                                                                <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                                                <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
+                                                                            </View>
                                                                         </View>
-                                                                    </View>
-                                                                </Card.Content>
-                                                    }
+                                                                    </Card.Content>
+                                                        }
 
-                                                </Card>
-                                            </TouchableHighlight>
-                                        }
-                                        )}
-                                    </>
+                                                    </Card>
+                                                </TouchableHighlight>
+                                            }
+                                            )}
+                                        </>
                                 }
                             </View>
                             <View>
@@ -377,11 +379,11 @@ const Dashboard = ({ navigation, route }) => {
                                 <StatisticsComponent bgColor="#00C292" title="COMPLETED PROCEDURES" count={dashboardData?.total_completed_procedures} iconName="check-circle" iconFolder="FeatherIcon" popOverContent={'Overall completed procedures'} />
                             </View>
                             {/* REPORT SUMMARY CHART*/}
-                            <ReportSummary route={route}/>
+                            <ReportSummary route={route} />
                             <MonthlyChart route={route} />
                             <View style={{ marginBottom: 5 }} />
                             <ProceduresChart route={route} />
-                             {/* SURGEONS CHART */}
+                            {/* SURGEONS CHART */}
                             <SurgeonsChart route={route} />
                             <LocationChart route={route} />
                             <SourceOfInquiryChart route={route} />
@@ -390,10 +392,10 @@ const Dashboard = ({ navigation, route }) => {
                             <List.Accordion
                                 title="Leads Funnel"
                                 titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                                expanded="true"
+                            
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
                                 <View style={{ paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
+                                   
                                 </View>
                             </List.Accordion>
                             <View style={{ marginBottom: 5 }} />
