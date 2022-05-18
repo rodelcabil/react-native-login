@@ -77,7 +77,7 @@ const Home = ({route}) => {
                         <Icon name="chat" color={color} size={size} />
                     ),
                 }} >
-                  {props => <ChatClient name="Rodel"/> }
+                  {props => <ChatClientClass name="Rodel"/> }
                 
             </Tab.Screen>
              <Tab.Screen 

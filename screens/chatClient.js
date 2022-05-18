@@ -5,8 +5,8 @@ import { View, Text, TextInput, StyleSheet } from 'react-native'
 import ChatView from './chatView';
 
 const ChatClient = ({ name }) => {
-    const [messages, setMessages] = useState([{name: 'rodel', action: 'message', message: 'hello'}, {name: 'Jim', action: 'message', message: 'hi'}]);
-    // const [messages, setMessages] = useState([]);
+    // const [messages, setMessages] = useState([{name: 'rodel', action: 'message', message: 'hello'}, {name: 'Jim', action: 'message', message: 'hi'}]);
+    const [messages, setMessages] = useState([]);
 
     const pusher = new Pusher(pusherConfig.key, pusherConfig);
     const chatChannel = pusher.subscribe('chat_channel');
@@ -18,15 +18,15 @@ const ChatClient = ({ name }) => {
             handlePart();
         });
         chatChannel.bind('message', (data) => {
-            handleMessage('Rodel',data.message);
+            handleMessage(data.name,data.message);
         });
     });
 
-    useEffect(() => {
-        // console.log("MESSAGE: ", messages)
-        componentDidMount();
-        componentWillUnmount();
-    }, [messages])
+    // useEffect(() => {
+    //     // console.log("MESSAGE: ", messages)
+    //     componentDidMount();
+    //     componentWillUnmount();
+    // }, [messages])
 
 
     const componentDidMount = () => { // (7)
@@ -50,13 +50,13 @@ const ChatClient = ({ name }) => {
     }
 
     const handleJoin =()=> { // (4)
-        const my_messages = this.state.messages.slice();
+        const my_messages = messages.slice();
         messages.push({ action: 'join', name: name });
         setMessages(my_messages);
     }
 
     const handlePart =()=> { // (5)
-        const my_messages = this.state.messages.slice();
+        const my_messages = messages.slice();
         messages.push({ action: 'part', name: name });
         setMessages(my_messages);
     }
@@ -86,8 +86,8 @@ const ChatClient = ({ name }) => {
 
     return (
         <>
-            <Text>Name: {name}</Text>
-            <ChatView message={messages} onSendMessage={onSendMessage} />
+           
+            <ChatView message={messages} onSendMessage={handleSendMessage} />
         </>
     )
 }

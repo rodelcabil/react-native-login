@@ -25,9 +25,9 @@ app.delete('/users/:name', function(req, res) { // (4)
 });
 
 app.post('/users/:name/messages', function(req, res) { // (5)
-    console.log('User sent message: ' + req.body.message);
+    console.log('User ' + req.params.name + ' sent message: ' + req.body.message);
     pusherClient.trigger('chat_channel', 'message', {
-        // name: req.params.name,
+        name: req.params.name,
         message: req.body.message
     });
     res.sendStatus(204);

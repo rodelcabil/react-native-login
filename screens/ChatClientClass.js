@@ -10,20 +10,20 @@ export default class ChatClientClass extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [{action: 'message',  name: 'Rodel', message: "message"}],
+      messages: []
     };
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
     this.chatChannel = this.pusher.subscribe('chat_channel'); // (2)
     this.chatChannel.bind('pusher:subscription_succeeded', () => { // (3)
-    //   this.chatChannel.bind('join', (data) => { // (4)
-    //     this.handleJoin(data.name);
-    //   });
-    //   this.chatChannel.bind('part', (data) => { // (5)
-    //     this.handlePart(data.name);
-    //   });
+      this.chatChannel.bind('join', (data) => { // (4)
+        this.handleJoin(data.name);
+      });
+      this.chatChannel.bind('part', (data) => { // (5)
+        this.handlePart(data.name);
+      });
       this.chatChannel.bind('message', (data) => { // (6)
-        this.handleMessage( data.message);
+        this.handleMessage(data.name, data.message);
       });
     });
     
@@ -36,6 +36,7 @@ export default class ChatClientClass extends React.Component {
     this.setState({
       messages: messages
     });
+    console.log(name, " JOINED");
   }
   
   handlePart(name) { // (5)
@@ -46,13 +47,13 @@ export default class ChatClientClass extends React.Component {
     });
   }
   
-  handleMessage(message) { // (6)
+  handleMessage(name, message) { // (6)
     const messages = this.state.messages.slice();
-    messages.push({action: 'message', name: 'Rodel', message: message});
+    messages.push({action: 'message', name: name, message: message});
     this.setState({
       messages: messages
     });
-    
+    console.log("name", name, " message", message);
   }
 
   componentDidMount() { // (7)
@@ -68,27 +69,33 @@ export default class ChatClientClass extends React.Component {
   }
 
   onSendMessage(text) { // (9)
+    console.log("called onSendMessage");
     const payload = {
         message: text
     };
-    fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    }).catch((e) => {
-        console.log("Error: ",e)
-    });
-    console.log("message: ",text)
-    console.log("name: ",this.props.name )
+    try{
+      fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }) .then((response) => response.json()) 
+      .then((responseJson) => {}) 
+      .catch((error) => { console.error(error); });
+    }
+    catch(error){
+      console.log(error);
+    }
+
+    console.log(text);
   }
 
-  render() { // (10)
+  render() {
     const messages = this.state.messages;
 
     return (
-        <ChatViewClass messages={ this.messages } onSendMessage={ this.handleSendMessage } />
+        <ChatViewClass messages={ messages } onSendMessage={ this.handleSendMessage } />
     );
   }
 }

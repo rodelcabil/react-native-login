@@ -118,10 +118,10 @@ const SurgeonsChart = ({ route }) => {
                 setSurgeonInquiries(response.data)
                 let data = [];
                 for (var i = 0; i < response.data.datasets.length; i++) {
-                    data[i] = { data: response.data.datasets[i].data };
+                    data[i] = { data: response.data.datasets[i].data, color: response.data.datasets[i].backgroundColor };
                 }
                 setSurgeonDataInquiriess(data[0].data);
-                console.log("SURGEON INQUIRIES: ", data[0].data)
+                console.log("SURGEON INQUIRIES: ", data[0].color)
 
                 // const isAllZero = data[0].data.every(item => item === 0);
 
