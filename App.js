@@ -20,6 +20,7 @@ import Settings from './screens/Home/HomeScreens/settings';
 import EditSchedule from './screens/editCalendar';
 import ChatClientClass from './screens/Messaging/ChatClientClass';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ChatClient from './screens/chatClient';
 
 
 const Stack = createNativeStackNavigator(); 
@@ -54,6 +55,10 @@ const App = () => {
       SplashScreen.hide();
   },[])
 
+
+  const getInitials = () =>{
+    return userDetails.first_name.charAt(0).toUpperCase() + userDetails.last_name.charAt(0).toUpperCase();
+  }   
 
 
   return (

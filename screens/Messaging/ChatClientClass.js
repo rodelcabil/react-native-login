@@ -4,13 +4,14 @@ import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
 
 import pusherConfig from '../../pusher.json';
 import ChatView from '../chatView';
-import ChatViewClass from './ChatViewClass';
+import ChatViewClass from '../Messaging/ChatViewClass'
 
 export default class ChatClientClass extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       messages: [],
+      date: '',
     };
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
@@ -23,7 +24,7 @@ export default class ChatClientClass extends React.Component {
         this.handlePart(data.name);
       });
       this.chatChannel.bind('message', (data) => { // (6)
-        this.handleMessage(data.name, data.message);
+        this.handleMessage(data.name, data.message, data.date);
       });
     });
 
@@ -47,13 +48,15 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
-  handleMessage(name, message) { // (6)
+  handleMessage(name, message, date) { // (6)
     const messages = this.state.messages.slice();
-    messages.push({ action: 'message', name: name, message: message });
+    const ddate = this.state.date;
+    messages.push({ action: 'message', name: name, message: message , date: date});
     this.setState({
-      messages: messages
+      messages: messages,
+      date: ddate
     });
-    console.log("name", name, " message", message);
+    console.log("name", name, " message", message, 'date: ', date);
   }
 
   componentDidMount() { // (7)
@@ -68,10 +71,11 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
-  onSendMessage(text) { // (9)
+  onSendMessage(text, date) { // (9)
     console.log("called onSendMessage");
     const payload = {
-      message: text
+      message: text,
+      date: date
     };
     try {
       fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
@@ -86,7 +90,7 @@ export default class ChatClientClass extends React.Component {
       console.log(error);
     }
 
-    console.log(text);
+    console.log(text, +" Time: ", date);
   }
 
   render() {

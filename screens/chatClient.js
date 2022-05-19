@@ -11,11 +11,11 @@ const ChatClient = ({ name }) => {
     const pusher = new Pusher(pusherConfig.key, pusherConfig);
     const chatChannel = pusher.subscribe('chat_channel');
     chatChannel.bind('pusher:subscription_succeeded', () => {
-        chatChannel.bind('join', () => { // (4)
-            handleJoin();
+        chatChannel.bind('join', (data) => { // (4)
+            handleJoin(data.name);
         });
-        chatChannel.bind('part', () => { // (5)
-            handlePart();
+        chatChannel.bind('part', (data) => { // (5)
+            handlePart(data.name);
         });
         chatChannel.bind('message', (data) => {
             handleMessage(data.name,data.message);
@@ -26,7 +26,7 @@ const ChatClient = ({ name }) => {
     //     // console.log("MESSAGE: ", messages)
     //     componentDidMount();
     //     componentWillUnmount();
-    // }, [messages])
+    // }, [])
 
 
     const componentDidMount = () => { // (7)
@@ -44,9 +44,9 @@ const ChatClient = ({ name }) => {
 
     const handleMessage = (name, message) => {
         console.log("send message")
-        const my_messages = messages.slice();
-        messages.push({ action: 'message', name: name, message: message });
-        setMessages(my_messages);
+        const messagess = messages.slice();
+        messagess.push({ action: 'message', name: name, message: message });
+        setMessages(messagess);
     }
 
     const handleJoin =()=> { // (4)
