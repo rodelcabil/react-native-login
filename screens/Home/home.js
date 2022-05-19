@@ -10,6 +10,7 @@ import Calendar from './HomeScreens/calendar';
 import Dashboard from './HomeScreens/dashsboard';
 import Group from './HomeScreens/group';
 import ChatClientClass from '../Messaging/ChatClientClass';
+import ChatClient from '../chatClient';
 import Settings from './HomeScreens/settings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatList from '../Messaging/ChatList';

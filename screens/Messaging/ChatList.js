@@ -4,7 +4,6 @@ import AppBar from '../ReusableComponents/AppBar'
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import { sr } from 'date-fns/locale';
-import ChatClientClass from './ChatClientClass';
 
 const ChatList = ({navigation}) => {
     return (
