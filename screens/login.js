@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView, ScrollView, ActivityIndicator, } from 'react-native';
+import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView, ScrollView, ActivityIndicator, LogBox } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Toast from 'react-native-simple-toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -9,6 +9,10 @@ import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 //  jayar@centaurmarketing.co H1stmj8e4s62xz6c
 
 const LoginPage = ({ navigation }) => {
+  LogBox.ignoreLogs([
+    "ViewPropTypes will be removed",
+    "ColorPropType will be removed",
+])
 
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);

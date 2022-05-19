@@ -89,6 +89,7 @@ const Dashboard = ({ navigation, route }) => {
 
     useEffect(() => {
         const getMySchedule = async () => {
+            console.log("GET SCHED LOADING");
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 

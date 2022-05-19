@@ -5,18 +5,14 @@ import { Card, Avatar } from 'react-native-paper';
 import { Agenda } from 'react-native-calendars';
 import { showNotification, handleScheduleNotification, handleCancel } from '../../ReusableComponents/notification.android'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import Icon2 from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
 import DeviceInfo from 'react-native-device-info';
 import { Dimensions } from "react-native";
 import DoubleClick from 'react-native-double-tap';
-import { Form, FormItem, Label } from 'react-native-form-component';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 import axios from 'axios';
 import SkeletonLoaderCard from '../../ReusableComponents/SkeletonLoader'
-import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 
 var width = Dimensions.get('window').width - 20;
@@ -32,8 +28,9 @@ export function Calendar ({ navigation, route }) {
     const [deviceID, setDeviceID] = useState();
     const [showModal, setShowModal] = useState(false);
 
-    const [user, setUser] = useState({});
-    const [getTokenGC, setGetTokenGC] = useState({});
+    const [user, setUser] = useState(null);
+    const [getTokenGC, setGetTokenGC] = useState(null);
+    const [loggedIn, setloggedIn] = useState(false);
 
     
     const [loader, setLoader] = useState(true);
@@ -54,24 +51,25 @@ export function Calendar ({ navigation, route }) {
             ],
             webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
             offlineAccess: true,
-            forceCodeForRefreshToken: true,
           });
 
-        isSignedIn()
         getDeviceID()
+        isSignedIn();
         console.log("Items: ", items);
     }, []);
 
     useEffect(() => {
         getData();
-    }, [isFocused]);
+    }, [isFocused, checkSignIn, user, getTokenGC]);
+
+
 
     const getData = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token; 
         const arrTemp = {};
 
-        const isSignedIn = await GoogleSignin.isSignedIn();
+       //const isSignedIn = await GoogleSignin.isSignedIn();
 
         await axios.get(
             `https://beta.centaurmd.com/api/schedules`,
@@ -98,12 +96,16 @@ export function Calendar ({ navigation, route }) {
                 );
                 
                 const SyncGoogleCalendar = async () =>{
-                    const userInfo = user === {} ? await GoogleSignin.signInSilently() : user;
-                    const userInfoToken = getTokenGC === null ? await GoogleSignin.getTokens() : getTokenGC;
-                    const token = userInfoToken.accessToken;
+                    console.log("Sync google calendar");
+                    console.log(user);
+                    console.log(user.user.email);
+                    console.log(getTokenGC);
+                   // const userInfo = await GoogleSignin.signInSilently();
+                   // const userInfoToken =  await GoogleSignin.getTokens();
+                   // const token = userInfoToken.accessToken;
         
                     await axios.get(
-                        `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
+                        `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?access_token=${getTokenGC.accessToken}`
                     ).then(response =>{
                         const mappedData = response.data.items.map((data, index) => {
                             const date = data.start.dateTime
@@ -131,16 +133,15 @@ export function Calendar ({ navigation, route }) {
                                      googleCalendar: true });
                             },
                         );
-
+                        console.log(mappedData);
+                        setItems({});
+                        setItems(arrTemp);
+                        setLoader(false);
+                        setGCSync(false);
                     });
-
-                    setItems({});
-                    setItems(arrTemp);
-                    setLoader(false);
-                    setGCSync(false);
                 } 
                 
-                if(!!isSignedIn){
+                if(checkSignIn === true){
                      SyncGoogleCalendar();
                 }
                 else{
@@ -157,9 +158,8 @@ export function Calendar ({ navigation, route }) {
         try{
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
-          setUser(userInfo)
-
           const userInfoToken = await GoogleSignin.getTokens();
+          setUser(userInfo)
           setGetTokenGC(userInfoToken)
 
           setCheckSignIn(true);
@@ -169,6 +169,9 @@ export function Calendar ({ navigation, route }) {
           //yncGoogleCalendar(true);
         }
         catch(error){
+          setCheckSignIn(false);
+          setLoader(true);
+          setGCSync(true);
           console.log('Message______', error.message);
           if(error.code === statusCodes.SIGN_IN_CANCELLED){
             console.log('User Cancelled the Login Flow.');
@@ -200,15 +203,12 @@ export function Calendar ({ navigation, route }) {
     const getCurrentUserInfo = async () => {
         try{
           const userInfo = await GoogleSignin.signInSilently();
-         // console.log('edit______', user);
+          const userInfoToken = await GoogleSignin.getTokens();
           setUser(userInfo);
-
-         const userInfoToken = await GoogleSignin.getTokens();
-          setGetTokenGC(userInfoToken.accessToken)
+          setGetTokenGC(userInfoToken)
           setCheckSignIn(true);
         }
         catch(error){
-            setCheckSignIn(false);
           if(error.code === statusCodes.SIGN_IN_REQUIRED){
             alert('User has not signed in yet');
             console.log('User has not signed in yet');
@@ -217,6 +217,7 @@ export function Calendar ({ navigation, route }) {
             alert('Somethign went wrong');
             console.log('Somethign went wrong');
           }
+          setCheckSignIn(false);
         }
     }
 
@@ -421,13 +422,14 @@ export function Calendar ({ navigation, route }) {
 
 
     const clickHandler = async () => {
-        const accToken = await GoogleSignin.getTokens();
+        //const accToken = await GoogleSignin.getTokens();
         navigation.navigate('Add Schedule', { 
             getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet,
             user: user,
-            accessToken: accToken.accessToken,
+            accessToken: getTokenGC.accessToken,
             email: user.user.email,
         })
+        console.log(getTokenGC.accessToken)
     };
 
     return (

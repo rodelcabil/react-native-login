@@ -10,8 +10,6 @@ import Calendar from './HomeScreens/calendar';
 import Dashboard from './HomeScreens/dashsboard';
 import Group from './HomeScreens/group';
 import ChatClientClass from '../Messaging/ChatClientClass';
-import ChatClient from '../chatClient';
-import ChatViewClass from '../ChatViewClass';
 import Settings from './HomeScreens/settings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatList from '../Messaging/ChatList';
@@ -79,7 +77,7 @@ const Home = ({route}) => {
                         <Icon name="chat" color={color} size={size} />
                     ),
                 }} >
-                  {/* {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> } */}
+                  {/**  {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> } */}
                 
             </Tab.Screen>
              <Tab.Screen 

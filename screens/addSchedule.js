@@ -19,7 +19,7 @@ const AddSchedule = ({ route, navigation }) => {
 
     const [title, setTitle] = useState(null);
     const [desc, setDesc] = useState(null);
-    const [endDate, setEndDate] = useState(route.params.getdate);
+    const [endDate, setEndDate] = useState( moment(route.params.getdate).format("YYYY-MM-DD"));
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
 
@@ -219,7 +219,7 @@ const AddSchedule = ({ route, navigation }) => {
                                 <DateTimePickerModal
                                     isVisible={isDatePickerVisible}
                                     mode="date"
-                                    value={route.params.getdate}
+                                    value={endDate}
                                     onConfirm={handleConfirm}
                                     onCancel={hideDatePicker}
                                     minimumDate={Date.now()}

@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
 import * as React from 'react';
+import {LogBox } from 'react-native';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -24,6 +26,10 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const App = () => {
+  LogBox.ignoreLogs([
+    "ViewPropTypes will be removed",
+    "ColorPropType will be removed",
+  ])
 
   const [userDetails, setUserDetails] = React.useState([])
   const [token, setToken] = React.useState()
