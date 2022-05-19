@@ -1,16 +1,16 @@
 import React from 'react';
 import Pusher from 'pusher-js/react-native';
-import { StyleSheet, Text, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
 
-import pusherConfig from '../pusher.json';
-import ChatView from './chatView';
+import pusherConfig from '../../pusher.json';
+import ChatView from '../chatView';
 import ChatViewClass from './ChatViewClass';
 
 export default class ChatClientClass extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: []
+      messages: [],
     };
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
@@ -26,30 +26,30 @@ export default class ChatClientClass extends React.Component {
         this.handleMessage(data.name, data.message);
       });
     });
-    
+
     this.handleSendMessage = this.onSendMessage.bind(this); // (9)
   }
 
   handleJoin(name) { // (4)
     const messages = this.state.messages.slice();
-    messages.push({action: 'join', name: name});
+    messages.push({ action: 'join', name: name });
     this.setState({
       messages: messages
     });
     console.log(name, " JOINED");
   }
-  
+
   handlePart(name) { // (5)
     const messages = this.state.messages.slice();
-    messages.push({action: 'part', name: name});
+    messages.push({ action: 'part', name: name });
     this.setState({
       messages: messages
     });
   }
-  
+
   handleMessage(name, message) { // (6)
     const messages = this.state.messages.slice();
-    messages.push({action: 'message', name: name, message: message});
+    messages.push({ action: 'message', name: name, message: message });
     this.setState({
       messages: messages
     });
@@ -71,20 +71,18 @@ export default class ChatClientClass extends React.Component {
   onSendMessage(text) { // (9)
     console.log("called onSendMessage");
     const payload = {
-        message: text
+      message: text
     };
-    try{
+    try {
       fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-      }) .then((response) => response.json()) 
-      .then((responseJson) => {}) 
-      .catch((error) => { console.error(error); });
+      })
     }
-    catch(error){
+    catch (error) {
       console.log(error);
     }
 
@@ -95,7 +93,10 @@ export default class ChatClientClass extends React.Component {
     const messages = this.state.messages;
 
     return (
-        <ChatViewClass messages={ messages } onSendMessage={ this.handleSendMessage } />
+      <View style={{ flex: 1, backgroundColor: 'orange' }}>
+        <ChatViewClass messages={messages} onSendMessage={this.handleSendMessage} />
+      </View>
+
     );
   }
 }

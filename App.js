@@ -16,15 +16,39 @@ import Account from './screens/account';
 import APICalls from './screens/apiPage';
 import Settings from './screens/Home/HomeScreens/settings';
 import EditSchedule from './screens/editCalendar';
+import ChatClientClass from './screens/Messaging/ChatClientClass';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const Stack = createNativeStackNavigator(); 
 const Tab = createBottomTabNavigator();
 
 const App = () => {
 
-  React.useEffect(() => {
-    SplashScreen.hide();
-  }, []);
+  const [userDetails, setUserDetails] = React.useState([])
+  const [token, setToken] = React.useState()
+
+  React.useEffect(()=>{
+      const getUserDetails = async () =>{
+          const value = await AsyncStorage.getItem('userDetails')
+          if(value !== null){
+             setUserDetails(JSON.parse(value))
+             console.log("HOME - USER DETAILS: ", value)
+          }
+      }
+      const getToken = async () => {
+          const token = await AsyncStorage.getItem('token');
+          if(token !== null){
+              setToken(token)
+           }
+      }
+
+      getUserDetails();
+      getToken();
+      SplashScreen.hide();
+  },[])
+
+
 
   return (
     <>
@@ -85,6 +109,15 @@ const App = () => {
           component={EditSchedule}
           options={{headerShown: false}}
         />
+
+        <Stack.Screen
+          name="Chat Client"
+          // component={ChatClientClass}
+          options={{headerShown: false}}
+        >
+            {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> }
+        </Stack.Screen>
+
 
       </Stack.Navigator>
     </NavigationContainer>

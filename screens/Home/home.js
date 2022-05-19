@@ -9,10 +9,11 @@ import FAIcon from 'react-native-vector-icons/FontAwesome5';
 import Calendar from './HomeScreens/calendar';
 import Dashboard from './HomeScreens/dashsboard';
 import Group from './HomeScreens/group';
-import ChatClientClass from '../ChatClientClass';
+import ChatClientClass from '../Messaging/ChatClientClass';
 import ChatClient from '../chatClient';
 import Settings from './HomeScreens/settings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ChatList from '../Messaging/ChatList';
 
 const Tab = createBottomTabNavigator();
 
@@ -69,7 +70,7 @@ const Home = ({route}) => {
             />
             <Tab.Screen 
                 name="Messaging" 
-                // component={ChatClientClass} 
+                component={ChatList} 
                 options={{
                     headerShown:false,
                     tabBarLabel: 'Messaging',
@@ -77,7 +78,7 @@ const Home = ({route}) => {
                         <Icon name="chat" color={color} size={size} />
                     ),
                 }} >
-                  {props => <ChatClientClass name="Rodel"/> }
+                  {/* {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> } */}
                 
             </Tab.Screen>
              <Tab.Screen 

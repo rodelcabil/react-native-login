@@ -1,0 +1,12 @@
+{
+    "expo": {
+        "name": "Centaur MD",
+        "icon": "../../images/ic_launcher.png",
+        "version": "1.0.0",
+        "slug": "centaurmd-slug",
+        "ios": {
+            "bundleIdentifier": "com.centaurmd.centaurmd",
+            "buildNumber": "1.0.0"
+        }
+    }
+}
