@@ -36,6 +36,8 @@ export function Calendar ({ navigation, route }) {
     const [loader, setLoader] = useState(true);
     const [gcSync, setGCSync] = useState(false);
     const [allowAdd, setAllowAdd] = useState(true);
+
+    const [refreshCalender, setRefreshCalender] = useState(false);
       
     const getDeviceID = () => {
         var uniqueID = DeviceInfo.getUniqueId;
@@ -67,6 +69,8 @@ export function Calendar ({ navigation, route }) {
     const getData = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token; 
+
+        setRefreshCalender(true);
         const arrTemp = {};
 
        //const isSignedIn = await GoogleSignin.isSignedIn();
@@ -153,6 +157,7 @@ export function Calendar ({ navigation, route }) {
                 }
             }
         );
+        setRefreshCalender(false);
     }
 
     const signIn = async () => {
@@ -511,6 +516,7 @@ export function Calendar ({ navigation, route }) {
                 items={items}
                 renderDay={renderDay}
                 renderEmptyData={renderEmptyDate}
+                refreshing={refreshCalender}
                 onDayPress={day => {
                     setDay(day.dateString);
                     if(day.dateString < moment(new Date(Date.now())).format("YYYY-MM-DD")){
