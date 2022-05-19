@@ -80,9 +80,7 @@ export default class ChatClientClass extends React.Component {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
-      }) .then((response) => response.json()) 
-      .then((responseJson) => {}) 
-      .catch((error) => { console.error(error); });
+      });
     }
     catch(error){
       console.log(error);
