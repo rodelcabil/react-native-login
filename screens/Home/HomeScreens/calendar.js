@@ -100,12 +100,13 @@ export function Calendar ({ navigation, route }) {
                     console.log(user);
                     console.log(user.user.email);
                     console.log(getTokenGC);
+                    setGCSync(true);
                    // const userInfo = await GoogleSignin.signInSilently();
-                   // const userInfoToken =  await GoogleSignin.getTokens();
-                   // const token = userInfoToken.accessToken;
+                    const userInfoToken =  await GoogleSignin.getTokens();
+                    //const token = userInfoToken.accessToken;
         
                     await axios.get(
-                        `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?access_token=${getTokenGC.accessToken}`
+                        `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?access_token=${userInfoToken.accessToken}`
                     ).then(response =>{
                         const mappedData = response.data.items.map((data, index) => {
                             const date = data.start.dateTime
@@ -170,8 +171,8 @@ export function Calendar ({ navigation, route }) {
         }
         catch(error){
           setCheckSignIn(false);
-          setLoader(true);
-          setGCSync(true);
+          setLoader(false);
+          setGCSync(false);
           console.log('Message______', error.message);
           if(error.code === statusCodes.SIGN_IN_CANCELLED){
             console.log('User Cancelled the Login Flow.');
@@ -422,14 +423,14 @@ export function Calendar ({ navigation, route }) {
 
 
     const clickHandler = async () => {
-        //const accToken = await GoogleSignin.getTokens();
+        const accToken = await GoogleSignin.getTokens();
         navigation.navigate('Add Schedule', { 
             getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet,
             user: user,
-            accessToken: getTokenGC.accessToken,
+            accessToken: accToken.accessToken,
             email: user.user.email,
         })
-        console.log(getTokenGC.accessToken)
+        console.log(accToken.accessToken)
     };
 
     return (
