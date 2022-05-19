@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "909386486823-sa1j1qiqtesps32mmn8vdala6bapfast.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.app.centaurmd",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
           "client_id": "909386486823-tvek17ebq0nqk6e6vnvv7mrjplvo6526.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

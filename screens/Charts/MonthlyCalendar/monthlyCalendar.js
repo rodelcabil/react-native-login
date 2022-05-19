@@ -54,8 +54,8 @@ const MonthlySchedChart = ({ navigation, route }) => {
                     headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
                 }).then(response => {
                     const filteredSchedule = response.data.filter(item => 
-                        moment(item.date_from).format("YYYY-MM-DD") >= "2022-04-23" &&
-                        moment(item.date_to).format("YYYY-MM-DD") <= "2022-04-30");
+                        moment(item.date_from).format("YYYY-MM-DD") >= begginingOfCurrentMonth &&
+                        moment(item.date_to).format("YYYY-MM-DD") <= endOfMonth);
 
                     console.log("Monthly - SCHEDULES: ", filteredSchedule)
                     if (filteredSchedule.length !== 0) {

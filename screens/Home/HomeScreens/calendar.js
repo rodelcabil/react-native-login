@@ -33,7 +33,7 @@ export function Calendar ({ navigation, route }) {
     const [showModal, setShowModal] = useState(false);
 
     const [user, setUser] = useState({});
-    const [getTokenGC, setGetTokenGC] = useState(null);
+    const [getTokenGC, setGetTokenGC] = useState({});
 
     
     const [loader, setLoader] = useState(true);
@@ -70,6 +70,9 @@ export function Calendar ({ navigation, route }) {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token; 
         const arrTemp = {};
+
+        const isSignedIn = await GoogleSignin.isSignedIn();
+
         await axios.get(
             `https://beta.centaurmd.com/api/schedules`,
             { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
@@ -94,62 +97,58 @@ export function Calendar ({ navigation, route }) {
                     },
                 );
                 
-                const SyncGoogleCalendar = async (setAlert) =>{
-                        const isSignedIn = await GoogleSignin.isSignedIn();
-                        if(!!isSignedIn){
-                            //setGCSync(true);
-                            const userInfo = await GoogleSignin.signInSilently();
-                            const userInfoToken = await GoogleSignin.getTokens();
-                            const token = userInfoToken.accessToken;
-                
-                            await axios.get(
-                                `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
-                            ).then(response =>{
-                                const mappedData = response.data.items.map((data, index) => {
-                                    const date = data.start.dateTime
-                                    return {
-                                        ...data,
-                                        date: moment(date).format('YYYY-MM-DD')
-                                    };
-                                });
-    
-                                mappedData.map(
-                                    (currentItem, index) => {
-                                        const { date, ...coolItem } = currentItem;
-                                        if (!arrTemp[date]) {
-                                            arrTemp[date] = [];
-                                        }
-                                        arrTemp[date].push({
-                                             title: coolItem.summary, 
-                                             description: coolItem.description, 
-                                             date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
-                                             time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
-                                             date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
-                                             time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
-                                             category: "Others",
-                                             googleEventId: coolItem.id, 
-                                             googleCalendar: true });
-                                    },
-                                );
-    
-                            });
+                const SyncGoogleCalendar = async () =>{
+                    const userInfo = user === {} ? await GoogleSignin.signInSilently() : user;
+                    const userInfoToken = getTokenGC === null ? await GoogleSignin.getTokens() : getTokenGC;
+                    const token = userInfoToken.accessToken;
+        
+                    await axios.get(
+                        `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
+                    ).then(response =>{
+                        const mappedData = response.data.items.map((data, index) => {
+                            const date = data.start.dateTime
+                            return {
+                                ...data,
+                                date: moment(date).format('YYYY-MM-DD')
+                            };
+                        });
 
-                            setItems({});
-                            setItems(arrTemp);
-                            setLoader(false);
-                            setGCSync(false);
-                            if(setAlert === true){
-                                alert('Successful Sync');
-                            }
-                        }
-                        else{
-                            setItems({});
-                            setItems(arrTemp);
-                            setLoader(false)
-                            setGCSync(false);
-                        }
+                        mappedData.map(
+                            (currentItem, index) => {
+                                const { date, ...coolItem } = currentItem;
+                                if (!arrTemp[date]) {
+                                    arrTemp[date] = [];
+                                }
+                                arrTemp[date].push({
+                                     title: coolItem.summary, 
+                                     description: coolItem.description, 
+                                     date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
+                                     time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
+                                     date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
+                                     time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
+                                     category: "Others",
+                                     googleEventId: coolItem.id, 
+                                     googleCalendar: true });
+                            },
+                        );
+
+                    });
+
+                    setItems({});
+                    setItems(arrTemp);
+                    setLoader(false);
+                    setGCSync(false);
                 } 
-                SyncGoogleCalendar(false);
+                
+                if(!!isSignedIn){
+                     SyncGoogleCalendar();
+                }
+                else{
+                    setItems({});
+                    setItems(arrTemp);
+                    setLoader(false)
+                    setGCSync(false);
+                }
             }
         );
     }
@@ -161,7 +160,7 @@ export function Calendar ({ navigation, route }) {
           setUser(userInfo)
 
           const userInfoToken = await GoogleSignin.getTokens();
-          setGetTokenGC(userInfoToken.accessToken)
+          setGetTokenGC(userInfoToken)
 
           setCheckSignIn(true);
           setLoader(true);
@@ -220,43 +219,7 @@ export function Calendar ({ navigation, route }) {
           }
         }
     }
-    
-    const SyncGoogleCalendar = async (setAlert) =>{
-        const arrTemp = items;
-        const isSignedIn = await GoogleSignin.isSignedIn();
-        if(!!isSignedIn){
-            const userInfo = await GoogleSignin.signInSilently();
-            const userInfoToken = await GoogleSignin.getTokens();
-            const token = userInfoToken.accessToken;
 
-            const resp = await axios.get(
-                `https://www.googleapis.com/calendar/v3/calendars/${userInfo.user.email}/events?access_token=${token}`
-            );
-
-            for (let i = 0; i < resp.data.items.length; i++) {
-                const date = moment(resp.data.items[i].start.dateTime).format("YYYY-MM-DD");
-                const timeStart = moment(resp.data.items[i].start.dateTime).format("HH:mma");
-                const dateEnd = moment(resp.data.items[i].end.dateTime).format("YYYY-MM-DD");
-                const timeEnd = moment(resp.data.items[i].end.dateTime).format("HH:mma");
-                const title = (resp.data.items[i].summary);
-                const description = (resp.data.items[i].description);
-
-                if (!arrTemp[date]) {
-                    arrTemp[date] = [];
-                }
-                arrTemp[date].push({ title: title, description: description, date_from: date, time_from: timeStart, date_to: dateEnd, time_to: timeEnd, category: "Others",
-                googleEventId: resp.data.items[i].id, googleCalendar: true });
-              }
-
-              setItems(arrTemp); 
-              setLoader(false);
-        }
-        else{
-            alert('Google Account not Connected');
-            setItems(arrTemp);
-            setLoader(false)
-        }
-    } 
 
     const getAllSchedules = async () => {
         setLoader(true);

@@ -93,10 +93,7 @@ export default class ChatClientClass extends React.Component {
     const messages = this.state.messages;
 
     return (
-      <View style={{ flex: 1, backgroundColor: 'orange' }}>
-        <ChatViewClass messages={messages} onSendMessage={this.handleSendMessage} />
-      </View>
-
+        <ChatViewClass messages={ messages } onSendMessage={ this.handleSendMessage } name={this.props.name} />
     );
   }
 }
