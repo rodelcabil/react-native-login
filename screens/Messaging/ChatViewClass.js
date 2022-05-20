@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, ScrollView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Dimensions } from "react-native";
 import AppBar from '../ReusableComponents/AppBar';
@@ -31,52 +31,25 @@ export default class ChatViewClass extends React.Component {
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
         <View style={styles.container}>
-          {/* <View style={{ width: "100%", padding: 15, flexDirection: 'row', borderBottomColor: 'gray', borderBottomWidth: 0.5, }}>
-            <Icon name="arrow-back" size={20} color="black" style={{ display: 'flex' }} onPress={() => this.props.navigation.goBack()} />
-            <Text style={{ fontSize: 15, marginLeft: 10, color: 'black', fontWeight: 'bold' }}>Group Chat Name</Text>
-          </View> */}
           <AppBar title={"Chat"} showMenuIcon={true} />
-
+         
+            {/* <View style={{ flex: 1, position: 'absolute', bottom: 0, width: Dimensions.get('window').width, zIndex: -100 }}>
+              <FlatList
+                ref={ref => { this.scrollView = ref }}
+                onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
+                data={this.props.messages}
+                renderItem={this.renderItem}
+                style={{ alignContent: 'flex-start' }}
+              />
+            </View> */}
             <FlatList
-              data={this.props.messages}
-              renderItem={this.renderItem}
-              styles={styles.messages} />
-
-            {/* <View style={{height: 60}} /> */}
-
-            {/* {this.props.messages.map((item, key) => {
-
-            return <View key={key} style={styles.messages}>
-              {
-                item.action === "join" ? <View style={styles.inOutContainer}><Text style={styles.joinPart}>{item.name} has joined</Text></View>
-                :
-                item.action === "part" ? <View style={styles.inOutContainer} ><Text style={styles.joinPart}>{item.name} has left</Text></View>
-                :
-                item.action === "message" ? 
-                  item.uuid === this.state.myUuid ? <View  style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10 }}>
-                    <Text style={{ textAlign: 'right', maxWidth: 200 }}>{item.date}</Text>
-                    <Text style={styles.bubbleChatOwn}>{item.message}</Text>
-                  </View>
-                    :
-                    <View  style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start' }}>
-                      <View style={styles.othersChat}>
-                        <Avatar.Text size={45} label="RC" />
-                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-
-                          <Text style={{ maxWidth: 300, textAlign: 'left' }}>{item.name}, {item.date} </Text>
-                          <Text style={styles.bubbleChatOthers}>{item.message}</Text>
-                        </View>
-                      </View>
-                    </View>
-                    
-                    :
-                    <></>
-              }
-            </View>
-          })} */}
-
-
-      
+                ref={ref => { this.scrollView = ref }}
+                onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
+                data={this.props.messages}
+                renderItem={this.renderItem}
+                style={{ flex: 1, position: 'absolute', bottom: 0, width: Dimensions.get('window').width, zIndex: -100, maxHeight: Dimensions.get('window').height - 150}}
+              />
+          
         </View>
         <View style={styles.textInputContainer}>
           <TextInput autoFocus
@@ -94,37 +67,61 @@ export default class ChatViewClass extends React.Component {
           />
           <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={styles.icon} />
         </View>
-     
+
       </View >
-  
+
     );
   }
 
-  renderItem = ({ item }) => { 
+  renderItem = ({ item }) => {
     const action = item.action;
     const name = item.name;
     const date = item.date;
     const uuid = item.uuid;
+    // return <View style={{  flexDirection: 'column', jusitfyContent: 'flex-end', flex: 1 }}>
+    //   {action == 'join' ? <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View> :
+    //     action == 'part' ? <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has left</Text></View> :
+    //       action == 'message' ? uuid === this.state.myUuid ? <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+    //         <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{date}</Text>
+    //         <Text style={styles.bubbleChatOwn}>{item.message}</Text>
+    //       </View>
+    //         :
+    //         <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+    //           <View style={styles.othersChat}>
+    //             <Avatar.Text size={45} label="RC" />
+    //             <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
+
+    //               <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{name}, {date} </Text>
+    //               <Text style={styles.bubbleChatOthers}>{item.message}</Text>
+
+    //             </View>
+    //           </View>
+    //         </View>
+
+    //         :
+    //         <></>
+    //   }
+    // </View>
     if (action == 'join') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View>;
     } else if (action == 'part') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has left</Text></View>;
     } else if (action == 'message') {
       return uuid === this.state.myUuid ?
-        <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10 }}>
-          <Text style={{ textAlign: 'right', maxWidth: 200 }}>{date}</Text>
+        <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+          <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{date}</Text>
           <Text style={styles.bubbleChatOwn}>{item.message}</Text>
 
         </View>
 
 
         :
-        <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start' }}>
+        <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
           <View style={styles.othersChat}>
             <Avatar.Text size={45} label="RC" />
             <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-              <Text style={{ maxWidth: 300, textAlign: 'left' }}>{name}, {date} </Text>
+              <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{name}, {date} </Text>
               <Text style={styles.bubbleChatOthers}>{item.message}</Text>
 
             </View>
@@ -154,7 +151,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 5,
     borderRadius: 15,
-    maxWidth: 300
+    maxWidth: 300,
+
   },
   bubbleChatOthers: {
     backgroundColor: "#f0f2f0",
@@ -163,7 +161,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     borderRadius: 15,
     textAlign: 'left',
-    maxWidth: 300
+    maxWidth: 300,
+
   },
 
 
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginLeft: 10,
+    marginLeft: 5,
     marginRight: 5,
     marginVertical: 10,
     fontSize: 14,
@@ -188,11 +187,12 @@ const styles = StyleSheet.create({
 
   },
   messages: {
-    alignSelf: 'stretch',
+    flexDirection: 'row',
     color: 'black',
     background: 'orange',
     marginBottom: 60,
     width: Dimensions.get('window').height - 100,
+
   },
   input: {
     alignSelf: 'stretch',
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopWidth: 0.6,
     borderColor: '#e3e3e3',
-    justifyContent: 'flex-end'
+    justifyContent: 'space-evenly'
   },
   icon: {
     marginBottom: 12.6
