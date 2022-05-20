@@ -52,8 +52,9 @@ export default class ChatViewClass extends React.Component {
             value={this.state.messages}
             onChangeText={message => this.setState({ messages: message })}
             ref="input"
+            multiline={true}
           />
-          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} />
+          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={styles.icon}/>
         </View>
 
       </View>
@@ -70,7 +71,7 @@ export default class ChatViewClass extends React.Component {
     } else if (action == 'part') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has left</Text></View>;
     } else if (action == 'message') {
-      return "Rodel Cabil" !== name ?
+      return "Rodel Cabil" === name ?
         <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10 }}>
           <Text style={{ textAlign: 'right', maxWidth: 200 }}>{date}</Text>
           <Text style={styles.bubbleChatOwn}>{item.message}</Text>
@@ -81,15 +82,15 @@ export default class ChatViewClass extends React.Component {
         :
         <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start' }}>
           <View style={styles.othersChat}>
-             <Avatar.Text size={45} label="RC" />
-            <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start'}}>
+            <Avatar.Text size={45} label="RC" />
+            <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                <Text style={{maxWidth: 300, textAlign: 'left'}}>{name}, {date} </Text>
-                <Text style={styles.bubbleChatOthers}>{item.message}</Text>
+              <Text style={{ maxWidth: 300, textAlign: 'left' }}>{name}, {date} </Text>
+              <Text style={styles.bubbleChatOthers}>{item.message}</Text>
 
-             </View>
-           </View>
-         </View>;
+            </View>
+          </View>
+        </View>;
     }
   }
 }
@@ -137,12 +138,13 @@ const styles = StyleSheet.create({
 
     width: Dimensions.get('window').width - 60,
     alignSelf: 'stretch',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     marginLeft: 10,
     marginRight: 5,
     marginVertical: 10,
     fontSize: 14,
-    borderRadius: 50,
+    borderRadius: 10,
     backgroundColor: '#e3e3e3',
 
   },
@@ -173,9 +175,13 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     backgroundColor: '#fff',
-    borderTopWidth: 1.5,
+    borderTopWidth: 0.6,
     borderColor: '#e3e3e3',
+    justifyContent: 'flex-end'
+  },
+  icon:{
+    marginBottom: 12.6
   }
 });

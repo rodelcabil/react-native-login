@@ -14,6 +14,8 @@ import ChatClient from '../chatClient';
 import Settings from './HomeScreens/settings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatList from '../Messaging/ChatList';
+import { Badge } from 'react-native-paper';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -75,7 +77,10 @@ const Home = ({route}) => {
                     headerShown:false,
                     tabBarLabel: 'Messaging',
                     tabBarIcon: ({ color, size }) => (
-                        <Icon name="chat" color={color} size={size} />
+                        <>
+                        <Badge size={25} style={{position: 'relative', marginTop:-20, marginRight: 10, borderWidth: 3, borderColor: '#fff', zIndex: 100}}>99</Badge>
+                        <Icon name="chat" color={color} size={30} style={{position: 'absolute', marginRight: 10, }}/>
+                        </>
                     ),
                 }} >
                   {/**  {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> } */}
