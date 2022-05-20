@@ -17,7 +17,7 @@ import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 
 var width = Dimensions.get('window').width - 20;
 
-export function Calendar ({ navigation, route }) {
+const Calendar = ({ navigation, route })  => {
 
     const isFocused = useIsFocused();
     const [checkSignIn, setCheckSignIn] = useState(false);
@@ -26,18 +26,15 @@ export function Calendar ({ navigation, route }) {
     const [tempItems, setTempItems] = useState([]);
     const [dayGet, setDay] = useState(null);
     const [deviceID, setDeviceID] = useState();
-    const [showModal, setShowModal] = useState(false);
 
     const [user, setUser] = useState(null);
     const [getTokenGC, setGetTokenGC] = useState(null);
-    const [loggedIn, setloggedIn] = useState(false);
 
-    
+
     const [loader, setLoader] = useState(true);
     const [gcSync, setGCSync] = useState(false);
     const [allowAdd, setAllowAdd] = useState(true);
 
-    const [refreshCalender, setRefreshCalender] = useState(false);
       
     const getDeviceID = () => {
         var uniqueID = DeviceInfo.getUniqueId;
@@ -55,129 +52,32 @@ export function Calendar ({ navigation, route }) {
             offlineAccess: true,
           });
 
+          
         getDeviceID()
         isSignedIn();
         console.log("Items: ", items);
     }, []);
 
     useEffect(() => {
-        getData();
-    }, [isFocused, checkSignIn, user, getTokenGC]);
+        getData(checkSignIn, user === null ? "" : user.user.email);
+    }, [isFocused, user, checkSignIn]);
 
-
-
-    const getData = async () => {
-        const token = await AsyncStorage.getItem('token');
-        const tokenget = token === null ? route.params.token : token; 
-
-        setRefreshCalender(true);
-        const arrTemp = {};
-
-       //const isSignedIn = await GoogleSignin.isSignedIn();
-
-        await axios.get(
-            `https://beta.centaurmd.com/api/schedules`,
-            { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
-            }).then(response => {
-                setTempItems(response.data);
-                const mappedData = response.data.map((data) => {
-                    const date = data.date_from;
-                    return {
-                        ...data,
-                        date: moment(date).format('YYYY-MM-DD')
-                    };
-                });
-
-
-                mappedData.map(
-                    (currentItem) => {
-                        const { date, ...coolItem } = currentItem;
-                        if (!arrTemp[date]) {
-                            arrTemp[date] = [];
-                        }
-                        arrTemp[date].push(coolItem);
-                    },
-                );
-                
-                const SyncGoogleCalendar = async () =>{
-                    console.log("Sync google calendar");
-                    console.log(user);
-                    console.log(user.user.email);
-                    console.log(getTokenGC);
-                    setGCSync(true);
-                   // const userInfo = await GoogleSignin.signInSilently();
-                    const userInfoToken =  await GoogleSignin.getTokens();
-                    //const token = userInfoToken.accessToken;
-        
-                    await axios.get(
-                        `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?access_token=${userInfoToken.accessToken}`
-                    ).then(response =>{
-                        const mappedData = response.data.items.map((data, index) => {
-                            const date = data.start.dateTime
-                            return {
-                                ...data,
-                                date: moment(date).format('YYYY-MM-DD')
-                            };
-                        });
-
-                        mappedData.map(
-                            (currentItem, index) => {
-                                const { date, ...coolItem } = currentItem;
-                                if (!arrTemp[date]) {
-                                    arrTemp[date] = [];
-                                }
-                                arrTemp[date].push({
-                                     title: coolItem.summary, 
-                                     description: coolItem.description, 
-                                     date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
-                                     time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
-                                     date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
-                                     time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
-                                     category: "Others",
-                                     googleEventId: coolItem.id, 
-                                     googleCalendar: true });
-                            },
-                        );
-                        console.log(mappedData);
-                        setItems({});
-                        setItems(arrTemp);
-                        setLoader(false);
-                        setGCSync(false);
-                    });
-                } 
-                
-                if(checkSignIn === true){
-                     SyncGoogleCalendar();
-                }
-                else{
-                    setItems({});
-                    setItems(arrTemp);
-                    setLoader(false)
-                    setGCSync(false);
-                }
-            }
-        );
-        setRefreshCalender(false);
-    }
 
     const signIn = async () => {
         try{
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
-          const userInfoToken = await GoogleSignin.getTokens();
+         // const userInfoToken = await GoogleSignin.getTokens();
           setUser(userInfo)
-          setGetTokenGC(userInfoToken)
+         // setGetTokenGC(userInfoToken)
 
           setCheckSignIn(true);
           setLoader(true);
           setGCSync(true);
-          getData();
+          getData(true, userInfo.user.email);
           //yncGoogleCalendar(true);
         }
         catch(error){
-          setCheckSignIn(false);
-          setLoader(false);
-          setGCSync(false);
           console.log('Message______', error.message);
           if(error.code === statusCodes.SIGN_IN_CANCELLED){
             console.log('User Cancelled the Login Flow.');
@@ -206,12 +106,134 @@ export function Calendar ({ navigation, route }) {
           }
     }
     
+    const getData = async (isLoggedIn, email) => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token; 
+        const arrTemp = {};
+
+       //const isSignedIn = await GoogleSignin.isSignedIn();
+        console.log("Get Data Called");
+        console.log(isLoggedIn, email);
+
+        const SyncGoogleCalendar = async () =>{
+            console.log("Sync google calendar");
+            // setGCSync(true);
+            //const userInfo = await GoogleSignin.signInSilently();
+            const userInfoToken =  await GoogleSignin.getTokens();
+            //const token = userInfoToken.accessToken;
+
+            await axios.get(
+                `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?access_token=${userInfoToken.accessToken}`
+            ).then(response =>{
+                const mappedData = response.data.items.map((data, index) => {
+                    const date = data.start.dateTime
+                    return {
+                        ...data,
+                        date: moment(date).format('YYYY-MM-DD')
+                    };
+                });
+
+                mappedData.map(
+                    (currentItem, index) => {
+                        const { date, ...coolItem } = currentItem;
+                        if (!arrTemp[date]) {
+                            arrTemp[date] = [];
+                        }
+                        arrTemp[date].push({
+                             title: coolItem.summary, 
+                             description: coolItem.description, 
+                             date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
+                             time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
+                             date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
+                             time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
+                             category: "Others",
+                             googleEventId: coolItem.id, 
+                             googleCalendar: true });
+                    },
+                );
+                console.log('Done Sync Google Calendar');
+                setItems({});
+                setItems(arrTemp);
+                setLoader(false);
+                setGCSync(false);
+            });
+        } 
+
+
+        if(isLoggedIn === true){
+            await axios.get(
+                `https://beta.centaurmd.com/api/schedules`,
+                { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
+                }).then(response => {
+                    console.log("response", response.data);
+                    setTempItems(response.data);
+                    const mappedData = response.data.map((data) => {
+                        const date = data.date_from;
+                        return {
+                            ...data,
+                            date: moment(date).format('YYYY-MM-DD')
+                        };
+                    });
+    
+    
+                    mappedData.map(
+                        (currentItem) => {
+                            const { date, ...coolItem } = currentItem;
+                            if (!arrTemp[date]) {
+                                arrTemp[date] = [];
+                            }
+                            arrTemp[date].push(coolItem);
+                        },
+                    );
+                    
+                    console.log("TEMP ARRAY", arrTemp);
+                    SyncGoogleCalendar();
+                }
+            );
+        }
+        else{
+            await axios.get(
+                `https://beta.centaurmd.com/api/schedules`,
+                { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
+                }).then(response => {
+                    console.log("response", response.data);
+                    setTempItems(response.data);
+                    const mappedData = response.data.map((data) => {
+                        const date = data.date_from;
+                        return {
+                            ...data,
+                            date: moment(date).format('YYYY-MM-DD')
+                        };
+                    });
+    
+    
+                    mappedData.map(
+                        (currentItem) => {
+                            const { date, ...coolItem } = currentItem;
+                            if (!arrTemp[date]) {
+                                arrTemp[date] = [];
+                            }
+                            arrTemp[date].push(coolItem);
+                        },
+                    );
+                    
+                    console.log("TEMP ARRAY", arrTemp);
+                }
+            );
+            setItems({});
+            setItems(arrTemp);
+            setLoader(false)
+            setGCSync(false);
+        }
+    }
+
+    
     const getCurrentUserInfo = async () => {
         try{
           const userInfo = await GoogleSignin.signInSilently();
-          const userInfoToken = await GoogleSignin.getTokens();
+         // const userInfoToken = await GoogleSignin.getTokens();
           setUser(userInfo);
-          setGetTokenGC(userInfoToken)
+         // setGetTokenGC(userInfoToken)
           setCheckSignIn(true);
         }
         catch(error){
@@ -266,13 +288,13 @@ export function Calendar ({ navigation, route }) {
             });
     }
 
-    const renderDay = (day, item) => {
+    const renderItem = (item) => {
         return (
             loader === true ? 
               <SkeletonLoaderCard/>
             :
-            moment(item.date_from).format('YYYY-MM-DD') !== ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ?  <></>
-               : <TouchableHighlight
+         /*  moment(item.date_from).format('YYYY-MM-DD') !== ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ?  <></>:*/
+              <TouchableHighlight
                     style={{ margin: 10, width: width }}
                     activeOpacity={0.6}
                     underlayColor="#DDDDDD"
@@ -293,7 +315,7 @@ export function Calendar ({ navigation, route }) {
                         }
                     }}
                 >
-                    <SafeAreaView style={{ flex: 1 }}>
+                    <SafeAreaView style={{ flex: 1, width: Dimensions.get('window').width-80}}>
                         <Card style={{ borderLeftWidth: 5, borderColor: item.category === 'consults' ? '#da7331' : item.category === 'procedures' ? '#ffc000' : item.category === 'reminder' ? '#3a87ad' : '#81c784' }}>
                             {item.category === 'reminder' ?
                                 <Card.Content>
@@ -514,9 +536,8 @@ export function Calendar ({ navigation, route }) {
 
             <Agenda
                 items={items}
-                renderDay={renderDay}
+                renderItem={renderItem}
                 renderEmptyData={renderEmptyDate}
-                refreshing={refreshCalender}
                 onDayPress={day => {
                     setDay(day.dateString);
                     if(day.dateString < moment(new Date(Date.now())).format("YYYY-MM-DD")){
@@ -527,6 +548,9 @@ export function Calendar ({ navigation, route }) {
                     }
                 }}
                 selected={Date.now()}
+               // minDate={'2022-05-16'}
+                //maxDate={'2022-05-21'}
+                showClosingKnob={true}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
                 }}
