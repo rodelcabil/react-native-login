@@ -326,7 +326,11 @@ const Calendar = ({ navigation, route })  => {
                                             <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
 
                                         </View>
+                                        <View style={styles.rowContainer}>
+                                                    <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.tagStyle}>{item.date_from} - {item.date_to}</Text>
 
+                                                </View>
                                         <View style={styles.rowContainer}>
                                             <Icon name="calendar" size={20} color="#3a87ad" style={{ marginRight: 5 }} />
                                             <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
@@ -345,7 +349,11 @@ const Calendar = ({ navigation, route })  => {
                                                 <Text style={styles.tagStyle}>{item.procedure_description}&nbsp;</Text>
 
                                             </View>
+                                            <View style={styles.rowContainer}>
+                                                    <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.tagStyle}>{item.date_from} - {item.date_to}</Text>
 
+                                                </View>
                                             <View style={styles.rowContainer}>
                                                 <Icon name="calendar" size={20} color="#ffc000" style={{ marginRight: 5 }} />
                                                 <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
@@ -369,6 +377,10 @@ const Calendar = ({ navigation, route })  => {
                                                     <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
                                                     <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                 </View>
+                                                <View style={styles.rowContainer}>
+                                                    <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.tagStyle}>{item.date_from} - {item.date_to}</Text>
+                                                </View>
                                             </View>
                                         </Card.Content>
 
@@ -382,12 +394,15 @@ const Calendar = ({ navigation, route })  => {
                                                     <Text style={styles.tagStyle}>{item.description}&nbsp;</Text>
 
                                                 </View>
+                                                <View style={styles.rowContainer}>
+                                                    <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                    <Text style={styles.tagStyle}>{item.date_from} - {item.date_to}</Text>
 
+                                                </View>
                                                 <View style={styles.rowContainer}>
                                                     <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
                                                     <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                 </View>
-
                                                 {item.googleCalendar === true ?
                                                 
                                                 <View style={styles.googleIconContainer}>
