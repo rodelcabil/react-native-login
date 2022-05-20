@@ -5,20 +5,25 @@ import { Dimensions } from "react-native";
 import AppBar from '../ReusableComponents/AppBar';
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
+import uuid from 'react-native-uuid';
+
+
+
 
 export default class ChatViewClass extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       messages: '',
-
+      myUuid: uuid.v4()
     };
     this.handleSendMessage = this.onSendMessage.bind(this);
 
   }
 
+
   onSendMessage(e) { // (1)
-    this.props.onSendMessage(this.state.messages, moment().calendar());
+    this.props.onSendMessage(this.state.messages, moment().calendar(), this.state.myUuid);
     this.refs.input.clear();
   }
 
@@ -31,14 +36,47 @@ export default class ChatViewClass extends React.Component {
             <Text style={{ fontSize: 15, marginLeft: 10, color: 'black', fontWeight: 'bold' }}>Group Chat Name</Text>
           </View> */}
           <AppBar title={"Chat"} showMenuIcon={true} />
-          <View >
 
             <FlatList
               data={this.props.messages}
               renderItem={this.renderItem}
               styles={styles.messages} />
 
-          </View>
+            {/* <View style={{height: 60}} /> */}
+
+            {/* {this.props.messages.map((item, key) => {
+
+            return <View key={key} style={styles.messages}>
+              {
+                item.action === "join" ? <View style={styles.inOutContainer}><Text style={styles.joinPart}>{item.name} has joined</Text></View>
+                :
+                item.action === "part" ? <View style={styles.inOutContainer} ><Text style={styles.joinPart}>{item.name} has left</Text></View>
+                :
+                item.action === "message" ? 
+                  item.uuid === this.state.myUuid ? <View  style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10 }}>
+                    <Text style={{ textAlign: 'right', maxWidth: 200 }}>{item.date}</Text>
+                    <Text style={styles.bubbleChatOwn}>{item.message}</Text>
+                  </View>
+                    :
+                    <View  style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start' }}>
+                      <View style={styles.othersChat}>
+                        <Avatar.Text size={45} label="RC" />
+                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
+
+                          <Text style={{ maxWidth: 300, textAlign: 'left' }}>{item.name}, {item.date} </Text>
+                          <Text style={styles.bubbleChatOthers}>{item.message}</Text>
+                        </View>
+                      </View>
+                    </View>
+                    
+                    :
+                    <></>
+              }
+            </View>
+          })} */}
+
+
+      
         </View>
         <View style={styles.textInputContainer}>
           <TextInput autoFocus
@@ -54,24 +92,25 @@ export default class ChatViewClass extends React.Component {
             ref="input"
             multiline={true}
           />
-          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={styles.icon}/>
+          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={styles.icon} />
         </View>
-
-      </View>
-
+     
+      </View >
+  
     );
   }
 
-  renderItem({ item }) { // (3)
+  renderItem = ({ item }) => { 
     const action = item.action;
     const name = item.name;
-    const date = item.date
+    const date = item.date;
+    const uuid = item.uuid;
     if (action == 'join') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View>;
     } else if (action == 'part') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has left</Text></View>;
     } else if (action == 'message') {
-      return "Rodel Cabil" === name ?
+      return uuid === this.state.myUuid ?
         <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10 }}>
           <Text style={{ textAlign: 'right', maxWidth: 200 }}>{date}</Text>
           <Text style={styles.bubbleChatOwn}>{item.message}</Text>
@@ -181,7 +220,7 @@ const styles = StyleSheet.create({
     borderColor: '#e3e3e3',
     justifyContent: 'flex-end'
   },
-  icon:{
+  icon: {
     marginBottom: 12.6
   }
 });

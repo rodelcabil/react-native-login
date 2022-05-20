@@ -25,11 +25,12 @@ app.delete('/users/:name', function(req, res) { // (4)
 });
 
 app.post('/users/:name/messages', function(req, res) { // (5)
-    console.log('User ' + req.params.name + ' sent message: ' + req.body.message + " Time: ", req.body.date);
+    console.log('User ' + req.params.name + ' sent message: ' + req.body.message + " Time: ", req.body.date + " uuid: ", req.body.uuid);
     pusherClient.trigger('chat_channel', 'message', {
         name: req.params.name,
         message: req.body.message,
-        date: req.body.date
+        date: req.body.date,
+        uuid: req.body.uuid
     });
     res.sendStatus(204);
 });

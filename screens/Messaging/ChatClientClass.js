@@ -12,6 +12,7 @@ export default class ChatClientClass extends React.Component {
     this.state = {
       messages: [],
       date: '',
+      uuid: ''
     };
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
@@ -24,7 +25,7 @@ export default class ChatClientClass extends React.Component {
         this.handlePart(data.name);
       });
       this.chatChannel.bind('message', (data) => { // (6)
-        this.handleMessage(data.name, data.message, data.date);
+        this.handleMessage(data.name, data.message, data.date, data.uuid);
       });
     });
 
@@ -48,15 +49,17 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
-  handleMessage(name, message, date) { // (6)
+  handleMessage(name, message, date, uuid) { // (6)
     const messages = this.state.messages.slice();
     const ddate = this.state.date;
-    messages.push({ action: 'message', name: name, message: message , date: date});
+    const unique_id = this.state.uuid;
+    messages.push({ action: 'message', name: name, message: message , date: date, uuid: uuid});
     this.setState({
       messages: messages,
-      date: ddate
+      date: ddate,
+      uuid: unique_id
     });
-    console.log("name", name, " message", message, 'date: ', date);
+    console.log("name", name, " message", message, 'date: ', date, "uuid: ", uuid);
   }
 
   componentDidMount() { // (7)
@@ -71,11 +74,12 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
-  onSendMessage(text, date) { // (9)
+  onSendMessage(text, date, uuid) { // (9)
     console.log("called onSendMessage");
     const payload = {
       message: text,
-      date: date
+      date: date,
+      uuid: uuid
     };
     try {
       fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
@@ -90,7 +94,7 @@ export default class ChatClientClass extends React.Component {
       console.log(error);
     }
 
-    console.log(text, +" Time: ", date);
+    console.log(text, " Time: ", date, 'uuid: ', uuid);
   }
 
   render() {
