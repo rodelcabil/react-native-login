@@ -82,12 +82,12 @@ const AddSchedule = ({ route, navigation }) => {
 
     const create = async () => {
         setAddLoader(true);
+        const accToken = await GoogleSignin.getTokens();
         const getDaySelecte = route.params.getdate === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : route.params.getdate;
   
-        console.log(route.params.accessToken, route.params.email, getDaySelecte, startTime);
-        console.log(endDate, endTime, title, desc);
+        console.log(getDaySelecte, startTime, endDate, endTime, title, desc, accToken);
         const resp = await axios.post(
-          `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events?access_token=${route.params.accessToken}`,
+          `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events?access_token=${accToken.accessToken}`,
           {
             start: {
               dateTime: `${getDaySelecte}T${startTime}:00`,

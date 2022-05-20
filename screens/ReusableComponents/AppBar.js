@@ -6,6 +6,7 @@ import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, Keyboar
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
+import RNRestart from 'react-native-restart'; 
 
 const AppBar = ({title, showMenuIcon}) => {
     const [visible, setVisible] = useState(false);
@@ -26,12 +27,12 @@ const AppBar = ({title, showMenuIcon}) => {
           await AsyncStorage.removeItem('userDetails');
           const isSignedIn = await GoogleSignin.isSignedIn();
           if(!isSignedIn){
-            navigation.replace('LoginPage')
+            RNRestart.Restart();
           }
           else{
             await GoogleSignin.revokeAccess();
             await GoogleSignin.signOut();
-            navigation.replace('LoginPage')
+            RNRestart.Restart();
           }
         }
         catch(error){

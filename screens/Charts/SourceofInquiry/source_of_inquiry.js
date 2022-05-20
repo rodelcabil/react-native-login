@@ -609,7 +609,7 @@ const SourceOfInquiry = ({ route }) => {
                                     <HorizontalBarGraph
                                         //data={filterDataSOIData}
                                         data={[1,2,3,4,5,6,7,8,9,10]}
-                                        labels={filterDataSOI.labels}
+                                        labels={filterDataSOI.labels.reverse()}
                                         width={Dimensions.get("window").width - 44}
                                         height={400}
                                         barRadius={5}
@@ -639,7 +639,7 @@ const SourceOfInquiry = ({ route }) => {
                                     <HorizontalBarGraph
                                         //data={filterDataSOIData}
                                         data={filterDataSOIData}
-                                        labels={filterDataSOI.labels}
+                                        labels={filterDataSOI.labels.reverse()}
                                         width={Dimensions.get("window").width - 44}
                                         height={400}
                                         barRadius={5}

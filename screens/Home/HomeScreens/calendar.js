@@ -59,11 +59,14 @@ const Calendar = ({ navigation, route })  => {
     }, []);
 
     useEffect(() => {
-        getData(checkSignIn, user === null ? "" : user.user.email);
-    }, [isFocused, user, checkSignIn]);
+        console.log(user);
+        const checkEmail = user === null ? null : user.user.email;
+        getData(checkEmail);
+    }, [isFocused, user]);
 
 
     const signIn = async () => {
+        setLoader(true);
         try{
           await GoogleSignin.hasPlayServices();
           const userInfo = await GoogleSignin.signIn();
@@ -72,12 +75,12 @@ const Calendar = ({ navigation, route })  => {
          // setGetTokenGC(userInfoToken)
 
           setCheckSignIn(true);
-          setLoader(true);
           setGCSync(true);
-          getData(true, userInfo.user.email);
+         // getData(userInfo.user.email);
           //yncGoogleCalendar(true);
         }
         catch(error){
+          setLoader(false);
           console.log('Message______', error.message);
           if(error.code === statusCodes.SIGN_IN_CANCELLED){
             console.log('User Cancelled the Login Flow.');
@@ -106,14 +109,14 @@ const Calendar = ({ navigation, route })  => {
           }
     }
     
-    const getData = async (isLoggedIn, email) => {
+    const getData = async (email) => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token; 
         const arrTemp = {};
 
        //const isSignedIn = await GoogleSignin.isSignedIn();
         console.log("Get Data Called");
-        console.log(isLoggedIn, email);
+        console.log(email);
 
         const SyncGoogleCalendar = async () =>{
             console.log("Sync google calendar");
@@ -123,7 +126,7 @@ const Calendar = ({ navigation, route })  => {
             //const token = userInfoToken.accessToken;
 
             await axios.get(
-                `https://www.googleapis.com/calendar/v3/calendars/${user.user.email}/events?access_token=${userInfoToken.accessToken}`
+                `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${userInfoToken.accessToken}`
             ).then(response =>{
                 const mappedData = response.data.items.map((data, index) => {
                     const date = data.start.dateTime
@@ -160,7 +163,7 @@ const Calendar = ({ navigation, route })  => {
         } 
 
 
-        if(isLoggedIn === true){
+        if(email !== null){
             await axios.get(
                 `https://beta.centaurmd.com/api/schedules`,
                 { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
@@ -465,14 +468,14 @@ const Calendar = ({ navigation, route })  => {
 
 
     const clickHandler = async () => {
-        const accToken = await GoogleSignin.getTokens();
+       // const accToken = await GoogleSignin.getTokens();
         navigation.navigate('Add Schedule', { 
             getdate: dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : dayGet,
             user: user,
-            accessToken: accToken.accessToken,
+           // accessToken: accToken.accessToken,
             email: user.user.email,
         })
-        console.log(accToken.accessToken)
+       // console.log(accToken.accessToken)
     };
 
     return (
