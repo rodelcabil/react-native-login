@@ -35,6 +35,7 @@ const AddSchedule = ({ route, navigation }) => {
     const [showErrorDesc, setShowErrorDesc] = useState(false);
     const [showErrorStartTime, setShowErrorStartTime] = useState(false);
     const [showErrorEndTime, setShowErrorEndTime] = useState(false);
+    const [showErrorEndTimeAhead, setShowErrorEndTimeAhead] = useState(false);
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -85,7 +86,7 @@ const AddSchedule = ({ route, navigation }) => {
         const accToken = await GoogleSignin.getTokens();
         const getDaySelecte = route.params.getdate === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") : route.params.getdate;
   
-        console.log(getDaySelecte, startTime, endDate, endTime, title, desc, accToken);
+        console.log(getDaySelecte, startTime, endDate, endTime, title, desc, accToken.accessToken);
         const resp = await axios.post(
           `https://www.googleapis.com/calendar/v3/calendars/${route.params.email}/events?access_token=${accToken.accessToken}`,
           {
@@ -261,6 +262,11 @@ const AddSchedule = ({ route, navigation }) => {
                                   <Text style={styles.errorMsg}>Please select End Time</Text>
                                 </Animatable.View>
                           :<></>}
+                          {showErrorEndTimeAhead === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Same Date! End Time must be after Start Time ahead</Text>
+                                </Animatable.View>
+                          :<></>}
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
                                 <DateTimePickerModal
@@ -281,7 +287,13 @@ const AddSchedule = ({ route, navigation }) => {
                                 title="Submit" 
                                 onPress={() => {
                                   if(startTime !== null && endTime !== null && title !== null && desc !== null){
-                                    route.params.user.idToken === null ? signIn() : create()
+                                    if(endTime < startTime){
+                                      setShowErrorEndTimeAhead(true)
+                                    }
+                                    else{
+                                      setShowErrorEndTimeAhead(false)
+                                      route.params.user.idToken === null ? signIn() : create()
+                                    }
                                   }
                                   else{
                                     if(startTime === null){

@@ -14,6 +14,7 @@ import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google
 import axios from 'axios';
 import SkeletonLoaderCard from '../../ReusableComponents/SkeletonLoader'
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
+import LoaderFullScreen from '../../ReusableComponents/LottieLoader-FullScreen';
 
 var width = Dimensions.get('window').width - 20;
 
@@ -294,7 +295,7 @@ const Calendar = ({ navigation, route })  => {
     const renderItem = (item) => {
         return (
             loader === true ? 
-              <SkeletonLoaderCard/>
+              <LoaderFullScreen/>
             :
          /*  moment(item.date_from).format('YYYY-MM-DD') !== ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ?  <></>:*/
               <TouchableHighlight
@@ -427,7 +428,7 @@ const Calendar = ({ navigation, route })  => {
     const renderEmptyDate = () => {
         return (
             loader === true ? 
-             <SkeletonLoaderCard/>
+             <LoaderFullScreen/>
             :
             <View style={styles.itemEmptyContainer}>
                 <Image
