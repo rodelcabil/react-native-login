@@ -17,6 +17,7 @@ import AllChat from './MessageTabs/allChats';
 
 
 const ChatList = ({ navigation, route, clientID, userID }) => {
+    const [searchBG, setSearchBG] = useState('#fff');
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
@@ -77,11 +78,17 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             <SafeAreaView>
                 <View style={styles.headerWrapper}> 
                 <Searchbar
-                    style={{width: Dimensions.get('window').width-80}}
+                    style={{width: Dimensions.get('window').width-80,  shadowOpacity: 0, elevation: 0, backgroundColor: searchBG, color:"white", borderRadius: 100}}
                     placeholder="Search"
                     onChangeText={onChangeSearch}
                     value={searchQuery}
                     inputStyle={{fontSize: 15}}
+                    onFocus={()=>{
+                        setSearchBG('#e3e3e3')
+                    }}
+                    onBlur={()=>{
+                        setSearchBG('#fff')
+                    }}
                     />
               
                 <Menu

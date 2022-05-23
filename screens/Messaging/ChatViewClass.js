@@ -16,7 +16,8 @@ export default class ChatViewClass extends React.Component {
     this.state = {
       messages: '',
       myUuid: uuid.v4(),
-      searchQuery: ''
+      searchQuery: '',
+      searchBG: '#fff'
     };
     this.handleSendMessage = this.onSendMessage.bind(this);
 
@@ -36,11 +37,21 @@ export default class ChatViewClass extends React.Component {
         <View style={styles.container}>
           <AppBar title={"Chat"} showMenuIcon={true} />
             <Searchbar
-                      style={{width: Dimensions.get('window').width-20, alignSelf: 'center', marginTop: 10}}
+                      style={{width: Dimensions.get('window').width-20, alignSelf: 'center', marginTop: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3'}}
                       placeholder="Search"
                       onChangeText={onChangeSearch}
                       value={this.props.searchQuery}
                       inputStyle={{fontSize: 15}}
+                      // onFocus={()=>{
+                      //     this.setState({
+                      //       searchBG: '#e3e3e3'
+                      //     })
+                      // }}
+                      // onBlur={()=>{
+                      //   this.setState({
+                      //       searchBG: '#fff'
+                      //     })
+                      // }}
               />
             <FlatList
                 ref={ref => { this.scrollView = ref }}
