@@ -5,7 +5,7 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const Colleagues = ({ navigation, route, id }) => {
+const Colleagues = ({ navigation, route, clientID, userID }) => {
 
     const [userList, setUserList] = useState([]);
     useEffect(() => {
@@ -14,7 +14,7 @@ const Colleagues = ({ navigation, route, id }) => {
             const tokenget = token === null ? route.params.token : token;
 
             await axios.get(
-                `https://beta.centaurmd.com/api/users/${id}`,
+                `https://beta.centaurmd.com/api/users/${clientID}`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -22,9 +22,9 @@ const Colleagues = ({ navigation, route, id }) => {
                     },
                 }).then(response => {
 
-                    setUserList(response.data)
-
-                    console.log("USER LIST: ", response.data)
+                    const newList = response.data.filter(item => { return item.id !== userID });
+                    setUserList(newList)
+                    console.log("USER LIST: ", newList);
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         

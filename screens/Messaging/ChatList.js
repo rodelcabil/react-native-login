@@ -11,7 +11,7 @@ import GroupChat from './MessageTabs/groupChat';
 import AllChat from './MessageTabs/allChats';
 
 
-const ChatList = ({ navigation, route, id }) => {
+const ChatList = ({ navigation, route, clientID, userID }) => {
 
 
     const layout = useWindowDimensions();
@@ -36,9 +36,9 @@ const ChatList = ({ navigation, route, id }) => {
     );
   
     const renderScene = SceneMap({
-        first: () => <AllChat navigation={navigation} route={route} id={id}/>,
-        second: () => <GroupChat navigation={navigation} route={route} id={id}/>,
-        third: () => <Colleagues navigation={navigation} route={route} id={id}/>
+        first: () => <AllChat navigation={navigation} route={route} clientID={clientID} userID={userID}/>,
+        second: () => <GroupChat navigation={navigation} route={route} clientID={clientID} userID={userID}/>,
+        third: () => <Colleagues navigation={navigation} route={route} clientID={clientID} userID={userID}/>
     });
 
 

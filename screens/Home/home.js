@@ -83,7 +83,7 @@ const Home = ({navigation, route}) => {
                         </>
                     ),
                 }} >
-                    {props => <ChatList id={userDetails.client_id} navigation={navigation}/> }
+                    {props => <ChatList clientID={userDetails.client_id} userID={userDetails.id} navigation={navigation}/> }
                 
             </Tab.Screen>
              <Tab.Screen 
