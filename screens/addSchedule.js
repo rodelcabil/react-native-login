@@ -287,8 +287,14 @@ const AddSchedule = ({ route, navigation }) => {
                                 title="Submit" 
                                 onPress={() => {
                                   if(startTime !== null && endTime !== null && title !== null && desc !== null){
-                                    if(endTime < startTime){
-                                      setShowErrorEndTimeAhead(true)
+                                    if(route.params.getdate === endDate){
+                                          if(endTime < startTime){
+                                            setShowErrorEndTimeAhead(true)
+                                        }
+                                        else{
+                                            setShowErrorEndTimeAhead(false)
+                                            setDialogBoxEdit(true)
+                                        }
                                     }
                                     else{
                                       setShowErrorEndTimeAhead(false)

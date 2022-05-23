@@ -1,14 +1,8 @@
 import React, { useState, useEffect, memo } from "react";
 import { View, StyleSheet, SafeAreaView, Text, Image, ScrollView,Button, ActivityIndicator, TouchableHighlight, Modal, TouchableOpacity, Animated } from 'react-native';
 import AppBar from './ReusableComponents/AppBar';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
-import Icon2 from 'react-native-vector-icons/Ionicons';
-import FontistoIcon from 'react-native-vector-icons/Fontisto';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
 import { Dimensions } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Form, FormItem, Label } from 'react-native-form-component';
+import { FormItem, Label } from 'react-native-form-component';
 import axios from "axios";
 import Dialog, {
   DialogFooter,
@@ -19,17 +13,11 @@ import { set } from "date-fns";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 import moment from 'moment';
+import * as Animatable from 'react-native-animatable';
 
 var width = Dimensions.get('window').width;
 
 const EditSchedule = ({ route, navigation }) => {
-
-  const [titleGC, setTitleGC] = useState(route.params.item?.title);
-  const [desceGC, setDescGC] = useState(route.params.item?.description);
-  const [timefromGC, setTimeFromGC] = useState(moment(route.params.item?.time_from, ["HH.mm"]).format("hh:mm A"));
-  const [timeToGC, setTimeToGC] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
-
-  const [editOpen, setEditOpen] = useState(false);
 
   const [dialogBoxEdit, setDialogBoxEdit] = useState(false);
 
@@ -192,6 +180,14 @@ const EditSchedule = ({ route, navigation }) => {
       setStartTime(moment(convTime, ["HH.mm"]).format("HH:mm"));
       hideDatePickerTimeStart();
   };
+
+  const [showErrorTitle, setShowErrorTitle] = useState(false);
+  const [showErrorDesc, setShowErrorDesc] = useState(false);
+  const [showErrorStartTime, setShowErrorStartTime] = useState(false);
+  const [showErrorEndTime, setShowErrorEndTime] = useState(false);
+  const [showErrorEndTimeAhead, setShowErrorEndTimeAhead] = useState(false);
+
+
   return (
       <View style={styles.container}>
           <DialogBox/>
@@ -229,20 +225,47 @@ const EditSchedule = ({ route, navigation }) => {
               </View>
               <ScrollView style={styles.safeAreaViewContainerAdd}>
                   <SafeAreaView style={styles.safeAreaViewContainerAdd}>
+
+                         <Label text="Title" isRequired asterik />
+                         {showErrorTitle === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please enter Title</Text>
+                                </Animatable.View>
+                          :<></>}
                           <FormItem
-                              label="Title"
-                              isRequired
                               value={title}
                               style={styles.inputContainer}
-                              onChangeText={titleInp => setTitle(titleInp)}
+                              onChangeText={titleInp => {
+                                 if(titleInp === "" ){
+                                    setShowErrorTitle(true)
+                                    setTitle("")
+                                  }
+                                  else{
+                                    setShowErrorTitle(false) 
+                                    setTitle(titleInp)
+                                  }
+                              }}
                               asterik />
 
+                        <Label text="Description" isRequired asterik />
+                        {showErrorDesc === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please enter Description</Text>
+                                </Animatable.View>
+                          :<></>}
                           <FormItem
-                              label="Description"
-                              isRequired
                               value={desc}
                               style={styles.inputContainer}
-                             onChangeText={descript => setDesc(descript)}
+                              onChangeText={descript => {
+                                if(descript === "" ){
+                                    setShowErrorDesc(true)
+                                    setDesc("")
+                                  }
+                                  else{
+                                    setShowErrorDesc(false) 
+                                    setDesc(descript)
+                                  }
+                              }}
                               asterik />
 
                           <Label text="End Date" isRequired asterik />
@@ -267,6 +290,11 @@ const EditSchedule = ({ route, navigation }) => {
                               activeOpacity={0.7}
                               onPress={showDatePickerTimeStart}
                           >
+                            {showErrorStartTime === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please select Start Time</Text>
+                                </Animatable.View>
+                            :<></>}
                               <View style={styles.inputContainer2}>
                                   <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
                                   <DateTimePickerModal
@@ -284,6 +312,16 @@ const EditSchedule = ({ route, navigation }) => {
                               activeOpacity={0.7}
                               onPress={showDatePickerTime}
                           >
+                                {showErrorEndTime === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please select End Time</Text>
+                                </Animatable.View>
+                                :<></>}
+                                {showErrorEndTimeAhead === true ? 
+                                        <Animatable.View animation='fadeInLeft' duration={500}>
+                                        <Text style={styles.errorMsg}>Same Date! End Time must be after Start Time ahead</Text>
+                                        </Animatable.View>
+                                :<></>}
                               <View style={styles.inputContainer2}>
                                   <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
                                   <DateTimePickerModal
@@ -302,8 +340,49 @@ const EditSchedule = ({ route, navigation }) => {
                             <Button 
                                 style={styles.buttonCont}
                                 title="Submit" 
-                                onPress={() => 
-                                    setDialogBoxEdit(true)
+                                onPress={() => {
+                                    if(startTime !== null && endTime !== null && title !== "" && desc !== ""){
+                                        if(route.params.item?.date_from === endDate){
+                                            if(endTime < startTime){
+                                                setShowErrorEndTimeAhead(true)
+                                            }
+                                            else{
+                                                setShowErrorEndTimeAhead(false)
+                                                setDialogBoxEdit(true)
+                                            }
+                                        }
+                                        else{
+                                          setShowErrorEndTimeAhead(false)
+                                          setDialogBoxEdit(true)
+                                        }
+                                      }
+                                      else{
+                                        if(startTime === null){
+                                          setShowErrorStartTime(true)
+                                        }
+                                        else{
+                                          setShowErrorStartTime(false) 
+                                        }
+                                        if(endTime === null){
+                                          setShowErrorEndTime(true)
+                                        }
+                                        else{
+                                          setShowErrorEndTime(false) 
+                                        }
+                                        if(title === "" ){
+                                          setShowErrorTitle(true)
+                                        }
+                                        else{
+                                          setShowErrorTitle(false) 
+                                        }
+                                        if(desc === "" ){
+                                          setShowErrorDesc(true)
+                                        }
+                                        else{
+                                          setShowErrorDesc(false) 
+                                        }
+                                      }
+                                }
                                 }
                             />
                           </View>}

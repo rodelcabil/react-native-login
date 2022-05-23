@@ -156,6 +156,7 @@ const Calendar = ({ navigation, route })  => {
                     },
                 );
                 console.log('Done Sync Google Calendar');
+                setItems({});
                 setItems(arrTemp);
                 setLoader(false);
                 setGCSync(false);
@@ -220,11 +221,12 @@ const Calendar = ({ navigation, route })  => {
                         },
                     );
                     console.log("TEMP ARRAY", arrTemp);
+                    setItems({});
+                    setItems(arrTemp);
+                    setLoader(false)
+                    setGCSync(false);
                 }
             );
-            setItems(arrTemp);
-            setLoader(false)
-            setGCSync(false);
         }
     }
 
