@@ -156,7 +156,6 @@ const Calendar = ({ navigation, route })  => {
                     },
                 );
                 console.log('Done Sync Google Calendar');
-                setItems({});
                 setItems(arrTemp);
                 setLoader(false);
                 setGCSync(false);
@@ -220,11 +219,9 @@ const Calendar = ({ navigation, route })  => {
                             arrTemp[date].push(coolItem);
                         },
                     );
-                    
                     console.log("TEMP ARRAY", arrTemp);
                 }
             );
-            setItems({});
             setItems(arrTemp);
             setLoader(false)
             setGCSync(false);
@@ -294,9 +291,6 @@ const Calendar = ({ navigation, route })  => {
 
     const renderItem = (item) => {
         return (
-            loader === true ? 
-              <LoaderFullScreen/>
-            :
          /*  moment(item.date_from).format('YYYY-MM-DD') !== ( dayGet === null ? moment(new Date(Date.now())).format("YYYY-MM-DD") :  dayGet ) ?  <></>:*/
               <TouchableHighlight
                     style={{ margin: 10, width: width }}
@@ -382,7 +376,7 @@ const Calendar = ({ navigation, route })  => {
                                                     <Text style={styles.scheduleStyle}>{moment(item.time_from, ["HH.mm"]).format("hh:mm A")} - {moment(item.time_to, ["HH.mm"]).format("hh:mm A")}</Text>
                                                 </View>
                                                 <View style={styles.rowContainer}>
-                                                    <Icon name="calendar" size={20} color="#81c784" style={{ marginRight: 5 }} />
+                                                    <Icon name="calendar" size={20} color="#da7331" style={{ marginRight: 5 }} />
                                                     <Text style={styles.tagStyle}>{item.date_from} - {item.date_to}</Text>
                                                 </View>
                                             </View>
@@ -427,9 +421,9 @@ const Calendar = ({ navigation, route })  => {
 
     const renderEmptyDate = () => {
         return (
-            loader === true ? 
-             <LoaderFullScreen/>
-            :
+            //loader === true ? 
+          //   <LoaderFullScreen/>
+          //  :
             <View style={styles.itemEmptyContainer}>
                 <Image
                     style={styles.logoImg}
@@ -553,6 +547,9 @@ const Calendar = ({ navigation, route })  => {
                 </DoubleClick>
             </View>
 
+            { loader === true ? 
+              <LoaderFullScreen/>
+            :
             <Agenda
                 items={items}
                 renderItem={renderItem}
@@ -567,14 +564,15 @@ const Calendar = ({ navigation, route })  => {
                     }
                 }}
                 selected={Date.now()}
-               // minDate={'2022-05-16'}
+            // minDate={'2022-05-16'}
                 //maxDate={'2022-05-21'}
                 showClosingKnob={true}
                 theme={{
                     selectedDayBackgroundColor: '#075DA7',
+                    agendaKnobColor: '#8dbee0',
                 }}
-
             />
+            }
 
          {checkSignIn !== false & allowAdd === true ? 
             <TouchableOpacity

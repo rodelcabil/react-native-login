@@ -6,7 +6,7 @@ import AppBar from '../ReusableComponents/AppBar';
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import uuid from 'react-native-uuid';
-
+import { Searchbar } from 'react-native-paper';
 
 
 
@@ -15,7 +15,8 @@ export default class ChatViewClass extends React.Component {
     super(props);
     this.state = {
       messages: '',
-      myUuid: uuid.v4()
+      myUuid: uuid.v4(),
+      searchQuery: ''
     };
     this.handleSendMessage = this.onSendMessage.bind(this);
 
@@ -28,11 +29,19 @@ export default class ChatViewClass extends React.Component {
   }
 
   render() { // (2)
+    const onChangeSearch = query => setSearchQuery(query);
+    
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
         <View style={styles.container}>
           <AppBar title={"Chat"} showMenuIcon={true} />
-         
+            <Searchbar
+                      style={{width: Dimensions.get('window').width-20, alignSelf: 'center', marginTop: 10}}
+                      placeholder="Search"
+                      onChangeText={onChangeSearch}
+                      value={this.props.searchQuery}
+                      inputStyle={{fontSize: 15}}
+              />
             <FlatList
                 ref={ref => { this.scrollView = ref }}
                 onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}

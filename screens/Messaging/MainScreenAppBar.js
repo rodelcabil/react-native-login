@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, SafeAreaView, Dimensions, TouchableHighlight,Image  } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , TouchableHighlight, Dimensions} from 'react-native';
+// import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { Searchbar } from 'react-native-paper';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 import RNRestart from 'react-native-restart'; 
-import AppBar from '../ReusableComponents/AppBar'
-import { Avatar } from 'react-native-paper';
-import moment from 'moment';
-import { sr } from 'date-fns/locale';
-import MainScreenAppBar from './MainScreenAppBar'
 
-import { TabView, SceneMap,TabBar } from 'react-native-tab-view';
-import Colleagues from './MessageTabs/colleagues';
-import GroupChat from './MessageTabs/groupChat';
-import AllChat from './MessageTabs/allChats';
-
-const ChatList = ({ navigation, route, id }) => {
+const MainScreenAppBar = () => {
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
-   // const navigation = useNavigation(); 
+
+    const navigation = useNavigation(); 
+
     const signOut = async () => {
         try{
           await AsyncStorage.removeItem('token')
@@ -42,34 +37,6 @@ const ChatList = ({ navigation, route, id }) => {
       const [searchQuery, setSearchQuery] = React.useState('');
 
       const onChangeSearch = query => setSearchQuery(query);
-
-    const layout = useWindowDimensions();
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
-        { key: 'first', title: 'All' },
-        { key: 'second', title: 'Group' },
-        { key: 'third', title: 'Colleague' },
-    ]);
-    
-    const renderTabBar = props => (
-        <TabBar
-            {...props}
-            indicatorStyle={{ backgroundColor: '#3a87ad' }}
-            style={{ backgroundColor: '#fff', }}
-            renderLabel={({ route }) => (
-                <Text style={{ color: 'black', margin: 8, textTransform: 'uppercase', fontSize: 12 }}>
-                    {route.title}
-                </Text>
-            )}
-        />
-    );
-  
-    const renderScene = SceneMap({
-        first: () => <AllChat navigation={navigation} route={route} id={id}/>,
-        second: () => <GroupChat navigation={navigation} route={route} id={id}/>,
-        third: () => <Colleagues navigation={navigation} route={route} id={id} filterData={searchQuery}/>
-    });
-
 
     return (
         <View style={styles.container}>
@@ -113,50 +80,38 @@ const ChatList = ({ navigation, route, id }) => {
                 </Menu>
                 </View>
             </SafeAreaView>
-
-            
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width: layout.width }}
-                renderTabBar={renderTabBar}
-            />
-
-            
         </View>
     )
 }
+
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    container:{
         backgroundColor: '#fff',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
+       
     },
-    body: {
-        flex: 1,
-        padding: 10,
-        // backgroundColor: 'orange'
+    containerMenu:{
+        width: 200,
     },
-    rowContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        marginBottom: 10
+    containerMenuItem:{
+        backgroundColor: '#075DA7',
+        height: 150,
+        resizeMode: 'contain',
+        alignItems: 'center',
+        padding: 20,
     },
-    columnContainer: {
-        justifyContent: 'center'
-    },
-    name: {
-        fontSize: 15,
-        width: 250,
-        color: 'black'
-    },
-    message: {
-        fontSize: 13,
-        maxWidth: 250,
-    },
-    date: {
-        fontSize: 11,
+    profileImageItem:{
+        width: 80,
+        height: 80,
+        borderRadius: 40,
     },
     headerWrapper:{
         flexDirection: 'row',
@@ -181,21 +136,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: 'white',
     },
-    containerMenu:{
-        width: 200,
-    },
-    containerMenuItem:{
-        backgroundColor: '#075DA7',
-        height: 150,
-        resizeMode: 'contain',
-        alignItems: 'center',
-        padding: 20,
-    },
-    profileImageItem:{
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-    },
+  
+  });
 
-});
-export default ChatList
+export default MainScreenAppBar

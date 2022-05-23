@@ -5,7 +5,7 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const Colleagues = ({ navigation, route, id }) => {
+const Colleagues = ({ navigation, route, id, filterData }) => {
 
     const [userList, setUserList] = useState([]);
     useEffect(() => {
@@ -35,13 +35,13 @@ const Colleagues = ({ navigation, route, id }) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-
+    const newList = filterData === "" ? userList : userList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
 
     return (
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.body}>
-                    {userList.map((item, i) => {
+                    {newList.map((item, i) => {
                         return <TouchableOpacity
                             key={i}
                             activeOpacity={0.6}
@@ -60,8 +60,6 @@ const Colleagues = ({ navigation, route, id }) => {
                             </View>
                         </TouchableOpacity>
                     })}
-
-
 
                 </View>
 
