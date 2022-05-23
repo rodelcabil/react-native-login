@@ -19,7 +19,7 @@ import { Badge } from 'react-native-paper';
 
 const Tab = createBottomTabNavigator();
 
-const Home = ({route}) => {
+const Home = ({navigation, route}) => {
     // const {details } = route.params
     // AsyncStorage.setItem('userDetails', JSON.stringify(details))
     // const getUserDetails = AsyncStorage.getItem('userDetails');
@@ -72,7 +72,7 @@ const Home = ({route}) => {
             />
             <Tab.Screen 
                 name="Messaging" 
-                component={ChatList} 
+                // component={ChatList} 
                 options={{
                     headerShown:false,
                     tabBarLabel: 'Messaging',
@@ -83,7 +83,7 @@ const Home = ({route}) => {
                         </>
                     ),
                 }} >
-                  {/**  {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> } */}
+                    {props => <ChatList id={userDetails.client_id} navigation={navigation}/> }
                 
             </Tab.Screen>
              <Tab.Screen 

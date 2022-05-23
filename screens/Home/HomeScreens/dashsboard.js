@@ -135,28 +135,7 @@ const Dashboard = ({ navigation, route }) => {
         }
 
 
-        const getSurgeons = async (filter) => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/charts?filter=${filter}`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-
-                    setSurgeons(response.data)
-                    console.log("SURGEONS: ", response.data.datasets.labels);
-
-                    console.log("DATA NOW: ", moment(Date.now()).format('YYYY-MM-DD'));
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        }
-
-
+      
         const getLeadsFunnelData = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
@@ -202,7 +181,6 @@ const Dashboard = ({ navigation, route }) => {
 
         getMySchedule();
         getDashboardData();
-
         getLeadsFunnelData();
 
     }, [])

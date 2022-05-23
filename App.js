@@ -21,6 +21,7 @@ import EditSchedule from './screens/editCalendar';
 import ChatClientClass from './screens/Messaging/ChatClientClass';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatClient from './screens/chatClient';
+import ChatList from './screens/Messaging/ChatList';
 
 
 const Stack = createNativeStackNavigator(); 
@@ -56,9 +57,7 @@ const App = () => {
   },[])
 
 
-  const getInitials = () =>{
-    return userDetails.first_name.charAt(0).toUpperCase() + userDetails.last_name.charAt(0).toUpperCase();
-  }   
+  
 
 
   return (
@@ -129,6 +128,17 @@ const App = () => {
             {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> }
         </Stack.Screen>
 
+        {/* <Stack.Screen
+          name="Messaging"
+          // component={EditSchedule}
+          options={{headerShown: false}}
+          
+        >
+          {props => <ChatList id={userDetails.client_id} /> }
+        </Stack.Screen> */}
+
+
+        
 
       </Stack.Navigator>
     </NavigationContainer>
