@@ -33,15 +33,6 @@ export default class ChatViewClass extends React.Component {
         <View style={styles.container}>
           <AppBar title={"Chat"} showMenuIcon={true} />
          
-            {/* <View style={{ flex: 1, position: 'absolute', bottom: 0, width: Dimensions.get('window').width, zIndex: -100 }}>
-              <FlatList
-                ref={ref => { this.scrollView = ref }}
-                onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
-                data={this.props.messages}
-                renderItem={this.renderItem}
-                style={{ alignContent: 'flex-start' }}
-              />
-            </View> */}
             <FlatList
                 ref={ref => { this.scrollView = ref }}
                 onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
@@ -57,7 +48,18 @@ export default class ChatViewClass extends React.Component {
             returnKeyType="done"
             enablesReturnKeyAutomatically
             placeholder='Type a message'
-            style={styles.username}
+            style={{
+              width: this.state.messages.length === 0 ? Dimensions.get('window').width - 20 : Dimensions.get('window').width - 60,
+              alignSelf: 'stretch',
+              paddingVertical: 10,
+              paddingHorizontal: 20,
+              marginLeft: 5,
+              marginRight: 5,
+              marginVertical: 10,
+              fontSize: 14,
+              borderRadius: 10,
+              backgroundColor: '#e3e3e3',
+            }}
             blurOnSubmit={false}
             // onSubmitEditing={this.handleSendMessage}
             value={this.state.messages}
@@ -65,7 +67,7 @@ export default class ChatViewClass extends React.Component {
             ref="input"
             multiline={true}
           />
-          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={styles.icon} />
+          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={{ display: this.state.messages.length === 0 ? 'none' : 'flex', marginBottom: 12.6}} />
         </View>
 
       </View >
@@ -78,30 +80,7 @@ export default class ChatViewClass extends React.Component {
     const name = item.name;
     const date = item.date;
     const uuid = item.uuid;
-    // return <View style={{  flexDirection: 'column', jusitfyContent: 'flex-end', flex: 1 }}>
-    //   {action == 'join' ? <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View> :
-    //     action == 'part' ? <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has left</Text></View> :
-    //       action == 'message' ? uuid === this.state.myUuid ? <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-    //         <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{date}</Text>
-    //         <Text style={styles.bubbleChatOwn}>{item.message}</Text>
-    //       </View>
-    //         :
-    //         <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-    //           <View style={styles.othersChat}>
-    //             <Avatar.Text size={45} label="RC" />
-    //             <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-
-    //               <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{name}, {date} </Text>
-    //               <Text style={styles.bubbleChatOthers}>{item.message}</Text>
-
-    //             </View>
-    //           </View>
-    //         </View>
-
-    //         :
-    //         <></>
-    //   }
-    // </View>
+   
     if (action == 'join') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View>;
     } else if (action == 'part') {
@@ -118,7 +97,7 @@ export default class ChatViewClass extends React.Component {
         :
         <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
           <View style={styles.othersChat}>
-            <Avatar.Text size={45} label="RC" />
+            <Avatar.Text size={45} label={item.name[0]} />
             <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
               <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{name}, {date} </Text>
