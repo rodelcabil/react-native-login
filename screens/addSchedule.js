@@ -192,6 +192,7 @@ const AddSchedule = ({ route, navigation }) => {
                                   <Text style={styles.errorMsg}>Please enter Title</Text>
                                 </Animatable.View>
                           :<></>}
+
                         <FormItem
                             value={title}
                             style={styles.inputContainer}
@@ -330,7 +331,6 @@ const AddSchedule = ({ route, navigation }) => {
                                 }}
                             />
                           </View>}
-
                 </SafeAreaView>
             </ScrollView >
         </View>

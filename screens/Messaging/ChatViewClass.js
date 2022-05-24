@@ -10,6 +10,7 @@ import { Searchbar } from 'react-native-paper';
 
 
 
+
 export default class ChatViewClass extends React.Component {
   constructor(props) {
     super(props);
@@ -30,14 +31,14 @@ export default class ChatViewClass extends React.Component {
   }
 
   render() { // (2)
-    const onChangeSearch = query => setSearchQuery(query);
-    
+    const onChangeSearch = query => {this.state.searchQuery = query};
+     const newList = this.state.searchQuery === "" ? this.props.messages : this.props.messages.filter(item => { return String(item.message).includes(  this.state.searchQuery ) });
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
         <View style={styles.container}>
           <AppBar title={"Chat"} showMenuIcon={true} />
             <Searchbar
-                      style={{width: Dimensions.get('window').width-20, alignSelf: 'center', marginTop: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3'}}
+                      style={{ width: Dimensions.get('window').width-20, alignSelf: 'center', marginTop: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3'}}
                       placeholder="Search"
                       onChangeText={onChangeSearch}
                       value={this.props.searchQuery}
@@ -53,14 +54,15 @@ export default class ChatViewClass extends React.Component {
                       //     })
                       // }}
               />
+   
             <FlatList
                 ref={ref => { this.scrollView = ref }}
                 onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
-                data={this.props.messages}
+                data={newList}
                 renderItem={this.renderItem}
-                style={{ flex: 1, position: 'absolute', bottom: 0, width: Dimensions.get('window').width, zIndex: -100, maxHeight: Dimensions.get('window').height - 150}}
+                style={{ position: 'absolute', bottom: 0, width: Dimensions.get('window').width, zIndex: -100, maxHeight: Dimensions.get('window').height - 150}}
               />
-          
+        
         </View>
         <View style={styles.textInputContainer}>
           <TextInput autoFocus
