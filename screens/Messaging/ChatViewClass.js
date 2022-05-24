@@ -11,6 +11,7 @@ import { UseKeyboard } from '../ReusableComponents/keyboard';
 
 
 
+
 export default class ChatViewClass extends React.Component {
   constructor(props) {
     super(props);
@@ -35,13 +36,11 @@ export default class ChatViewClass extends React.Component {
     })
   }
 
-
-
   _keyExtractor = item => item.id;
 
-  render (){ // (2)
-    const onChangeSearch = query => setSearchQuery(query);
-
+  render() { // (2)
+    const onChangeSearch = query => {this.state.searchQuery = query};
+     const newList = this.state.searchQuery === "" ? this.props.messages : this.props.messages.filter(item => { return String(item.message).includes(  this.state.searchQuery ) });
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
         <View style={styles.container}>
@@ -75,7 +74,7 @@ export default class ChatViewClass extends React.Component {
 
               ref={ref => { this.scrollView = ref }}
               onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
-              data={this.props.messages}
+              data={newList}
               renderItem={this.renderItem}
               inverted
               contentContainerStyle={{flexDirection:'column-reverse', }}

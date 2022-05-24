@@ -150,12 +150,26 @@ const Calendar = ({ navigation, route })  => {
                              time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
                              date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
                              time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
-                             category: "Others",
+                             category: "other",
                              googleEventId: coolItem.id, 
                              googleCalendar: true });
+
+                             tempItems.push({
+                                title: coolItem.summary, 
+                                description: coolItem.description, 
+                                date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
+                                time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
+                                date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
+                                time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
+                                category: "other",
+                                googleEventId: coolItem.id, 
+                                googleCalendar: true });
                     },
                 );
                 console.log('Done Sync Google Calendar');
+                console.log("TEMP ARRAY with Google Calendar", arrTemp);
+                setTempItems(tempItems);
+                console.log("TEMP ARRAY FILTER", tempItems);
                 setItems({});
                 setItems(arrTemp);
                 setLoader(false);
@@ -165,12 +179,13 @@ const Calendar = ({ navigation, route })  => {
 
 
         if(email !== null){
+            SyncGoogleCalendar();
             await axios.get(
                 `https://beta.centaurmd.com/api/schedules`,
                 { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
                 }).then(response => {
                     console.log("response", response.data);
-                    setTempItems(response.data);
+                    tempItems.push(response.data);
                     const mappedData = response.data.map((data) => {
                         const date = data.date_from;
                         return {
@@ -189,9 +204,6 @@ const Calendar = ({ navigation, route })  => {
                             arrTemp[date].push(coolItem);
                         },
                     );
-                    
-                    console.log("TEMP ARRAY", arrTemp);
-                    SyncGoogleCalendar();
                 }
             );
         }
@@ -437,7 +449,7 @@ const Calendar = ({ navigation, route })  => {
     }
 
     const filterItems = (itemCategory) => {
-        setLoader(true);
+
         const newList = tempItems.filter(item => { return item.category === itemCategory });
         // console.log("new list to: ", newList)
         const mappedData = newList.map((data) => {
@@ -460,7 +472,6 @@ const Calendar = ({ navigation, route })  => {
 
         console.log("filtered: ", reduced)
         setItems(reduced);
-        setLoader(false);
     };
 
 
@@ -507,7 +518,11 @@ const Calendar = ({ navigation, route })  => {
                 > */}
                 <DoubleClick
                     singleTap={() => {filterItems("consults")}}
-                    doubleTap={() => {getAllSchedules()}}
+                    doubleTap={() => {() => {
+                        const checkEmail = user === null ? null : user.user.email;
+                        getData(checkEmail)
+                    }
+                    }}
                     delay={200}
                 >
                     <View style={styles.types}>
@@ -519,7 +534,11 @@ const Calendar = ({ navigation, route })  => {
 
                 <DoubleClick
                     singleTap={() => {filterItems("procedures")}}
-                    doubleTap={() => {getAllSchedules()}}
+                    doubleTap={() => {() => {
+                        const checkEmail = user === null ? null : user.user.email;
+                        getData(checkEmail)
+                    }
+                    }}
                     delay={200}
                 >
                     <View style={styles.types}>
@@ -529,7 +548,11 @@ const Calendar = ({ navigation, route })  => {
                 </DoubleClick>
                 <DoubleClick
                     singleTap={() => {filterItems("reminder")}}
-                    doubleTap={() => {getAllSchedules()}}
+                    doubleTap={() => {() => {
+                        const checkEmail = user === null ? null : user.user.email;
+                        getData(checkEmail)
+                    }
+                    }}
                     delay={200}
                 >
                     <View style={styles.types}>
@@ -539,7 +562,11 @@ const Calendar = ({ navigation, route })  => {
                 </DoubleClick>
                 <DoubleClick
                     singleTap={() => {filterItems("other")}}
-                    doubleTap={() => {getAllSchedules()}}
+                    doubleTap={() => {() => {
+                        const checkEmail = user === null ? null : user.user.email;
+                        getData(checkEmail)
+                    }
+                    }}
                     delay={200}
                 >
                     <View style={styles.types}>
