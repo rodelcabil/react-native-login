@@ -4,12 +4,16 @@ import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
 const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
 
     const [userList, setUserList] = useState([]);
+    const [loader, setLoader] = useState(true);
+
     useEffect(() => {
         const getUserList = async () => {
+            setLoader(true);
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
@@ -24,10 +28,11 @@ const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
 
                     const newList = response.data.filter(item => { return item.id !== userID });
                     setUserList(newList)
-                    console.log("USER LIST: ", newList);
+                    // console.log("USER LIST: ", newList);
+                   
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        
+            setLoader(false);
         }
         getUserList()
     }, []);
@@ -38,6 +43,7 @@ const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
     const newList = filterData === "" ? userList : userList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
 
     return (
+        loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.body}>
@@ -46,7 +52,10 @@ const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
                             key={i}
                             activeOpacity={0.6}
                             onPress={() => {
-                                navigation.navigate('Chat Client');
+                                navigation.navigate('Chat Client',{
+                                    name: item.first_name + " " +item.last_name
+                                });
+                                
                             }}
                         >
                             <View style={styles.rowContainer}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, ScrollView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Dimensions } from "react-native";
 import AppBar from '../ReusableComponents/AppBar';
@@ -7,6 +7,7 @@ import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import uuid from 'react-native-uuid';
 import { Searchbar } from 'react-native-paper';
+import { UseKeyboard } from '../ReusableComponents/keyboard';
 
 
 
@@ -17,7 +18,9 @@ export default class ChatViewClass extends React.Component {
       messages: '',
       myUuid: uuid.v4(),
       searchQuery: '',
-      searchBG: '#fff'
+      searchBG: '#fff',
+      height: null
+
     };
     this.handleSendMessage = this.onSendMessage.bind(this);
 
@@ -27,67 +30,100 @@ export default class ChatViewClass extends React.Component {
   onSendMessage(e) { // (1)
     this.props.onSendMessage(this.state.messages, moment().calendar(), this.state.myUuid);
     this.refs.input.clear();
+    this.setState({
+      messages: ''
+    })
   }
 
-  render() { // (2)
+
+
+  _keyExtractor = item => item.id;
+
+  render (){ // (2)
     const onChangeSearch = query => setSearchQuery(query);
-    
+
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
         <View style={styles.container}>
-          <AppBar title={"Chat"} showMenuIcon={true} />
+          <AppBar title="Chats" showMenuIcon={true} />
+          <View style={{ backgroundColor: '#fff', }} >
             <Searchbar
-                      style={{width: Dimensions.get('window').width-20, alignSelf: 'center', marginTop: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3'}}
-                      placeholder="Search"
-                      onChangeText={onChangeSearch}
-                      value={this.props.searchQuery}
-                      inputStyle={{fontSize: 15}}
-                      // onFocus={()=>{
-                      //     this.setState({
-                      //       searchBG: '#e3e3e3'
-                      //     })
-                      // }}
-                      // onBlur={()=>{
-                      //   this.setState({
-                      //       searchBG: '#fff'
-                      //     })
-                      // }}
-              />
+              style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}
+              placeholder="Search"
+              onChangeText={onChangeSearch}
+              value={this.props.searchQuery}
+              inputStyle={{ fontSize: 15 }}
+              autoFocus={false}
+              showSoftInputOnFocus={false}
+            // onFocus={()=>{
+            //     this.setState({
+            //       searchBG: '#e3e3e3'
+            //     })
+            // }}
+            // onBlur={()=>{
+            //   this.setState({
+            //       searchBG: '#fff'
+            //     })
+            // }}
+            />
+          </View>
+          <View >
+
+
+          </View>
             <FlatList
-                ref={ref => { this.scrollView = ref }}
-                onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
-                data={this.props.messages}
-                renderItem={this.renderItem}
-                style={{ flex: 1, position: 'absolute', bottom: 0, width: Dimensions.get('window').width, zIndex: -100, maxHeight: Dimensions.get('window').height - 150}}
-              />
-          
+
+              ref={ref => { this.scrollView = ref }}
+              onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
+              data={this.props.messages}
+              renderItem={this.renderItem}
+              inverted
+              contentContainerStyle={{flexDirection:'column-reverse', }}
+              keyExtractor={this._keyExtractor}
+              
+             
+            />
+
         </View>
         <View style={styles.textInputContainer}>
-          <TextInput autoFocus
-            keyboardType="default"
-            returnKeyType="done"
-            enablesReturnKeyAutomatically
-            placeholder='Type a message'
-            style={{
-              width: this.state.messages.length === 0 ? Dimensions.get('window').width - 20 : Dimensions.get('window').width - 60,
-              alignSelf: 'stretch',
-              paddingVertical: 10,
-              paddingHorizontal: 20,
-              marginLeft: 5,
-              marginRight: 5,
-              marginVertical: 10,
-              fontSize: 14,
-              borderRadius: 10,
-              backgroundColor: '#e3e3e3',
-            }}
-            blurOnSubmit={false}
-            // onSubmitEditing={this.handleSendMessage}
-            value={this.state.messages}
-            onChangeText={message => this.setState({ messages: message })}
-            ref="input"
-            multiline={true}
-          />
-          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={{ display: this.state.messages.length === 0 ? 'none' : 'flex', marginBottom: 12.6}} />
+          <KeyboardAvoidingView>
+            <TextInput autoFocus={false}
+              keyboardType="default"
+              returnKeyType="done"
+              enablesReturnKeyAutomatically
+              placeholder='Type a message'
+              style={{
+                width: this.state.messages.length === 0 ? Dimensions.get('window').width - 20 : Dimensions.get('window').width - 60,
+
+                paddingVertical: 10,
+                paddingHorizontal: 20,
+                marginLeft: 5,
+                marginRight: 5,
+                marginVertical: 10,
+                fontSize: 14,
+                borderRadius: 10,
+                backgroundColor: '#e3e3e3',
+              }}
+              blurOnSubmit={false}
+              // onSubmitEditing={this.handleSendMessage}
+              value={this.state.messages}
+              onChangeText={message => this.setState({ messages: message })}
+              ref="input"
+              multiline={true}
+
+              onFocus={() => {
+                this.setState({
+                  height: Dimensions.get('window').height - 500,
+                })
+              }}
+              onBlur={() => {
+                this.setState({
+                  height: Dimensions.get('window').height - 200
+                })
+              }}
+            />
+          </KeyboardAvoidingView>
+          <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={{ display: this.state.messages.length === 0 ? 'none' : 'flex', marginBottom: 12.6 }} />
         </View>
 
       </View >
@@ -100,7 +136,7 @@ export default class ChatViewClass extends React.Component {
     const name = item.name;
     const date = item.date;
     const uuid = item.uuid;
-   
+
     if (action == 'join') {
       return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View>;
     } else if (action == 'part') {
@@ -223,3 +259,6 @@ const styles = StyleSheet.create({
     marginBottom: 12.6
   }
 });
+
+
+

@@ -51,14 +51,16 @@ const App = () => {
            }
       }
 
+     
+    
       getUserDetails();
       getToken();
       SplashScreen.hide();
+
+
   },[])
 
-
-  
-
+ 
 
   return (
     <>

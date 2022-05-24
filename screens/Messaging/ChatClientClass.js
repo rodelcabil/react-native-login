@@ -5,15 +5,19 @@ import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
 import pusherConfig from '../../pusher.json';
 import ChatView from '../chatView';
 import ChatViewClass from '../Messaging/ChatViewClass'
+import { useRoute } from '@react-navigation/native';
+
 
 export default class ChatClientClass extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = {
       messages: [],
       date: '',
-      uuid: ''
+      uuid: '',
     };
+  
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
     this.chatChannel = this.pusher.subscribe('chat_channel'); // (2)
@@ -30,6 +34,7 @@ export default class ChatClientClass extends React.Component {
     });
 
     this.handleSendMessage = this.onSendMessage.bind(this); // (9)
+   
   }
 
   handleJoin(name) { // (4)
@@ -49,6 +54,8 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
+
+
   handleMessage(name, message, date, uuid) { // (6)
     const messages = this.state.messages.slice();
     const ddate = this.state.date;
@@ -66,6 +73,7 @@ export default class ChatClientClass extends React.Component {
     fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
       method: 'PUT'
     });
+  
   }
 
   componentWillUnmount() { // (8)
@@ -99,7 +107,7 @@ export default class ChatClientClass extends React.Component {
 
   render() {
     const messages = this.state.messages;
-
+    
     return (
         <ChatViewClass messages={ messages } onSendMessage={ this.handleSendMessage } name={this.props.name} />
     );

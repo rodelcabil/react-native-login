@@ -24,7 +24,8 @@ const Home = ({navigation, route}) => {
     // AsyncStorage.setItem('userDetails', JSON.stringify(details))
     // const getUserDetails = AsyncStorage.getItem('userDetails');
     // // const parsedData = JSON.parse(getUserDetails);
-    const [userDetails, setUserDetails] = React.useState([])
+    const [userDetails, setUserDetails] = React.useState([]);
+    const [notifCount, setNotifCount] = React.useState(0);
     const [token, setToken] = React.useState()
 
     React.useEffect(()=>{
@@ -48,7 +49,7 @@ const Home = ({navigation, route}) => {
 
     return (
      
-        <Tab.Navigator  initialRouteName="Dashboard">
+        <Tab.Navigator  initialRouteName="Dashboard" >
             <Tab.Screen name="Dashboard" component={Dashboard} 
                  options={{
                     headerShown:false,
@@ -74,11 +75,12 @@ const Home = ({navigation, route}) => {
                 name="Messaging" 
                 // component={ChatList} 
                 options={{
+                    // tabBarBadge: 3,
                     headerShown:false,
                     tabBarLabel: 'Messaging',
                     tabBarIcon: ({ color, size }) => (
                         <>
-                        <Badge size={25} style={{position: 'relative', marginTop:-20, marginRight: 10, borderWidth: 3, borderColor: '#fff', zIndex: 100}}>99</Badge>
+                        <Badge size={25} style={{position: 'relative', marginTop:-12, marginRight: 13, borderWidth: 3, borderColor: '#fff', zIndex: 100, display: notifCount === 0 ? 'none' : 'flex'}}>{notifCount}</Badge>
                         <Icon name="chat" color={color} size={30} style={{position: 'absolute', marginRight: 10, }}/>
                         </>
                     ),
