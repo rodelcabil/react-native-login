@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
 import * as React from 'react';
-import {LogBox } from 'react-native';
+import { LogBox } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SplashScreen from 'react-native-splash-screen'
@@ -23,8 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatClient from './screens/chatClient';
 import ChatList from './screens/Messaging/ChatList';
 
-
-const Stack = createNativeStackNavigator(); 
+const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const App = () => {
@@ -33,104 +32,106 @@ const App = () => {
     "ColorPropType will be removed",
   ])
 
+  // const route = useRoute();
+
   const [userDetails, setUserDetails] = React.useState([])
   const [token, setToken] = React.useState()
 
-  React.useEffect(()=>{
-      const getUserDetails = async () =>{
-          const value = await AsyncStorage.getItem('userDetails')
-          if(value !== null){
-             setUserDetails(JSON.parse(value))
-             console.log("HOME - USER DETAILS: ", value)
-          }
+  React.useEffect(() => {
+    const getUserDetails = async () => {
+      const value = await AsyncStorage.getItem('userDetails')
+      if (value !== null) {
+        setUserDetails(JSON.parse(value))
+        console.log("HOME - USER DETAILS: ", value)
       }
-      const getToken = async () => {
-          const token = await AsyncStorage.getItem('token');
-          if(token !== null){
-              setToken(token)
-           }
+    }
+    const getToken = async () => {
+      const token = await AsyncStorage.getItem('token');
+
+      if (token !== null) {
+        setToken(token)
       }
-
-     
-    
-      getUserDetails();
-      getToken();
-      SplashScreen.hide();
+    }
 
 
-  },[])
+    getUserDetails();
+    getToken();
+    SplashScreen.hide();
 
- 
+  }, [])
+
+
+
 
   return (
     <>
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="LoginPage"
-          component={LoginPage}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="ForgotPasswordPage"
-          component={ForgotPasswordPage}
-          
-        />
-        <Stack.Screen
-          name="Home Page"
-          component={Home}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="View Schedule"
-          component={ViewSchedule}
-          options={{headerShown: false}}
-        />
-        <Stack.Screen
-          name="Add Schedule"
-          component={AddSchedule}
-          options={{headerShown: false}}
-        />
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="LoginPage"
+            component={LoginPage}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ForgotPasswordPage"
+            component={ForgotPasswordPage}
 
-        <Stack.Screen
-          name="View Patient Details"
-          component={ViewPatientDetails}
-          options={{headerShown: false}}
-        />
+          />
+          <Stack.Screen
+            name="Home Page"
+            component={Home}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="View Schedule"
+            component={ViewSchedule}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Add Schedule"
+            component={AddSchedule}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Account"
-          component={Account}
-          options={{headerShown: false}}
-        />
+          <Stack.Screen
+            name="View Patient Details"
+            component={ViewPatientDetails}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Settings"
-          component={Settings}
-          options={{headerShown: false}}
-        />
+          <Stack.Screen
+            name="Account"
+            component={Account}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="API"
-          component={APICalls}
-          options={{headerShown: false}}
-        />
+          <Stack.Screen
+            name="Settings"
+            component={Settings}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Edit Schedule"
-          component={EditSchedule}
-          options={{headerShown: false}}
-        />
+          <Stack.Screen
+            name="API"
+            component={APICalls}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Chat Client"
-          // component={ChatClientClass}
-          options={{headerShown: false}}
-        >
-            {props => <ChatClientClass name={userDetails.first_name+ " " + userDetails.last_name} /> }
-        </Stack.Screen>
+          <Stack.Screen
+            name="Edit Schedule"
+            component={EditSchedule}
+            options={{ headerShown: false }}
+          />
 
-        {/* <Stack.Screen
+          <Stack.Screen
+            name="Chat Client"
+            // component={ChatClientClass}
+            options={{ headerShown: false }}
+          >
+            {props => <ChatClientClass name={userDetails.first_name + " " + userDetails.last_name} />}
+          </Stack.Screen>
+
+          {/* <Stack.Screen
           name="Messaging"
           // component={EditSchedule}
           options={{headerShown: false}}
@@ -140,10 +141,10 @@ const App = () => {
         </Stack.Screen> */}
 
 
-        
 
-      </Stack.Navigator>
-    </NavigationContainer>
+
+        </Stack.Navigator>
+      </NavigationContainer>
     </>
   );
 };

@@ -38,8 +38,10 @@ const Home = ({navigation, route}) => {
         }
         const getToken = async () => {
             const token = await AsyncStorage.getItem('token');
-            if(token !== null){
-                setToken(token)
+            const tokenget = token === null ? route.params.token : token;
+
+            if(tokenget !== null){
+                setToken(tokenget)
              }
         }
 
@@ -80,11 +82,12 @@ const Home = ({navigation, route}) => {
                     tabBarLabel: 'Messaging',
                     tabBarIcon: ({ color, size }) => (
                         <>
-                        <Badge size={25} style={{position: 'relative', marginTop:-12, marginRight: 13, borderWidth: 3, borderColor: '#fff', zIndex: 100, display: notifCount === 0 ? 'none' : 'flex'}}>{notifCount}</Badge>
+                        <Badge size={25} style={{position: 'relative', marginTop: -12, marginRight: 13, borderWidth: notifCount === 0 ? 0 :  3, borderColor:'#fff', zIndex: 100, display: notifCount === 0 ?  'none' : 'flex' }}>{notifCount}</Badge>
                         <Icon name="chat" color={color} size={30} style={{position: 'absolute', marginRight: 10, }}/>
                         </>
                     ),
                 }} >
+                    {/* {props => <ChatClient name={userDetails.first_name + ' ' + userDetails.last_name} /> } */}
                     {props => <ChatList clientID={userDetails.client_id} userID={userDetails.id} navigation={navigation}/> }
                 
             </Tab.Screen>

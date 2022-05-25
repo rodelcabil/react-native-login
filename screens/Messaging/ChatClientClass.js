@@ -1,23 +1,26 @@
 import React from 'react';
 import Pusher from 'pusher-js/react-native';
-import { StyleSheet, Text, KeyboardAvoidingView, View } from 'react-native';
-
 import pusherConfig from '../../pusher.json';
-import ChatView from '../chatView';
 import ChatViewClass from '../Messaging/ChatViewClass'
-import { useRoute } from '@react-navigation/native';
-
+import ChatView from '../chatView';
 
 export default class ChatClientClass extends React.Component {
   
   constructor(props) {
+
+
     super(props);
     this.state = {
       messages: [],
       date: '',
       uuid: '',
+      // route: this.props.route.params?.name
     };
   
+    // for(var i = 0; i < 30; i++){
+    //   this.state.messages.push({ action: 'message', name: 'hi', message: 'hello' , date: i, uuid: i});
+    // }
+
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
     this.chatChannel = this.pusher.subscribe('chat_channel'); // (2)
@@ -105,11 +108,16 @@ export default class ChatClientClass extends React.Component {
     console.log(text, " Time: ", date, 'uuid: ', uuid);
   }
 
+  
+
   render() {
     const messages = this.state.messages;
-    
+ 
     return (
-        <ChatViewClass messages={ messages } onSendMessage={ this.handleSendMessage } name={this.props.name} />
+        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } 
+        // route={this.state.route}
+
+        />
     );
   }
 }

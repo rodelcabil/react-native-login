@@ -28,7 +28,7 @@ const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
 
                     const newList = response.data.filter(item => { return item.id !== userID });
                     setUserList(newList)
-                    // console.log("USER LIST: ", newList);
+                    // console.log("ROUTESSS: ", route.params.token);
                    
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)

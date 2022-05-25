@@ -24,7 +24,7 @@ const AllChat = ({ navigation, route, id }) => {
 
                     setUserList(response.data)
 
-                    console.log("USER LIST: ", response.data)
+                    // console.log("USER LIST: ", response.data)
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         

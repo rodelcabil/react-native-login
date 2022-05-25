@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     headerWrapper:{
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
         paddingTop: 10,
         paddingBottom: 10,
         alignItems: 'center',

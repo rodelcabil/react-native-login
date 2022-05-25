@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, FlatList, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, VirtualizedList, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, ScrollView, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Dimensions } from "react-native";
 import AppBar from '../ReusableComponents/AppBar';
@@ -24,7 +24,7 @@ export default class ChatViewClass extends React.Component {
 
     };
     this.handleSendMessage = this.onSendMessage.bind(this);
-
+    console.log("MESSAGES: ", this.props.messages)
   }
 
 
@@ -39,8 +39,8 @@ export default class ChatViewClass extends React.Component {
   _keyExtractor = item => item.id;
 
   render() { // (2)
-    const onChangeSearch = query => {this.state.searchQuery = query};
-     const newList = this.state.searchQuery === "" ? this.props.messages : this.props.messages.filter(item => { return String(item.message).includes(  this.state.searchQuery ) });
+    const onChangeSearch = query => this.setState({ searchQuery: query });
+    const newList = this.state.searchQuery === "" ? this.props.messages : this.props.messages.filter(item => { return String(item.message).includes(this.state.searchQuery) });
     return (
       <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
         <View style={styles.container}>
@@ -50,42 +50,80 @@ export default class ChatViewClass extends React.Component {
               style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}
               placeholder="Search"
               onChangeText={onChangeSearch}
-              value={this.props.searchQuery}
+              value={this.state.searchQuery}
               inputStyle={{ fontSize: 15 }}
               autoFocus={false}
               showSoftInputOnFocus={false}
-            // onFocus={()=>{
-            //     this.setState({
-            //       searchBG: '#e3e3e3'
-            //     })
-            // }}
-            // onBlur={()=>{
-            //   this.setState({
-            //       searchBG: '#fff'
-            //     })
-            // }}
+
             />
           </View>
           <View >
 
 
           </View>
-            <FlatList
+          {/* <FlatList
 
+            ref={ref => { this.scrollView = ref }}
+            onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
+            data={newList}
+            renderItem={this.renderItem}
+            inverted
+            contentContainerStyle={{ flexDirection: 'column-reverse', }}
+            keyExtractor={this._keyExtractor}
+          
+
+          /> */}
+          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'red' }}>
+            <ScrollView
               ref={ref => { this.scrollView = ref }}
               onContentSizeChange={() => this.scrollView.scrollToEnd({ animated: true })}
-              data={newList}
-              renderItem={this.renderItem}
-              inverted
-              contentContainerStyle={{flexDirection:'column-reverse', }}
-              keyExtractor={this._keyExtractor}
-              
-             
-            />
+              snapToEnd={false}
+              style={{backgroundColor: 'orange'}}
+              contentContainerStyle={{ position: 'absolute', alignItems: 'baseline'}}
+
+            >
+
+
+              <View>
+                {newList.map((item, key) => {
+                  return <>{item?.action == 'join' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has joined</Text></View>
+                    :
+                    item?.action == 'part' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has left</Text></View>
+                      :
+                      item?.action == 'message' ? item.uuid === this.state.myUuid ?
+                        <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+                          <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{item?.date}</Text>
+                          <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+
+                        </View>
+                        :
+                        <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+                          <View style={styles.othersChat}>
+                            <Avatar.Text size={45} label={item?.name[0]} />
+                            <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
+
+                              <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.name}, {item?.date} </Text>
+                              <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
+
+                            </View>
+                          </View>
+                        </View>
+                        :
+                        <></>
+                  }
+                  </>
+
+
+                })}
+              </View>
+
+
+            </ScrollView>
+          </View>
 
         </View>
         <View style={styles.textInputContainer}>
-          <KeyboardAvoidingView>
+        
             <TextInput autoFocus={false}
               keyboardType="default"
               returnKeyType="done"
@@ -109,19 +147,8 @@ export default class ChatViewClass extends React.Component {
               onChangeText={message => this.setState({ messages: message })}
               ref="input"
               multiline={true}
-
-              onFocus={() => {
-                this.setState({
-                  height: Dimensions.get('window').height - 500,
-                })
-              }}
-              onBlur={() => {
-                this.setState({
-                  height: Dimensions.get('window').height - 200
-                })
-              }}
             />
-          </KeyboardAvoidingView>
+          
           <Icon name='send-circle' size={40} color="#3a87ad" onPress={this.handleSendMessage} style={{ display: this.state.messages.length === 0 ? 'none' : 'flex', marginBottom: 12.6 }} />
         </View>
 
