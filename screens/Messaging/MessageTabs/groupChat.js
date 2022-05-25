@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions } from 'react-native'
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,7 +39,19 @@ const GroupChat = ({ navigation, route, id }) => {
 
     return (
         <View style={styles.container}>
-            <Text>Group Chat</Text>
+            <TouchableOpacity style={styles.buttonGPlusStyle} activeOpacity={0.5} 
+                onPress={()=>{
+                    navigation.navigate('Add Group', {
+                        route: route,
+                    });
+                }}>
+                <Image
+                 source={require('../../../assets/addgroup.png')}
+                 style={styles.buttonImageIconStyle}
+                />
+                <Text style={styles.buttonTextStyle}>Add Group </Text>
+            </TouchableOpacity>
+
         </View>
     )
 }
@@ -48,8 +60,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center'
     },
     body: {
         flex: 1,
@@ -77,6 +87,29 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 11,
     },
+    buttonGPlusStyle: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#3a87ad',
+        borderWidth: 0.5,
+        borderColor: 'gray',
+        height: 40,
+        borderRadius: 5,
+        margin: 5,
+        justifyContent: 'center',
+      },
+      buttonImageIconStyle: {
+        padding: 10,
+        margin: 5,
+        height: 30,
+        width: 30,
+        resizeMode: 'stretch',
+      },
+      buttonTextStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        marginLeft: 10,
+      },
 
 });
 

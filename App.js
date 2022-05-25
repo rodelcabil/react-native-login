@@ -23,6 +23,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChatClient from './screens/chatClient';
 import ChatList from './screens/Messaging/ChatList';
 
+import AddGroup from './screens/Messaging/MessageTabs/addGroup';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -122,6 +124,13 @@ const App = () => {
             component={EditSchedule}
             options={{ headerShown: false }}
           />
+
+          <Stack.Screen
+            name="Add Group"
+            component={AddGroup}
+            options={{ headerShown: false }}
+          />
+
 
           <Stack.Screen
             name="Chat Client"
