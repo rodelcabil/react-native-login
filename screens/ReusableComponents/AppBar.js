@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , TouchableHighlight} from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 import RNRestart from 'react-native-restart'; 
 
-const AppBar = ({title, showMenuIcon}) => {
+const AppBar = ({title, showMenuIcon, route}) => {
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
@@ -72,6 +72,29 @@ const AppBar = ({title, showMenuIcon}) => {
     };
 
 
+    const [firstName, setFirstName] = useState("")
+    const [diplayName, setDiplayName] = useState(null)
+    const [lastName, setLastName] = useState(null)
+    const [email, setEmail] = useState(null)
+    const [userName, setUserName] = useState(null)
+
+    useEffect(() => {
+        const getUserDetails = async () => { 
+            const value = await AsyncStorage.getItem('userDetails')
+            const data = JSON.parse(value)
+            setFirstName(data?.first_name)
+            setDiplayName(data?.name)
+            setLastName(data?.last_name)
+            setEmail(data?.email_address)
+            setUserName(data?.username)
+            // console.log("ACCOUNT - USER DETAILS: ", userDetails)
+        }
+        getUserDetails();
+        
+        
+    },[])
+
+
     return (
         <View style={styles.container}>
             <SafeAreaView>
@@ -103,7 +126,7 @@ const AppBar = ({title, showMenuIcon}) => {
                             uri: 'https://cdn-icons-png.flaticon.com/512/194/194915.png',
                             }}
                         />
-                        <Text style={styles.textEmail}>Dr. Sample Name</Text>
+                        <Text style={styles.textEmail}>{firstName + "  "+  lastName}</Text>
                     </View>
                     <MenuItem onPress={hideMenu}>View Profile</MenuItem>
                     <MenuDivider />
@@ -136,7 +159,7 @@ const styles = StyleSheet.create({
     },
     containerMenuItem:{
         backgroundColor: '#075DA7',
-        height: 150,
+        height: 160,
         resizeMode: 'contain',
         alignItems: 'center',
         padding: 20,
@@ -164,8 +187,8 @@ const styles = StyleSheet.create({
         color: 'red',
     },
     textEmail: {
-        paddingTop: 10,
-        paddingBottom: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
         fontSize: 15,
         color: 'white',
     },
