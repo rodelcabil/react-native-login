@@ -126,11 +126,77 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                 })
                 setLoader(false)
         }
+
+
+        const tryCombineAPI = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/chat/client-group`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                     let tempArr = [];
+                     response.data.map((data, index) => {
+                        const id = data.id
+                        const name = data.name
+                            const Api2 = async () => {
+                                await axios.get(
+                                    `https://beta.centaurmd.com/api/chat/client-group-user?group_id=${id}`,
+                                    {
+                                        headers: {
+                                            'Accept': 'application/json',
+                                            'Authorization': 'Bearer ' + tokenget
+                                        },
+                                    }).then(response2 => {
+                                        response2.data.map((data2, index) => {
+                                            const getIDuserInfo = data2.user_id
+                                            const GetUserInfo = async (getID) => {
+                                                await axios.get(
+                                                    `https://beta.centaurmd.com/api/users/2`,
+                                                    {
+                                                        headers: {
+                                                            'Accept': 'application/json',
+                                                            'Authorization': 'Bearer ' + tokenget
+                                                        },
+                                                    }).then(response3 => {
+                                                        response3.data.map((data3, index) => {
+                                                            if(getID === data3.id){
+                                                                tempArr.push({
+                                                                    groupID: id,
+                                                                    groupName: name,
+                                                                    userID: getIDuserInfo,
+                                                                    user_firstName: data3.first_name,
+                                                                    user_lastName: data3.last_name,
+                                                                    user_avatar: data3.avatar
+                                                                })
+                                                            }
+                                                        });
+                                                        console.log("GROUP with MEMBERS", tempArr)
+                                                    })
+                                            }
+                                            GetUserInfo(getIDuserInfo)
+                                        });
+                                    })
+                            }
+                            Api2()
+                            
+                    });
+
+                })
+ 
+        }
+
       
         
         getUserList();
         getGroupList();
         getCombinedList();
+        tryCombineAPI();
        
     }, []);
 
