@@ -92,8 +92,51 @@ const AddGroup = ({ route }) => {
           console.log(resp.data);
 
          if (resp.status === 200) {
-            alert("Added Successfully");
-       } else {
+            //alert("Added Successfully");
+            let groupID = '';
+            await axios.get(
+                `https://beta.centaurmd.com/api/chat/client-group`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+                    response.data.map((data, index) => {
+                        const id = data.id
+                        if(data.name === title){
+                            groupID = id
+                            console.log(id, "success get id");
+                        }
+                    });
+
+                    const addMemberFunction = async (groupId, memberId) => {
+                        const addMembers = await axios({
+                            method: 'post',
+                            url: 'https://beta.centaurmd.com/api/chat/group/add',
+                            data: {
+                                group_id: groupId,
+                                user_id: memberId
+                            },
+                            headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
+                        });
+
+                        console.log(addMembers.data);
+                        if (resp.status === 200) {
+                            console.log('Member ', memberId , " added");
+                        }
+                        else{
+                            alert("Error, Adding Members");
+                        }
+                    }
+                    
+                    for(let x = 0; x<selectedMember.length; x++){
+                        addMemberFunction(groupID, selectedMember[x]);
+                    }
+
+                })
+
+         } else {
          alert("Error, please try again");
        }
     }
