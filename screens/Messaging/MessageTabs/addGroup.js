@@ -194,7 +194,7 @@ const AddGroup = ({ route }) => {
 
                 />
 
-                    <View style={{flex: 1, height: 300,}}>
+                    <View style={{flex: 1, }}>
                         {selectedMemberDisplay.map((item, i) => {
                            return <View key={i} style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
                                 <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
@@ -256,7 +256,8 @@ const styles = StyleSheet.create({
     formText:{
         fontSize: 15,
         fontWeight: 'bold',
-        marginBottom: 5
+        marginBottom: 5,
+        fontFamily: 'Poppins-Bold'
     },
     formContainer: {
         alignSelf: 'center',
@@ -267,6 +268,7 @@ const styles = StyleSheet.create({
     headerText:{
         fontSize: 25,
         fontWeight: 'bold',
+        fontFamily: 'Poppins-Italic'
     },
     body: {
         flex: 1,
