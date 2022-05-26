@@ -288,8 +288,8 @@ const AddGroup = ({ route }) => {
 
                     <View style={{flex: 1,  marginTop: 10}}>
                         {selectedMemberDisplay.map((item, i) => {
-                           return <View style={{flexDirection: 'row', marginBottom: 8, justifyContent: 'space-between'}}>
-                               <View key={i} style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
+                           return <View  key={i}  style={{flexDirection: 'row', marginBottom: 8, justifyContent: 'space-between'}}>
+                               <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
                                 <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
                                 {/*<Avatar.Image size={45} 
                                     source={{
@@ -300,7 +300,7 @@ const AddGroup = ({ route }) => {
                             </View>
                             
                             <TouchableHighlight
-                                    key={i}
+                                 
                                     activeOpacity={0.6}
                                     underlayColor="#DDDDDD"
                                     style={{alignSelf: 'center'}}

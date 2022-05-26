@@ -47,15 +47,20 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     },
                 }).then(response => {
 
-                    setGroupList(response.data)
 
-                    console.log("GROUP LIST: ", response.data)
+                    let sort = response.data.sort(function(a,b){
+                        return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
+                      });
+
+                    setGroupList(sort)
+
+                    console.log("GROUP LISTTt: ", sort)
                    
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
         const getUserList = async () => {
-            setLoader(true);
+          
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
@@ -69,7 +74,12 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                 }).then(response => {
 
                     const newList = response.data.filter(item => { return item.id !== userID });
-                    setUserList(newList)
+
+                    let sort = newList.sort(function(a,b){
+                        return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
+                      });
+
+                    setUserList(sort)
                     // console.log("ROUTESSS: ", route.params.token);
                   
                 })
@@ -93,13 +103,15 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     },
                 }).then(response => {
 
-                     mappedData1 = response.data.map((data) => {
+                    const newList = response.data.map((data) => {
                         return {
                             ...data, type: 'user'
                         }
                     })
 
-                    console.log("ALL CHAT - USER LIST: ", mappedData1)
+                     mappedData1 = newList.filter(item => { return item.id !== userID });
+
+                    // console.log("ALL CHAT - USER LIST: ", mappedData1)
                 })
 
             await axios.get(
@@ -119,14 +131,17 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     console.log("ALL CHAT - GROUP LIST: ", mappedData2)
                     const combined = mappedData1.concat(mappedData2)
 
-                    setAllChat(combined)
-                    console.log("COMBINED: ALL CHAT", combined)
+                    let sort = combined.sort(function(a,b){
+                        return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
+                      });
+
+                    setAllChat(sort)
+                    console.log("COMBINED: ALL CHAT", sort)
                    
 
                 })
                 setLoader(false)
         }
-
 
         const tryCombineAPI = async () => {
             const token = await AsyncStorage.getItem('token');
@@ -191,12 +206,20 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
  
         }
 
+        const unsubscribe = navigation.addListener('focus', () => {
+            getUserList();
+            getGroupList();
+            getCombinedList();
+            tryCombineAPI();
+          });
       
         
         getUserList();
         getGroupList();
         getCombinedList();
         tryCombineAPI();
+
+        return unsubscribe;
        
     }, []);
 
