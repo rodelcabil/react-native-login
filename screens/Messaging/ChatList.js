@@ -8,6 +8,8 @@ import AppBar from '../ReusableComponents/AppBar'
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import { sr } from 'date-fns/locale';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 import { TabView, SceneMap,TabBar } from 'react-native-tab-view';
 import Colleagues from './MessageTabs/colleagues';
@@ -20,6 +22,119 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     const [visible, setVisible] = useState(false);
     const hideMenu = () => setVisible(false);
     const showMenu = () => setVisible(true);
+
+
+    const [groupList, setGroupList] = useState([]);
+    const [userList, setUserList] = useState([]);
+    const [allChat, setAllChat] = useState([]);
+    const [loader, setLoader] = useState(false);
+    let mappedData1;
+    let mappedData2;
+  
+  
+    useEffect(() => {
+        const getGroupList = async () => {
+            setLoader(true);
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/chat/client-group`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    setGroupList(response.data)
+
+                    console.log("GROUP LIST: ", response.data)
+                   
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+        }
+        const getUserList = async () => {
+            setLoader(true);
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/users/${clientID}`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    const newList = response.data.filter(item => { return item.id !== userID });
+                    setUserList(newList)
+                    // console.log("ROUTESSS: ", route.params.token);
+                  
+                })
+            // console.log("DASHBOARD - SCHEDULES: ", schedule)
+            
+        }
+        const getCombinedList = async () => {
+           
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+           
+
+            await axios.get(
+
+                `https://beta.centaurmd.com/api/users/${clientID}`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                     mappedData1 = response.data.map((data) => {
+                        return {
+                            ...data, type: 'user'
+                        }
+                    })
+
+                    console.log("ALL CHAT - USER LIST: ", mappedData1)
+                })
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/chat/client-group`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                     mappedData2 = response.data.map((data) => {
+                        return {
+                            ...data, type: 'group'
+                        }
+                    })
+                    console.log("ALL CHAT - GROUP LIST: ", mappedData2)
+                    const combined = mappedData1.concat(mappedData2)
+
+                    setAllChat(combined)
+                    console.log("COMBINED: ALL CHAT", combined)
+                   
+
+                })
+                setLoader(false)
+        }
+      
+        
+        getUserList();
+        getGroupList();
+        getCombinedList();
+       
+    }, []);
+
+
    // const navigation = useNavigation(); 
     const signOut = async () => {
         try{
@@ -66,9 +181,9 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     );
   
     const renderScene = SceneMap({
-        first: () => <AllChat navigation={navigation} route={route} clientID={clientID} userID={userID}/>,
-        second: () => <GroupChat navigation={navigation} route={route} clientID={clientID} userID={userID}/>,
-        third: () => <Colleagues navigation={navigation} route={route} clientID={clientID} userID={userID} filterData={searchQuery}/>
+        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={loader} allChat={allChat}/>,
+        second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={loader} groupList={groupList}/>,
+        third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={loader} userList={userList}/>
     });
 
 

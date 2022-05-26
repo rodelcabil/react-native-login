@@ -4,43 +4,79 @@ import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { set } from 'date-fns';
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
-const AllChat = ({ navigation, route, id }) => {
+const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) => {
 
-    const [userList, setUserList] = useState([]);
-    useEffect(() => {
-        const getUserList = async () => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
+ 
+ 
 
-            await axios.get(
-                `https://beta.centaurmd.com/api/users/${id}`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
 
-                    setUserList(response.data)
 
-                    // console.log("USER LIST: ", response.data)
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        
-        }
-        getUserList()
-    }, []);
+
     const getInitials = (first_name, last_name) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
 
+    const newList = filterData === "" ? allChat : allChat?.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
+
 
     return (
-        <View style={styles.container}>
-           <Text>All Chats</Text>
-        </View>
+        loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
+            <View style={styles.container}>
+                <ScrollView>
+                    <View style={styles.body}>
+                        {newList.map((item, i) => {
+                            return item.type === 'user' ?
+                                <TouchableOpacity
+                                    key={i}
+                                    activeOpacity={0.6}
+                                    onPress={() => {
+                                        navigation.navigate('Chat Client', {
+                                            // name: item.first_name + " " +item.last_name
+                                        });
+
+                                    }}
+                                >
+                                    <View style={styles.rowContainer}>
+                                        <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.name}>{item.first_name} {item.last_name}</Text>
+                                            <Text style={styles.message}>{item.email_address}</Text>
+                                        </View>
+                                        {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
+                                        <View style={{ width: 50 }} />
+                                    </View>
+                                </TouchableOpacity>
+
+                                :
+
+                                <TouchableOpacity
+                                    key={i}
+                                    activeOpacity={0.6}
+                                    onPress={() => {
+                                        navigation.navigate('Chat Client');
+
+                                    }}
+                                >
+                                    <View style={styles.rowContainer}>
+                                        <Avatar.Text size={45} label={item.name[0].toUpperCase()} />
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.name}>{item.name}</Text>
+                                            {/* <Text style={styles.message}>{item.email_address}</Text> */}
+                                        </View>
+                                        {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
+                                        <View style={{ width: 50 }} />
+                                    </View>
+                                </TouchableOpacity>
+                        })}
+
+                    </View>
+
+                </ScrollView>
+            </View>
     )
 }
 
@@ -48,8 +84,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        justifyContent: 'center',
-        alignItems: 'center'
     },
     body: {
         flex: 1,

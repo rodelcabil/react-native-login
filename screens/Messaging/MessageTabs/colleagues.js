@@ -2,40 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions } from 'react-native'
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
-const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
+const Colleagues = ({ navigation, filterData, loader, userList }) => {
 
-    const [userList, setUserList] = useState([]);
-    const [loader, setLoader] = useState(true);
-
-    useEffect(() => {
-        const getUserList = async () => {
-            setLoader(true);
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/users/${clientID}`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-
-                    const newList = response.data.filter(item => { return item.id !== userID });
-                    setUserList(newList)
-                    // console.log("ROUTESSS: ", route.params.token);
-                   
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-            setLoader(false);
-        }
-        getUserList()
-    }, []);
+    
     const getInitials = (first_name, last_name) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
@@ -43,7 +14,7 @@ const Colleagues = ({ navigation, route, clientID, userID, filterData }) => {
     const newList = filterData === "" ? userList : userList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
 
     return (
-        loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
+        loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall /></View> :
         <View style={styles.container}>
             <ScrollView>
                 <View style={styles.body}>

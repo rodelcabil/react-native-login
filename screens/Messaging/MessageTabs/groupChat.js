@@ -2,57 +2,62 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions } from 'react-native'
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const GroupChat = ({ navigation, route, id }) => {
-
-    const [userList, setUserList] = useState([]);
-    useEffect(() => {
-        const getUserList = async () => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/users/${id}`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-
-                    setUserList(response.data)
-
-                    // console.log("USER LIST: ", response.data)
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        
-        }
-        getUserList()
-    }, []);
-    const getInitials = (first_name, last_name) => {
-        return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
-    }
+const GroupChat = ({ navigation, route, filterData, loader, groupList }) => {
 
 
+    const newList = filterData === "" ? groupList : groupList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.buttonGPlusStyle} activeOpacity={0.5} 
-                onPress={()=>{
-                    navigation.navigate('Add Group', {
-                        route: route,
-                    });
-                }}>
-                <Image
-                 source={require('../../../assets/addgroup.png')}
-                 style={styles.buttonImageIconStyle}
-                />
-                <Text style={styles.buttonTextStyle}>Add Group </Text>
-            </TouchableOpacity>
+        loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
 
-        </View>
+
+            <View style={styles.container}>
+                <ScrollView >
+                    <View style={styles.body}>
+                        {newList.map((item, i) => {
+
+                            return <TouchableOpacity
+                                key={i}
+                                activeOpacity={0.6}
+                                onPress={() => {
+                                    navigation.navigate('Chat Client');
+
+                                }}
+                            >
+                                <View style={styles.rowContainer}>
+                                    <Avatar.Text size={45} label={item.name[0].toUpperCase()} />
+                                    <View style={styles.columnContainer}>
+                                        <Text style={styles.name}>{item.name}</Text>
+                                        {/* <Text style={styles.message}>{item.email_address}</Text> */}
+                                    </View>
+                                    {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
+                                    <View style={{ width: 50 }} />
+                                </View>
+                            </TouchableOpacity>
+                        })}
+                    </View>
+
+                </ScrollView>
+                <TouchableOpacity activeOpacity={0.5}
+                    onPress={() => {
+                        navigation.navigate('Add Group', {
+                            route: route,
+                        });
+                    }}>
+                    <Avatar.Icon
+                        size={55}
+                        style={styles.fab}
+                        icon={() => <Icon name='group-add' size={30} color="#fff" />}
+
+
+                    />
+                </TouchableOpacity>
+            </View>
+
+
     )
 }
 
@@ -97,20 +102,35 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         margin: 5,
         justifyContent: 'center',
-      },
-      buttonImageIconStyle: {
+    },
+    buttonImageIconStyle: {
         padding: 10,
         margin: 5,
         height: 30,
         width: 30,
         resizeMode: 'stretch',
-      },
-      buttonTextStyle: {
+    },
+    buttonTextStyle: {
         color: 'white',
         fontWeight: 'bold',
         marginLeft: 10,
-      },
-
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+        padding: 0,
+        borderColor: '#fff',
+        borderWidth: 2,
+        backgroundColor: '#3a87ad',
+        shadowColor: 'black',
+        shadowOffset: { width: -2, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
 });
 
 export default GroupChat
+
+
