@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions, Button, TouchableHighlight } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions, Button, TouchableHighlight, Animated, Modal } from 'react-native'
 import AppBar from '../../ReusableComponents/AppBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -10,9 +10,11 @@ import { useIsFocused } from '@react-navigation/native';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 
 const AddGroup = ({ route }) => {
     const isFocused = useIsFocused();
+    const navigation = useNavigation(); 
     const [userList, setUserList] = useState([]);
     const [title, setTitle] = useState("");
     const [addLoader, setAddLoader] = useState(false);
@@ -78,6 +80,7 @@ const AddGroup = ({ route }) => {
     } 
 
     const addGroup = async () => {
+        setAddLoader(true);
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
         console.log(title, tokenget);
@@ -134,7 +137,9 @@ const AddGroup = ({ route }) => {
                     for(let x = 0; x<selectedMember.length; x++){
                         addMemberFunction(groupID, selectedMember[x]);
                     }
-
+                    setAddLoader(false);
+                    setVisibleAdd(true);
+                    setTimeout(() => {navigation.goBack();}, 1000)
                 })
 
          } else {
@@ -155,22 +160,84 @@ const AddGroup = ({ route }) => {
         console.log("Updated Memebrs List", selectedMemberDisplay);
     }
     
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const ModalPoup = ({visible, children}) => {
+        const [showModalAdd, setShowModalAdd] = React.useState(visible);
+        const scaleValue = React.useRef(new Animated.Value(0)).current;
+        React.useEffect(() => {
+          toggleModal();
+        }, [visible]);
+        const toggleModal = () => {
+          if (visible) {
+            setShowModalAdd(true);
+            Animated.spring(scaleValue, {
+              toValue: 1,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          } else {
+            setTimeout(() => setShowModalAdd(false), 200);
+            Animated.timing(scaleValue, {
+              toValue: 0,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          }
+        };
+        return (
+          <Modal transparent visible={showModalAdd}>
+            <View style={styles.modalBackGround}>
+              <Animated.View
+                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+                {children}
+              </Animated.View>
+            </View>
+          </Modal>
+        );
+    };
+
+    const DialogBox = () =>{
+      return(
+          <ModalPoup visible={visibleAdd}>
+          <View style={{alignItems: 'center'}}>
+            <Image
+              source={require('../../../assets/sucess.png')}
+              style={{height: 120, width: 120, marginVertical: 10}}
+            />
+          </View>
+  
+          <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+             Group Created Successfully
+          </Text>
+        </ModalPoup>
+      );
+  }
+
     return (
         <View style={styles.container}>
+            <DialogBox/>   
             <AppBar title={""} showMenuIcon={true} />
             <ScrollView >
-
-
             <View style={styles.header}>
                 <Avatar.Image size={50} source={require('../../../assets/addgroup.png')} 
                      style={{backgroundColor: 'white', marginRight: 10}} />
                 <Text style={styles.headerText}>Add Group</Text>
             </View>
 
+            <View style={{flexDirection: 'row',  marginLeft: 25, marginTop: 10}}>
+                      <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>All fields marked with </Text>
+                      <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                      <Text style={{fontSize: 15, fontWeight: 'bold', color: 'black'}}> are required.</Text>
+            </View>
+
             <View style={styles.formContainer}>
 
                 <View style={[styles.card, styles.shadowProp]}>
-                    <Text style={styles.formText}>Group Name</Text>
+                    <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Group Name</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                    </View>
                     {showErrorTitle === true ? 
                                     <Animatable.View animation='fadeInLeft' duration={500}>
                                     <Text style={styles.errorMsg}>Please enter Group Name</Text>
@@ -183,12 +250,12 @@ const AddGroup = ({ route }) => {
                                 style={styles.inputContainer}
                                 onChangeText={titleInp => setTitle(titleInp)}
                                 asterik />
-                </View>
 
 
-
-                <View style={[styles.card, styles.shadowProp]}>
-                <Text style={styles.formText}>Members</Text>
+                    <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Members</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                    </View>
                 {showErrorListMember === true ? 
                                 <Animatable.View animation='fadeInLeft' duration={500}>
                                   <Text style={styles.errorMsg}>Please select Group Members</Text>
@@ -248,7 +315,6 @@ const AddGroup = ({ route }) => {
                         })}
                     </View>
 
-                    </View>
                     {addLoader === true? 
                           <LoaderSmall/> : 
                            <View style={{marginTop: 10}}>
@@ -279,6 +345,7 @@ const AddGroup = ({ route }) => {
                             />
                           </View>}
 
+                          </View>
             </View>
             </ScrollView>
         </View>
@@ -322,7 +389,9 @@ const styles = StyleSheet.create({
     },
     formContainer: {
         alignSelf: 'center',
-        padding: 15,
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingBottom: 10,
         width: Dimensions.get('window').width-10,
         //backgroundColor: '#3a87ad',
     },
@@ -399,6 +468,20 @@ const styles = StyleSheet.create({
         marginTop: 10,
         backgroundColor: 'green'
     },
+    modalBackGround: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      modalContainer: {
+        width: '70%',
+        backgroundColor: 'white',
+        paddingHorizontal: 20,
+        paddingVertical: 30,
+        borderRadius: 20,
+        elevation: 20,
+      },
 
 });
 
