@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions, Button } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions, Button, TouchableHighlight } from 'react-native'
 import AppBar from '../../ReusableComponents/AppBar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -9,11 +9,12 @@ import MultiSelect from 'react-native-multiple-select';
 import { useIsFocused } from '@react-navigation/native';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import { Avatar } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AddGroup = ({ route }) => {
     const isFocused = useIsFocused();
     const [userList, setUserList] = useState([]);
-    const [title, setTitle] = useState(null);
+    const [title, setTitle] = useState("");
     const [addLoader, setAddLoader] = useState(false);
 
     const [showErrorTitle, setShowErrorTitle] = useState(false);
@@ -141,30 +142,53 @@ const AddGroup = ({ route }) => {
        }
     }
 
+    const handleRemoveItem = (id) => {
+        const newArr = [...selectedMember];
+        newArr.splice(newArr.findIndex(item => item === id), 1)
+        setSelectedMember(newArr)
+
+        const newArr2 = [...selectedMemberDisplay];
+        newArr2.splice(newArr2.findIndex(item => item.id === id), 1)
+        setSelectedMemberDisplay(newArr2)
+
+        console.log("Updated Memebrs", selectedMember);
+        console.log("Updated Memebrs List", selectedMemberDisplay);
+    }
+    
     return (
         <View style={styles.container}>
             <AppBar title={""} showMenuIcon={true} />
             <ScrollView >
-            <View style={styles.header}><Text style={styles.headerText}>Add Group</Text></View>
+
+
+            <View style={styles.header}>
+                <Avatar.Image size={50} source={require('../../../assets/addgroup.png')} 
+                     style={{backgroundColor: 'white', marginRight: 10}} />
+                <Text style={styles.headerText}>Add Group</Text>
+            </View>
 
             <View style={styles.formContainer}>
-                <Text style={styles.formText}>Group Name</Text>
 
-                {showErrorTitle === true ? 
-                                <Animatable.View animation='fadeInLeft' duration={500}>
-                                  <Text style={styles.errorMsg}>Please enter Group Name</Text>
-                                </Animatable.View>
-                          :<></>}
+                <View style={[styles.card, styles.shadowProp]}>
+                    <Text style={styles.formText}>Group Name</Text>
+                    {showErrorTitle === true ? 
+                                    <Animatable.View animation='fadeInLeft' duration={500}>
+                                    <Text style={styles.errorMsg}>Please enter Group Name</Text>
+                                    </Animatable.View>
+                            :<></>}
 
-                        <FormItem
-                            value={title}
-                            style={styles.inputContainer}
-                            onChangeText={titleInp => setTitle(titleInp)}
-                            asterik />
+                            <FormItem
+                                value={title}
+                                placeholder='Enter Group Name'
+                                style={styles.inputContainer}
+                                onChangeText={titleInp => setTitle(titleInp)}
+                                asterik />
+                </View>
 
+
+
+                <View style={[styles.card, styles.shadowProp]}>
                 <Text style={styles.formText}>Members</Text>
-
-
                 {showErrorListMember === true ? 
                                 <Animatable.View animation='fadeInLeft' duration={500}>
                                   <Text style={styles.errorMsg}>Please select Group Members</Text>
@@ -172,6 +196,7 @@ const AddGroup = ({ route }) => {
                           :<></>}
                 <MultiSelect
                     hideTags
+                    hideSubmitButton
                     items={userList}
                     uniqueKey='id'
                     //ref={(component) => {this.multiSelect = component}}
@@ -194,16 +219,36 @@ const AddGroup = ({ route }) => {
 
                 />
 
-                    <View style={{flex: 1, }}>
+                    <View style={{flex: 1,  marginTop: 10}}>
                         {selectedMemberDisplay.map((item, i) => {
-                           return <View key={i} style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
+                           return <View style={{flexDirection: 'row', marginBottom: 8, justifyContent: 'space-between'}}>
+                               <View key={i} style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
                                 <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                                {/*<Avatar.Image size={45} 
+                                    source={{
+                                        uri:
+                                        item.avatar,
+                                    }} />*/}
                                 <Text style={{marginLeft: 10, fontSize: 15}}>{item.name}</Text>
                             </View>
+                            
+                            <TouchableHighlight
+                                    key={i}
+                                    activeOpacity={0.6}
+                                    underlayColor="#DDDDDD"
+                                    style={{alignSelf: 'center'}}
+                                    onPress={() => handleRemoveItem(item.id)}
+                                >
+                                <Avatar.Image size={20} source={require('../../../assets/x.png')} 
+                                    style={{backgroundColor: 'white', alignSelf: 'center', marginRight: 10, marginLeft: 10}} />
+
+                            </TouchableHighlight>
+
+                           </View>
                         })}
                     </View>
 
-
+                    </View>
                     {addLoader === true? 
                           <LoaderSmall/> : 
                            <View style={{marginTop: 10}}>
@@ -211,13 +256,13 @@ const AddGroup = ({ route }) => {
                                 style={styles.buttonCont}
                                 title="Submit" 
                                 onPress={() => {
-                                  if(title !== null && selectedMember.length !== 0){
+                                  if(title !== "" && selectedMember.length !== 0){
                                      setShowErrorTitle(false) 
                                      setShowErrorListMember(false) 
                                      addGroup();
                                   }
                                   else{
-                                    if(title === null){
+                                    if(title === ""){
                                        setShowErrorTitle(true)
                                     }
                                     else{
@@ -248,13 +293,29 @@ const styles = StyleSheet.create({
     header:{
         width: Dimensions.get('window').width,
         //backgroundColor: '#3a87ad',
-        paddingTop: 30,
+        paddingTop: 25,
         paddingLeft: 30,
         paddingRight: 30,
-        paddingBottom: 10,
+        paddingBottom: 5,
+        flexDirection: 'row',
+        alignItems: 'center'
     },
+    card: {
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        width: '100%',
+        marginVertical: 10,
+      },
+      shadowProp: {
+        shadowColor: 'black',
+        shadowOffset: {width: -2, height: 4},
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 8
+      },
     formText:{
-        fontSize: 15,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 5,
         fontFamily: 'Poppins-Bold'
@@ -262,13 +323,14 @@ const styles = StyleSheet.create({
     formContainer: {
         alignSelf: 'center',
         padding: 15,
-        width: Dimensions.get('window').width-30,
+        width: Dimensions.get('window').width-10,
         //backgroundColor: '#3a87ad',
     },
     headerText:{
-        fontSize: 25,
+        fontSize: 30,
         fontWeight: 'bold',
-        fontFamily: 'Poppins-Italic'
+        fontFamily: 'Poppins-Bold',
+        //color: '#3a87ad',
     },
     body: {
         flex: 1,
@@ -320,11 +382,9 @@ const styles = StyleSheet.create({
         marginLeft: 10,
       },
     inputContainer: {
-        marginHorizontal: 3,
         borderWidth: 1,
         borderColor: 'gray',
-        borderRadius: 5,
-        paddingHorizontal: 5,
+        borderRadius: 15,
         alignItems: 'center',
         fontSize: 13,
         backgroundColor: 'white',

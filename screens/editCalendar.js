@@ -217,16 +217,25 @@ const EditSchedule = ({ route, navigation }) => {
                       </Dialog>
           <AppBar title={"Edit Schedule"} showMenuIcon={true} />
           <View style={styles.dateContainer}>
-                  <Image
-                      style={styles.logoImg2}
-                      source={require('../assets/calendar.png')}
-                  />
-                  <Text style={styles.textTitle}>Date - {route.params.item?.date_from} </Text>
-              </View>
+                    <Image
+                        style={styles.logoImg2}
+                        source={require('../assets/calendar.png')}
+                    />
+                    <Text style={styles.textTitle}>Date - {route.params.item?.date_from} </Text>
+                  </View>
               <ScrollView style={styles.safeAreaViewContainerAdd}>
                   <SafeAreaView style={styles.safeAreaViewContainerAdd}>
+                  <View style={{flexDirection: 'row',}}>
+                      <Text style={styles.formText}>All fields marked with </Text>
+                      <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                      <Text style={styles.formText}> are required.</Text>
+                    </View>
 
-                         <Label text="Title" isRequired asterik />
+                    <View style={[styles.card, styles.shadowProp]}>
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Title</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                          {showErrorTitle === true ? 
                                 <Animatable.View animation='fadeInLeft' duration={500}>
                                   <Text style={styles.errorMsg}>Please enter Title</Text>
@@ -246,8 +255,11 @@ const EditSchedule = ({ route, navigation }) => {
                                   }
                               }}
                               asterik />
-
-                        <Label text="Description" isRequired asterik />
+                       
+                       <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Description</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                         {showErrorDesc === true ? 
                                 <Animatable.View animation='fadeInLeft' duration={500}>
                                   <Text style={styles.errorMsg}>Please enter Description</Text>
@@ -268,7 +280,10 @@ const EditSchedule = ({ route, navigation }) => {
                               }}
                               asterik />
 
-                          <Label text="End Date" isRequired asterik />
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>End Date</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                           <TouchableOpacity
                               activeOpacity={0.7}
                               onPress={showDatePicker}
@@ -285,7 +300,10 @@ const EditSchedule = ({ route, navigation }) => {
                               </View>
                           </TouchableOpacity>
 
-                          <Label text="Start Time" isRequired asterik />
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Start Time</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                           <TouchableOpacity
                               activeOpacity={0.7}
                               onPress={showDatePickerTimeStart}
@@ -307,7 +325,10 @@ const EditSchedule = ({ route, navigation }) => {
                               </View>
                           </TouchableOpacity>
 
-                          <Label text="End Time" isRequired asterik />
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>End Time</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                           <TouchableOpacity
                               activeOpacity={0.7}
                               onPress={showDatePickerTime}
@@ -332,9 +353,9 @@ const EditSchedule = ({ route, navigation }) => {
                                       onCancel={hideDatePickerTime}
                                   />
                               </View>
-                          </TouchableOpacity>
+                          </TouchableOpacity> 
 
-                      {addLoader === true? 
+                          {addLoader === true? 
                           <LoaderSmall/> : 
                            <View style={{marginTop: 10}}>
                             <Button 
@@ -386,6 +407,8 @@ const EditSchedule = ({ route, navigation }) => {
                                 }
                             />
                           </View>}
+                      </View>
+
                   </SafeAreaView>
               </ScrollView>
       </View>
@@ -402,6 +425,27 @@ const styles = StyleSheet.create({
       fontFamily: "Roboto",
 
   },
+  card: {
+    padding: 18,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    width: '100%',
+    marginVertical: 10,
+  },
+  shadowProp: {
+    shadowColor: 'black',
+    shadowOffset: {width: -2, height: 2},
+    shadowOpacity: 1,
+    shadowRadius: 5,
+    elevation: 8
+  },
+  formText:{
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    fontFamily: 'Poppins-Bold',
+    color: 'black'
+},
   itemContainer: {
       backgroundColor: 'white',
       borderRadius: 10,
@@ -417,15 +461,11 @@ const styles = StyleSheet.create({
   },
   columnContainer: {
       flexDirection: 'column',
-     
-
   },
   rowContainer: {
       flexDirection: 'row',
       alignItems: 'flex-start',
       paddingVertical: 8,
-
-
   },
   border: {
       borderBottomWidth: 0.8,
@@ -495,17 +535,19 @@ const styles = StyleSheet.create({
 
    //MODAL DESIGN
    safeAreaViewContainerAdd: {
-      padding: 15,
+      padding: 10,
       flex: 1,
       backgroundColor: '#fff'
   },
   dateContainer: {
       flexDirection: 'row',
-      height: 80,
-      paddingHorizontal: 20,
       alignItems: 'center',
       fontSize: 18,
       backgroundColor: '#3a87ad',
+      paddingTop: 15,
+      paddingBottom: 15,
+      paddingLeft: 20,
+      paddingRight: 20
   },
   datetimeCont: {
       flexDirection: 'row',
@@ -519,30 +561,26 @@ const styles = StyleSheet.create({
   },
 
   inputContainer: {
-      marginHorizontal: 3,
-      borderWidth: 1,
-      borderColor: 'gray',
-      borderRadius: 5,
-      paddingHorizontal: 5,
-      alignItems: 'center',
-      fontSize: 13,
-      backgroundColor: 'white',
-  },
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 20,
+    alignItems: 'center',
+    fontSize: 13,
+    backgroundColor: 'white',
+},
 
-  inputContainer2: {
-      height: 50,
-      marginHorizontal: 3,
-      marginVertical: 2,
-      borderWidth: 1,
-      borderColor: 'gray',
-      borderRadius: 5,
-      fontSize: 13,
-      backgroundColor: 'white',
-      flexDirection: 'row',
-      marginBottom: 20,
-      alignItems: 'center',
-      justifyContent: 'center'
-  },
+inputContainer2: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 20,
+    fontSize: 13,
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
+},
   buttonCont: {
       marginHorizontal: 5,
       marginTop: 10,
@@ -556,7 +594,6 @@ const styles = StyleSheet.create({
       width: 50,
       height: 50,
       marginRight: 10,
-      marginLeft: 10,
       resizeMode: 'contain',
   },
   errorMsg: {
@@ -566,7 +603,7 @@ const styles = StyleSheet.create({
       marginBottom: 10,
   },
   textTitle: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '700',
       padding: 5,
       color: 'white',

@@ -15,12 +15,6 @@ const AppBar = ({title, showMenuIcon, route}) => {
 
     const navigation = useNavigation(); 
 
-    const logout = async() =>{
-        await AsyncStorage.removeItem('token')
-        signOut();
-        navigation.replace('LoginPage')
-    }
-
     const signOut = async () => {
         try{
           await AsyncStorage.removeItem('token')
@@ -39,38 +33,6 @@ const AppBar = ({title, showMenuIcon, route}) => {
           console.log('Error', error);
         }
       }
-
-    getUserInfo = async () => {
-        const token = await AsyncStorage.getItem('token');
-        console.log(token, "token");
-        await fetch('https://beta.centaurmd.com/api/user-info', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + token,
-        },
-        }).then(res => res.json())
-        .then(resData => {
-            console.log(resData);
-        });
-    };
-
-
-    getSchedule = async () => {
-        const token = await AsyncStorage.getItem('token');
-        console.log(token, "token");
-        await fetch('https://beta.centaurmd.com/api/schedules', {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + token,
-        },
-        }).then(res => res.json())
-        .then(resData => {
-            console.log(resData);
-        });
-    };
-
 
     const [firstName, setFirstName] = useState("")
     const [diplayName, setDiplayName] = useState(null)
@@ -172,7 +134,7 @@ const styles = StyleSheet.create({
     headerWrapper:{
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingHorizontal: 10,
+        paddingHorizontal: 15,
         paddingTop: 10,
         paddingBottom: 10,
         alignItems: 'center',

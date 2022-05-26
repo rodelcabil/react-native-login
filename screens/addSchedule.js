@@ -173,20 +173,33 @@ const AddSchedule = ({ route, navigation }) => {
         <View style={styles.container}>    
              <DialogBox/>     
             <View style={styles.dateContainer}>
-            <Icon2 name="arrow-back" size={30} color="white"  onPress={() => navigation.navigate('Calendar')}/>
-                <Image
-                    style={styles.logoImg2}
-                    source={require('../assets/calendar.png')}
-                />
-                <View style={{flexDirection: 'column'}}>
-                  <Text style={{fontSize: 13, fontWeight: 'bold', color: 'white', marginLeft: 5, marginTop: 10}}>Start Date</Text>
-                  <Text style={styles.textTitle}>Date - {route.params.getdate} </Text>
-                </View>
+               <Icon2 name="arrow-back" size={30} color="white"  onPress={() => navigation.navigate('Calendar')}/>
+               <Text style={{marginLeft: 8, color: 'white', fontSize: 18, fontWeight: '600'}}>Add Item to Google Calendar</Text>
             </View>
             <ScrollView style={styles.safeAreaViewContainerAdd}>
                 <SafeAreaView style={styles.safeAreaViewContainerAdd}>
+                    <View style={{flexDirection: 'row', marginBottom: 10}}>
+                      <Image
+                        style={styles.logoImg2}
+                        source={require('../assets/calendar.png')}
+                      />
+                      <View style={{flexDirection: 'column'}}>
+                        <Text style={{fontSize: 13, fontWeight: 'bold', color: 'black', marginLeft: 5, marginTop: 5}}>Start Date</Text>
+                        <Text style={styles.textTitle}>Date - {route.params.getdate} </Text>
+                      </View>
+                    </View>
 
-                        <Label text="Title" isRequired asterik />
+                    <View style={{flexDirection: 'row', marginVertical: 5}}>
+                      <Text style={styles.formText}>All fields marked with </Text>
+                      <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                      <Text style={styles.formText}> are required.</Text>
+                    </View>
+
+                    <View style={[styles.card, styles.shadowProp]}>
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Title</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                         {showErrorTitle === true ? 
                                 <Animatable.View animation='fadeInLeft' duration={500}>
                                   <Text style={styles.errorMsg}>Please enter Title</Text>
@@ -196,10 +209,14 @@ const AddSchedule = ({ route, navigation }) => {
                         <FormItem
                             value={title}
                             style={styles.inputContainer}
+                            placeholder= "Enter Title"
                             onChangeText={titleInp => setTitle(titleInp)}
                             asterik />
 
-                        <Label text="Description" isRequired asterik />
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Description</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
                         {showErrorDesc === true ? 
                                 <Animatable.View animation='fadeInLeft' duration={500}>
                                   <Text style={styles.errorMsg}>Please enter Description</Text>
@@ -208,81 +225,90 @@ const AddSchedule = ({ route, navigation }) => {
                         <FormItem
                             value={desc}
                             style={styles.inputContainer}
+                            placeholder= "Enter Description"
                             onChangeText={descript => setDesc(descript)}
                             asterik />
+      
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>End Date</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
+                              <TouchableOpacity
+                                  activeOpacity={0.7}
+                                  onPress={showDatePicker}
+                              >
+                                  <View style={styles.inputContainer2}>
+                                      <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
+                                      <DateTimePickerModal
+                                          isVisible={isDatePickerVisible}
+                                          mode="date"
+                                          value={endDate}
+                                          onConfirm={handleConfirm}
+                                          onCancel={hideDatePicker}
+                                          minimumDate={Date.now()}
+                                      />
+                                  </View>
+                              </TouchableOpacity>
 
-                        <Label text="End Date" isRequired asterik />
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePicker}
-                        >
-                            <View style={styles.inputContainer2}>
-                                <Text style={styles.textPicker}>{datePickerTitle === null ? "Show Date Picker" : datePickerTitle}</Text>
-                                <DateTimePickerModal
-                                    isVisible={isDatePickerVisible}
-                                    mode="date"
-                                    value={endDate}
-                                    onConfirm={handleConfirm}
-                                    onCancel={hideDatePicker}
-                                    minimumDate={Date.now()}
-                                />
-                            </View>
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>Start Time</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePickerTimeStart}
+                            >
+                              {showErrorStartTime === true ? 
+                                    <Animatable.View animation='fadeInLeft' duration={500}>
+                                      <Text style={styles.errorMsg}>Please select Start Time</Text>
+                                    </Animatable.View>
+                              :<></>}
 
-                        <Label text="Start Time" isRequired asterik />
-                        
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePickerTimeStart}
-                        >
-                          {showErrorStartTime === true ? 
-                                <Animatable.View animation='fadeInLeft' duration={500}>
-                                  <Text style={styles.errorMsg}>Please select Start Time</Text>
-                                </Animatable.View>
-                          :<></>}
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerVisibleStart}
+                                        mode="time"
+                                        value={startTime}
+                                        onConfirm={handleConfirmTime}
+                                        onCancel={hideDatePickerTime}
+                                    />
+                                </View>
+                            </TouchableOpacity>
 
-                            <View style={styles.inputContainer2}>
-                                <Text style={styles.textPicker}>{datePickerTitleTimeStart === null ? "Show Time Picker" : datePickerTitleTimeStart}</Text>
-                                <DateTimePickerModal
-                                    isVisible={isDatePickerVisibleStart}
-                                    mode="time"
-                                    value={startTime}
-                                    onConfirm={handleConfirmTime}
-                                    onCancel={hideDatePickerTime}
-                                />
-                            </View>
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row', marginVertical: 5}}>
+                          <Text style={styles.formText}>End Time</Text>
+                          <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
+                        </View>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={showDatePickerTime}
+                            >
+                            {showErrorEndTime === true ? 
+                                    <Animatable.View animation='fadeInLeft' duration={500}>
+                                      <Text style={styles.errorMsg}>Please select End Time</Text>
+                                    </Animatable.View>
+                              :<></>}
+                              {showErrorEndTimeAhead === true ? 
+                                    <Animatable.View animation='fadeInLeft' duration={500}>
+                                      <Text style={styles.errorMsg}>Same Date! End Time must be after Start Time ahead</Text>
+                                    </Animatable.View>
+                              :<></>}
+                                <View style={styles.inputContainer2}>
+                                    <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
+                                    <DateTimePickerModal
+                                        isVisible={isDatePickerTimeVisible}
+                                        mode="time"
+                                        value={endTime}
+                                        onConfirm={handleConfirmTimeEnd}
+                                        onCancel={hideDatePickerTimeEnd}
+                                    />
+                                </View>
+                            </TouchableOpacity>
 
-                        <Label text="End Time" isRequired asterik />
-                        <TouchableOpacity
-                            activeOpacity={0.7}
-                            onPress={showDatePickerTime}
-                        >
-                         {showErrorEndTime === true ? 
-                                <Animatable.View animation='fadeInLeft' duration={500}>
-                                  <Text style={styles.errorMsg}>Please select End Time</Text>
-                                </Animatable.View>
-                          :<></>}
-                          {showErrorEndTimeAhead === true ? 
-                                <Animatable.View animation='fadeInLeft' duration={500}>
-                                  <Text style={styles.errorMsg}>Same Date! End Time must be after Start Time ahead</Text>
-                                </Animatable.View>
-                          :<></>}
-                            <View style={styles.inputContainer2}>
-                                <Text style={styles.textPicker}>{datePickerTitleTime === null ? "Show Time Picker" : datePickerTitleTime}</Text>
-                                <DateTimePickerModal
-                                    isVisible={isDatePickerTimeVisible}
-                                    mode="time"
-                                    value={endTime}
-                                    onConfirm={handleConfirmTimeEnd}
-                                    onCancel={hideDatePickerTimeEnd}
-                                />
-                            </View>
-                        </TouchableOpacity>
-
-                         {addLoader === true? 
+                            {addLoader === true? 
                           <LoaderSmall/> : 
-                           <View style={{marginTop: 10}}>
+                           <View style={{marginTop: 10, marginBottom: 20}}>
                             <Button 
                                 style={styles.buttonCont}
                                 title="Submit" 
@@ -331,6 +357,9 @@ const AddSchedule = ({ route, navigation }) => {
                                 }}
                             />
                           </View>}
+
+                      </View>
+
                 </SafeAreaView>
             </ScrollView >
         </View>
@@ -357,28 +386,27 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
-
-    inputContainer: {
-        marginHorizontal: 3,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 5,
-        paddingHorizontal: 5,
-        alignItems: 'center',
-        fontSize: 13,
+    card: {
+        padding: 18,
         backgroundColor: 'white',
-    },
-
-    inputContainer2: {
-        height: 50,
-        marginHorizontal: 3,
-        borderWidth: 1,
-        borderColor: 'gray',
-        borderRadius: 5,
-        fontSize: 13,
-        backgroundColor: 'white',
-        flexDirection: 'row',
-        marginBottom: 10,
+        borderRadius: 8,
+        width: '100%',
+        marginVertical: 10,
+        marginBottom: 20,
+      },
+      shadowProp: {
+        shadowColor: 'black',
+        shadowOffset: {width: -2, height: 2},
+        shadowOpacity: 1,
+        shadowRadius: 5,
+        elevation: 8
+      },
+      formText:{
+        fontSize: 15,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        fontFamily: 'Poppins-Bold',
+        color: 'black'
     },
 
     itemContainer: {
@@ -390,7 +418,9 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     safeAreaViewContainerAdd: {
-        padding: 15,
+        paddingLeft: 12,
+        paddingRight: 12,
+        paddingTop: 10,
         flex: 1,
         backgroundColor: '#fff'
     },
@@ -414,11 +444,9 @@ const styles = StyleSheet.create({
     },
 
     inputContainer: {
-        marginHorizontal: 3,
         borderWidth: 1,
         borderColor: 'gray',
-        borderRadius: 5,
-        paddingHorizontal: 5,
+        borderRadius: 20,
         alignItems: 'center',
         fontSize: 13,
         backgroundColor: 'white',
@@ -426,11 +454,9 @@ const styles = StyleSheet.create({
 
     inputContainer2: {
         height: 50,
-        marginHorizontal: 3,
-        marginVertical: 2,
         borderWidth: 1,
         borderColor: 'gray',
-        borderRadius: 5,
+        borderRadius: 20,
         fontSize: 13,
         backgroundColor: 'white',
         flexDirection: 'row',
@@ -451,7 +477,6 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         marginRight: 10,
-        marginLeft: 10,
         resizeMode: 'contain',
     },
     errorMsg: {
@@ -462,8 +487,8 @@ const styles = StyleSheet.create({
     textTitle: {
         fontSize: 18,
         fontWeight: '700',
-        padding: 5,
-        color: 'white',
+        color: 'black',
+        marginLeft: 5
     },
       skeltonMainView: {
         margin: 10,
