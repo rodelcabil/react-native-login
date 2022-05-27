@@ -25,7 +25,7 @@ const Home = ({navigation, route}) => {
     // const getUserDetails = AsyncStorage.getItem('userDetails');
     // // const parsedData = JSON.parse(getUserDetails);
     const [userDetails, setUserDetails] = React.useState([]);
-    const [notifCount, setNotifCount] = React.useState(1);
+    const [notifCount, setNotifCount] = React.useState(0);
     const [token, setToken] = React.useState()
 
     React.useEffect(()=>{

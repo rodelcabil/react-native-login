@@ -54,9 +54,22 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                     setGroupList(sort)
 
-                    console.log("GROUP LIST: ", sort)
+                    // console.log("GROUP LIST: ", sort)
                    
                 })
+                await axios.get(
+                    `  https://beta.centaurmd.com/api/chat/client-group-message?group_id=2`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+    
+                        console.log("GROUP CHATS LIST: ", response.data);
+                       
+                    })
+              
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
         const getUserList = async () => {

@@ -25,6 +25,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList }) => {
                                 onPress={() => {
                                     navigation.navigate('Chat Client',{
                                         user_name: item.name,
+                                        type: 'group'
                                     });
 
                                 }}

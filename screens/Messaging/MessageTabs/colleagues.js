@@ -26,6 +26,9 @@ const Colleagues = ({navigation, filterData, loader, userList }) => {
                             onPress={() => {
                                 navigation.navigate('Chat Client',{
                                     user_name: item.first_name +' '+item.last_name,
+                                    first_name: item.first_name,
+                                    last_name: item.last_name,
+                                    type: 'user'
                                 });
                                 
                             }}

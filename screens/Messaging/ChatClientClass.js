@@ -116,9 +116,12 @@ export default class ChatClientClass extends React.Component {
   render() {
     const messages = this.state.messages;
     const user_name = this.props.chatMateName;
+    const type = this.props.type;
+    const first_name = this.props.first_name;
+    const last_name = this.props.last_name;
     
     return (
-        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } name={user_name}/>
+        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } name={user_name} type={type} first_name={first_name} last_name={last_name}/>
     );
   }
 }

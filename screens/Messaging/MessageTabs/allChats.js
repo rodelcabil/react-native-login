@@ -36,6 +36,9 @@ const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) =
                                     onPress={() => {
                                         navigation.navigate('Chat Client', {
                                             user_name: item.first_name +' '+item.last_name,
+                                            first_name: item.first_name,
+                                            last_name: item.last_name,
+                                            type: 'user'
                                         });
 
                                     }}
@@ -59,6 +62,7 @@ const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) =
                                     onPress={() => {
                                         navigation.navigate('Chat Client',{
                                             user_name: item.name,
+                                            type: 'group'
                                         });
 
                                     }}
