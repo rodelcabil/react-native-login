@@ -22,11 +22,13 @@ const AddGroup = ({ route }) => {
     const [showErrorTitle, setShowErrorTitle] = useState(false);
     const [showErrorListMember, setShowErrorListMember] = useState(false);
 
+    const [creator, setCreator] = useState([]);
+
     useEffect(() => {
         const getUserList = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
-            const userDetails = [];
+            const userList = [];
             await axios.get(
                 `https://beta.centaurmd.com/api/users/2`,
                 {
@@ -35,25 +37,41 @@ const AddGroup = ({ route }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
-
-                    const mappedData = response.data.map((data, index) => {
+                     response.data.map((data, index) => {
                         const id = data.id
                         const name = data.first_name + " " + data.last_name
                         const avatar = data.avatar
                         const first_name = data.first_name;
                         const last_name = data.last_name;
-                        return {
-                            id: id,
-                            name: name,
-                            avatar: avatar,
-                            last_name: last_name,
-                            first_name: first_name,
-
-                        };
+                        if(id !== route.params.userID){
+                            userList.push({
+                                id: id,
+                                name: name,
+                                avatar: avatar,
+                                last_name: last_name,
+                                first_name: first_name,
+                            });
+                        }
+                        else{
+                            selectedMemberDisplay.push({
+                                id: id,
+                                name: name,
+                                avatar: avatar,
+                                last_name: last_name,
+                                first_name: first_name,
+                            })
+                            creator.push({
+                                id: id,
+                                name: name,
+                                avatar: avatar,
+                                last_name: last_name,
+                                first_name: first_name,
+                            })
+                        }
                     });
-                    setUserList(mappedData)
+                    setUserList(userList)
                 })
-                console.log("USER LIST: ", userDetails)
+                console.log("USER LIST: ", userList)
         }
         getUserList()
     }, [isFocused]);
@@ -62,7 +80,7 @@ const AddGroup = ({ route }) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-    const [selectedMember, setSelectedMember] = useState([]);
+    const [selectedMember, setSelectedMember] = useState([route.params.userID]);
 
     const [selectedMemberDisplay, setSelectedMemberDisplay] = useState([]);
 
@@ -70,6 +88,7 @@ const AddGroup = ({ route }) => {
         setSelectedMember(selectedItem);
         console.log('Members', selectedItem);
         const newArr = [];
+        newArr.push(creator)
         for(let x = 0; x<=selectedItem.length; x++){
             const add = userList.filter(item => { return item.id === selectedItem[x] });
             newArr.push(add)
@@ -296,11 +315,11 @@ const AddGroup = ({ route }) => {
                                         uri:
                                         item.avatar,
                                     }} />*/}
-                                <Text style={{marginLeft: 10, fontSize: 15}}>{item.name}</Text>
+                                <Text style={{marginLeft: 10, fontSize: 15}}>{item.id === route.params.userID ? item.name + " ( Creator )" : item.name }</Text>
                             </View>
                             
+                            {item.id === route.params.userID ? <></> :
                             <TouchableHighlight
-                                 
                                     activeOpacity={0.6}
                                     underlayColor="#DDDDDD"
                                     style={{alignSelf: 'center'}}
@@ -310,6 +329,9 @@ const AddGroup = ({ route }) => {
                                     style={{backgroundColor: 'white', alignSelf: 'center', marginRight: 10, marginLeft: 10}} />
 
                             </TouchableHighlight>
+
+                            }
+
 
                            </View>
                         })}
