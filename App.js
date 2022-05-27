@@ -26,6 +26,7 @@ import ChatList from './screens/Messaging/ChatList';
 import AddGroup from './screens/Messaging/MessageTabs/addGroup';
 import ChatView from './screens/chatView';
 import MessageWrapper from './screens/Messaging/MessageTabs/MessageWrapper';
+import ChatSetting from './screens/Messaging/MessageTabs/chatSetting';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -130,6 +131,12 @@ const App = () => {
           <Stack.Screen
             name="Add Group"
             component={AddGroup}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="Chat Setting"
+            component={ChatSetting}
             options={{ headerShown: false }}
           />
 

@@ -1,15 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { StyleSheet, View, Image, TextInput, Text, SafeAreaView, Button, KeyboardAvoidingView , TouchableHighlight} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Image, Dimensions, Button, TouchableHighlight, Animated, Modal, SafeAreaView } from 'react-native'
 // import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
-import RNRestart from 'react-native-restart'; 
 
-const ChatAppBar = ({title, type, first_name, last_name}) => {
+const ChatAppBar = ({title, type, first_name, last_name, roomId}) => {
 
     const navigation = useNavigation();
 
@@ -32,7 +30,19 @@ const ChatAppBar = ({title, type, first_name, last_name}) => {
                        
                         <Text style={{marginLeft: 10 , fontSize: 16, fontWeight: 'bold', color: 'black'}}>{title}</Text>
                     </View>
+                    <TouchableOpacity
+                                    activeOpacity={0.6}
+                                    onPress={() => {
+                                        navigation.navigate('Chat Setting',{
+                                            user_name: title,
+                                            type: 'group',
+                                            roomId: roomId
+                                        });
+
+                                    }}
+                                >
                     <Icon name="information" size={30} color="#3a87ad"/>
+                    </TouchableOpacity>
                 </View>
             </SafeAreaView>
         </View>

@@ -23,9 +23,11 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList }) => {
                                 key={i}
                                 activeOpacity={0.6}
                                 onPress={() => {
+                                    console.log(item);
                                     navigation.navigate('Chat Client',{
                                         user_name: item.name,
-                                        type: 'group'
+                                        type: 'group',
+                                        roomId: item.id,
                                     });
 
                                 }}

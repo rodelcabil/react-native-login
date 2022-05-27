@@ -11,7 +11,7 @@ import { useRoute } from '@react-navigation/native';
 import ChatAppBar from './ReusableComponents/ChatAppBar';
 var width = Dimensions.get('window').width - 20;
 
-const ChatView = ({ message, onSendMessage, name, type, first_name, last_name }) => {
+const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId }) => {
 
     const [messages, setMessages] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
@@ -74,7 +74,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name })
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
             <View style={styles.container}>
-                <ChatAppBar title={name} type={type} first_name={first_name} last_name={last_name} />
+                <ChatAppBar title={name} type={type} first_name={first_name} last_name={last_name} roomId={roomId}/>
                 <View style={{ backgroundColor: '#fff', }} >
                     <Searchbar
                         style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}
