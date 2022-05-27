@@ -35,13 +35,13 @@ const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) =
                                     activeOpacity={0.6}
                                     onPress={() => {
                                         navigation.navigate('Chat Client', {
-                                            // name: item.first_name + " " +item.last_name
+                                            user_name: item.first_name +' '+item.last_name,
                                         });
 
                                     }}
                                 >
                                     <View style={styles.rowContainer}>
-                                        <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                                        <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} style={styles.avatar}/>
                                         <View style={styles.columnContainer}>
                                             <Text style={styles.name}>{item.first_name} {item.last_name}</Text>
                                             <Text style={styles.message}>{item.email_address}</Text>
@@ -57,12 +57,14 @@ const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) =
                                     key={i}
                                     activeOpacity={0.6}
                                     onPress={() => {
-                                        navigation.navigate('Chat Client');
+                                        navigation.navigate('Chat Client',{
+                                            user_name: item.name,
+                                        });
 
                                     }}
                                 >
                                     <View style={styles.rowContainer}>
-                                        <Avatar.Text size={45} label={item.name[0].toUpperCase()} />
+                                        <Avatar.Icon size={45} icon="account-group" style={styles.avatar}/>
                                         <View style={styles.columnContainer}>
                                             <Text style={styles.name}>{item.name}</Text>
                                             {/* <Text style={styles.message}>{item.email_address}</Text> */}
@@ -111,6 +113,9 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 11,
     },
+    avatar: {
+        backgroundColor: '#3a87ad'
+    }
 
 });
 

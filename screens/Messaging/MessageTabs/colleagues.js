@@ -3,9 +3,10 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensio
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
+import { useNavigation } from '@react-navigation/native';
 
-const Colleagues = ({ navigation, filterData, loader, userList }) => {
-
+const Colleagues = ({navigation, filterData, loader, userList }) => {
+    // const navigation = useNavigation();
     
     const getInitials = (first_name, last_name) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
@@ -24,13 +25,13 @@ const Colleagues = ({ navigation, filterData, loader, userList }) => {
                             activeOpacity={0.6}
                             onPress={() => {
                                 navigation.navigate('Chat Client',{
-                                    name: item.first_name + " " +item.last_name
+                                    user_name: item.first_name +' '+item.last_name,
                                 });
                                 
                             }}
                         >
                             <View style={styles.rowContainer}>
-                                <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                                <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} style={styles.avatar} />
                                 <View style={styles.columnContainer}>
                                     <Text style={styles.name}>{item.first_name} {item.last_name}</Text>
                                     <Text style={styles.message}>{item.email_address}</Text>
@@ -79,6 +80,9 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 11,
     },
+    avatar: {
+        backgroundColor: '#3a87ad'
+    }
 
 });
 

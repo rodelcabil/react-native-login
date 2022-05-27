@@ -24,6 +24,8 @@ import ChatClient from './screens/chatClient';
 import ChatList from './screens/Messaging/ChatList';
 
 import AddGroup from './screens/Messaging/MessageTabs/addGroup';
+import ChatView from './screens/chatView';
+import MessageWrapper from './screens/Messaging/MessageTabs/MessageWrapper';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -137,17 +139,15 @@ const App = () => {
             // component={ChatClientClass}
             options={{ headerShown: false }}
           >
-            {props => <ChatClientClass name={userDetails.first_name + " " + userDetails.last_name} />}
+            {props => <MessageWrapper name={userDetails.first_name + " " + userDetails.last_name}/>}
           </Stack.Screen>
+{/* 
+          <Stack.Screen
+            name="Chat View"
+            component={ChatView}
+            options={{ headerShown: false }}
 
-          {/* <Stack.Screen
-          name="Messaging"
-          // component={EditSchedule}
-          options={{headerShown: false}}
-          
-        >
-          {props => <ChatList id={userDetails.client_id} /> }
-        </Stack.Screen> */}
+          /> */}
 
 
 

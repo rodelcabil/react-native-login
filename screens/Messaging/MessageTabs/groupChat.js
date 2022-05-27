@@ -23,12 +23,14 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList }) => {
                                 key={i}
                                 activeOpacity={0.6}
                                 onPress={() => {
-                                    navigation.navigate('Chat Client');
+                                    navigation.navigate('Chat Client',{
+                                        user_name: item.name,
+                                    });
 
                                 }}
                             >
                                 <View style={styles.rowContainer}>
-                                    <Avatar.Text size={45} label={item.name[0].toUpperCase()} />
+                                    <Avatar.Icon size={45} icon="account-group"  style={styles.avatar}/>
                                     <View style={styles.columnContainer}>
                                         <Text style={styles.name}>{item.name}</Text>
                                         {/* <Text style={styles.message}>{item.email_address}</Text> */}
@@ -129,6 +131,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3,
     },
+    avatar: {
+        backgroundColor: '#3a87ad'
+    }
 });
 
 export default GroupChat

@@ -7,9 +7,10 @@ import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import AppBar from './ReusableComponents/AppBar';
 import { Searchbar } from 'react-native-paper';
+import { useRoute } from '@react-navigation/native';
 var width = Dimensions.get('window').width - 20;
 
-const ChatView = ({ message, onSendMessage }) => {
+const ChatView = ({ message, onSendMessage, name }) => {
 
     const [messages, setMessages] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
@@ -18,6 +19,9 @@ const ChatView = ({ message, onSendMessage }) => {
 
     const myRef = useRef();
     const scrollRef = useRef();
+
+ 
+ 
 
     const onChangeSearch = query => { setSearchQuery(query) };
 
@@ -69,7 +73,7 @@ const ChatView = ({ message, onSendMessage }) => {
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
             <View style={styles.container}>
-                <AppBar title="Chats" showMenuIcon={true} />
+                <AppBar title={name} showMenuIcon={true} />
                 <View style={{ backgroundColor: '#fff', }} >
                     <Searchbar
                         style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}

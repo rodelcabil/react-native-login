@@ -3,6 +3,7 @@ import Pusher from 'pusher-js/react-native';
 import pusherConfig from '../../pusher.json';
 import ChatViewClass from '../Messaging/ChatViewClass'
 import ChatView from '../chatView';
+import { useRoute } from '@react-navigation/native';
 
 export default class ChatClientClass extends React.Component {
   
@@ -14,12 +15,14 @@ export default class ChatClientClass extends React.Component {
       messages: [],
       date: '',
       uuid: '',
-      // route: this.props.route.params?.name
+      
     };
   
     // for(var i = 0; i < 30; i++){
     //   this.state.messages.push({ action: 'message', name: 'hi', message: 'hello' , date: i, uuid: i});
     // }
+
+   
 
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
@@ -112,12 +115,10 @@ export default class ChatClientClass extends React.Component {
 
   render() {
     const messages = this.state.messages;
- 
+    const user_name = this.props.chatMateName;
+    
     return (
-        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } 
-        // route={this.state.route}
-
-        />
+        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } name={user_name}/>
     );
   }
 }

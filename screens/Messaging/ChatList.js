@@ -54,7 +54,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                     setGroupList(sort)
 
-                    console.log("GROUP LISTTt: ", sort)
+                    console.log("GROUP LIST: ", sort)
                    
                 })
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
@@ -128,7 +128,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                             ...data, type: 'group'
                         }
                     })
-                    console.log("ALL CHAT - GROUP LIST: ", mappedData2)
+                    // console.log("ALL CHAT - GROUP LIST: ", mappedData2)
                     const combined = mappedData1.concat(mappedData2)
 
                     let sort = combined.sort(function(a,b){
@@ -136,7 +136,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                       });
 
                     setAllChat(sort)
-                    console.log("COMBINED: ALL CHAT", sort)
+                    // console.log("COMBINED: ALL CHAT", sort)
                    
 
                 })
@@ -159,6 +159,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                      response.data.map((data, index) => {
                         const id = data.id
                         const name = data.name
+                        // console.log("MY ID: ", id)
                             const Api2 = async () => {
                                 await axios.get(
                                     `https://beta.centaurmd.com/api/chat/client-group-user?group_id=${id}`,
@@ -191,7 +192,8 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                                                 })
                                                             }
                                                         });
-                                                        console.log("GROUP with MEMBERS", tempArr)
+                                                     
+                                                        console.log("GROUP with MEMBERS NEW LIST", tempArr)
                                                     })
                                             }
                                             GetUserInfo(getIDuserInfo)
@@ -210,14 +212,14 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             getUserList();
             getGroupList();
             getCombinedList();
-            tryCombineAPI();
-          });
+            // tryCombineAPI();
+        });
       
         
         getUserList();
         getGroupList();
         getCombinedList();
-        tryCombineAPI();
+        // tryCombineAPI();
 
         return unsubscribe;
        
