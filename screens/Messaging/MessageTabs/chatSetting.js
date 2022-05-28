@@ -41,7 +41,6 @@ const ChatSetting = ({ route }) => {
                     response.data.map((data) =>{
                         ids.push(data.user_id)
                     })
-                    console.log("data ids ", ids);
                     setMembersId(ids);
             })
 
@@ -63,8 +62,6 @@ const ChatSetting = ({ route }) => {
                             id: data.id
                         })
                     });
-                    console.log("data details ", users);
-
                     const newArr = [];
                     for(let x = 0; x<=ids.length; x++){
                         const add = users.filter(item => { return item.id === ids[x] });
@@ -72,8 +69,6 @@ const ChatSetting = ({ route }) => {
                     }
                     const newData = [].concat(...newArr);
                     setUserList(newData)
-                    console.log('new arr ',newArr);
-
             })
 
         }
@@ -102,7 +97,12 @@ const ChatSetting = ({ route }) => {
                         }
                         onRequestClose={hideMenu}
                     >
-                    <MenuItem onPress={hideMenu}>Add Member</MenuItem>
+                    <MenuItem onPress={() => {
+                                    navigation.navigate('Add Members',{
+                                        route: route,
+                                        roomId: route.params.roomId
+                                    });
+                    }}>Add Member</MenuItem>
                     <MenuDivider />
                     </Menu>
             </View>
@@ -122,7 +122,7 @@ const ChatSetting = ({ route }) => {
             {loader !== true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
                    userList.map((item, i) => {
                                 return (
-                                <View style={{flex:1}}>
+                                <View style={{flex:1,}} key={i}>
                                 <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}  key={i} >
                                     <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
                                     <Text style={{marginLeft: 10, fontSize: 15}}>{item.first_name +" " + item.last_name }</Text>
