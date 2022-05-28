@@ -5,9 +5,7 @@ import moment from 'moment';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const GroupChat = ({ navigation, route, filterData, loader, groupList }) => {
-
-
+const GroupChat = ({ navigation, route, filterData, loader, groupList, userID }) => {
     const newList = filterData === "" ? groupList : groupList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
 
     return (
@@ -50,6 +48,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList }) => {
                     onPress={() => {
                         navigation.navigate('Add Group', {
                             route: route,
+                            userID: userID,
                         });
                     }}>
                     <Avatar.Icon

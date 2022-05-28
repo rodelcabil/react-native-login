@@ -286,7 +286,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
   
     const renderScene = SceneMap({
         first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={loader} allChat={allChat}/>,
-        second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={loader} groupList={groupList}/>,
+        second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={loader} groupList={groupList} userID={userID}/>,
         third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={loader} userList={userList}/>
     });
 

@@ -154,7 +154,7 @@ const App = () => {
             // component={ChatClientClass}
             options={{ headerShown: false }}
           >
-            {props => <MessageWrapper name={userDetails.first_name + " " + userDetails.last_name}/>}
+            {props => <MessageWrapper name={userDetails.first_name + " " + userDetails.last_name} myID={userDetails.id}/>}
           </Stack.Screen>
 {/* 
           <Stack.Screen

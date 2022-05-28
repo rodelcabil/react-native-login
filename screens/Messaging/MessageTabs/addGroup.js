@@ -12,7 +12,7 @@ import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 
-const AddGroup = ({ route }) => {
+const AddGroup = ({ route, userID}) => {
     const isFocused = useIsFocused();
     const navigation = useNavigation(); 
     const [userList, setUserList] = useState([]);
@@ -25,6 +25,7 @@ const AddGroup = ({ route }) => {
     const [creator, setCreator] = useState([]);
 
     useEffect(() => {
+        console.log(userID);
         const getUserList = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
@@ -157,6 +158,7 @@ const AddGroup = ({ route }) => {
                         addMemberFunction(groupID, selectedMember[x]);
                     }
                     setAddLoader(false);
+                    setVisibleAdd(true);
                     setTimeout(() => {navigation.goBack();}, 1000)
                 })
 
@@ -177,6 +179,60 @@ const AddGroup = ({ route }) => {
         console.log("Updated Memebrs", selectedMember);
         console.log("Updated Memebrs List", selectedMemberDisplay);
     }
+
+    const [visibleAdd, setVisibleAdd] = useState(false);
+
+    const ModalPoup = ({visible, children}) => {
+        const [showModalAdd, setShowModalAdd] = React.useState(visible);
+        const scaleValue = React.useRef(new Animated.Value(0)).current;
+        React.useEffect(() => {
+          toggleModal();
+        }, [visible]);
+        const toggleModal = () => {
+          if (visible) {
+            setShowModalAdd(true);
+            Animated.spring(scaleValue, {
+              toValue: 1,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          } else {
+            setTimeout(() => setShowModalAdd(false), 200);
+            Animated.timing(scaleValue, {
+              toValue: 0,
+              duration: 100,
+              useNativeDriver: true,
+            }).start();
+          }
+        };
+        return (
+          <Modal transparent visible={showModalAdd}>
+            <View style={styles.modalBackGround}>
+              <Animated.View
+                style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
+                {children}
+              </Animated.View>
+            </View>
+          </Modal>
+        );
+    };
+
+    const DialogBox = () =>{
+      return(
+          <ModalPoup visible={visibleAdd}>
+          <View style={{alignItems: 'center'}}>
+            <Image
+              source={require('../../../assets/sucess.png')}
+              style={{height: 120, width: 120, marginVertical: 10}}
+            />
+          </View>
+  
+          <Text style={{marginBottom: 20, fontSize: 20, color: 'black', textAlign: 'center'}}>
+             Group Created Successfully
+          </Text>
+        </ModalPoup>
+      );
+  }
 
     return (
         <View style={styles.container}>
