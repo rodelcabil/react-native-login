@@ -7,6 +7,7 @@ import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 import RNRestart from 'react-native-restart'; 
+import { Avatar } from 'react-native-paper';
 
 const AppBar = ({title, showMenuIcon, route}) => {
     const [visible, setVisible] = useState(false);
@@ -57,6 +58,10 @@ const AppBar = ({title, showMenuIcon, route}) => {
     },[])
 
 
+    const getInitials = (first_name, last_name) => {
+        return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
+    }
+
     return (
         <View style={styles.container}>
             <SafeAreaView>
@@ -71,24 +76,14 @@ const AppBar = ({title, showMenuIcon, route}) => {
                     visible={visible}
                     anchor={
                     <TouchableHighlight onPress={showMenu}>
-                        <Image
-                            style={styles.profileImage}
-                            source={{
-                            uri: 'https://cdn-icons-png.flaticon.com/512/194/194915.png',
-                            }}
-                        />
+                        <Avatar.Text size={35} label={getInitials(firstName, lastName)} style={styles.avatar}/>
                     </TouchableHighlight>
                     }
                     onRequestClose={hideMenu}
                 >
                     <View style={styles.containerMenuItem}>
-                        <Image
-                            style={styles.profileImageItem}
-                            source={{
-                            uri: 'https://cdn-icons-png.flaticon.com/512/194/194915.png',
-                            }}
-                        />
-                        <Text style={styles.textEmail}>{firstName + "  "+  lastName}</Text>
+                        <Avatar.Text size={100} label={getInitials(firstName, lastName)} style={styles.avatar}/>
+                        <Text style={styles.textEmail}>{firstName + " "+  lastName}</Text>
                     </View>
                     <MenuItem onPress={hideMenu}>View Profile</MenuItem>
                     <MenuDivider />
@@ -149,12 +144,12 @@ const styles = StyleSheet.create({
         color: 'red',
     },
     textEmail: {
-        paddingTop: 15,
-        paddingBottom: 15,
-        fontSize: 15,
+        fontSize: 18,
         color: 'white',
     },
-  
+    avatar: {
+        backgroundColor: '#3a87ad'
+    }
   });
   
   export default AppBar;

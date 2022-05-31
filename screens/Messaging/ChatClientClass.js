@@ -18,11 +18,6 @@ export default class ChatClientClass extends React.Component {
       
     };
   
-    // for(var i = 0; i < 30; i++){
-    //   this.state.messages.push({ action: 'message', name: 'hi', message: 'hello' , date: i, uuid: i});
-    // }
-
-   
 
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 

@@ -7,21 +7,13 @@ import axios from 'axios';
 import { set } from 'date-fns';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
-const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) => {
-
- 
- 
-
-
-
+const AllChat = ({ navigation, filterData, loader, allChat }) => {
 
     const getInitials = (first_name, last_name) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-
     const newList = filterData === "" ? allChat : allChat?.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
-
 
     return (
         loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
@@ -62,6 +54,7 @@ const AllChat = ({ navigation, route, clientID, filterData, loader, allChat }) =
                                     onPress={() => {
                                         navigation.navigate('Chat Client',{
                                             user_name: item.name,
+                                            roomId: item.id,
                                             type: 'group'
                                         });
 
