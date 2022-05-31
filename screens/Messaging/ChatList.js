@@ -46,13 +46,11 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
-
-
                     let sort = response.data.sort(function(a,b){
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
                       });
 
-                    setGroupList(sort)
+                   // setGroupList(sort)
 
                     // console.log("GROUP LIST: ", sort)
                    
@@ -153,7 +151,6 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                    
 
                 })
-                setLoader(false)
         }
 
         const tryCombineAPI = async () => {
@@ -183,40 +180,25 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                         },
                                     }).then(response2 => {
                                         response2.data.map((data2, index) => {
-                                            const getIDuserInfo = data2.user_id
-                                            const GetUserInfo = async (getID) => {
-                                                await axios.get(
-                                                    `https://beta.centaurmd.com/api/users/2`,
-                                                    {
-                                                        headers: {
-                                                            'Accept': 'application/json',
-                                                            'Authorization': 'Bearer ' + tokenget
-                                                        },
-                                                    }).then(response3 => {
-                                                        response3.data.map((data3, index) => {
-                                                            if(getID === data3.id){
-                                                                tempArr.push({
-                                                                    groupID: id,
-                                                                    groupName: name,
-                                                                    userID: getIDuserInfo,
-                                                                    user_firstName: data3.first_name,
-                                                                    user_lastName: data3.last_name,
-                                                                    user_avatar: data3.avatar
-                                                                })
-                                                            }
-                                                        });
-                                                     
-                                                        console.log("GROUP with MEMBERS NEW LIST", tempArr)
-                                                    })
+                                            if( data2.user_id === userID){
+                                                tempArr.push({
+                                                    id: id,
+                                                    name: name,
+                                                    userid: data2.user_id
+                                                })
+                                                console.log("Group ID ", id, "Group Name",name ,"User ID",  data2.user_id);
                                             }
-                                            GetUserInfo(getIDuserInfo)
+                                            else{
+
+                                            }
                                         });
+                                        setGroupList(tempArr)
                                     })
                             }
                             Api2()
                             
                     });
-
+                setLoader(false)
                 })
  
         }
@@ -225,14 +207,14 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             getUserList();
             getGroupList();
             getCombinedList();
-            // tryCombineAPI();
+            tryCombineAPI();
         });
       
         
         getUserList();
         getGroupList();
         getCombinedList();
-        // tryCombineAPI();
+        tryCombineAPI();
 
         return unsubscribe;
        
