@@ -5,13 +5,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import uuid from 'react-native-uuid';
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { Searchbar } from 'react-native-paper';
 import { useRoute } from '@react-navigation/native';
 import ChatAppBar from './ReusableComponents/ChatAppBar';
 var width = Dimensions.get('window').width - 20;
 
-const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId }) => {
+const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, userID }) => {
 
     const [messages, setMessages] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
@@ -20,8 +21,6 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
     const myRef = useRef();
     const scrollRef = useRef();
-
- 
  
 
     const onChangeSearch = query => { setSearchQuery(query) };
@@ -29,8 +28,30 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     const newList = searchQuery === "" ? message : message.filter(item => { return String(item.message).includes(searchQuery) });
 
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         onSendMessage(messages, moment().calendar(), myUuid);
+
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        console.log("User ID", userID, "Room ID: ",  roomId, "Message", messages);
+        const resp =   await axios({
+            method: 'post',
+            url: `https://beta.centaurmd.com/api/chat/group/${roomId}`,
+            data: {
+               sender_id: userID,
+               message: messages,
+            },
+            headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
+         });
+
+         if(resp.status === 200){
+            console.log(resp.data);
+         }
+         else{
+             console.log("error");
+         }
+
         myRef.current.clear();
         setMessages('')
     }

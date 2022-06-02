@@ -26,6 +26,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID })
                                         user_name: item.name,
                                         type: 'group',
                                         roomId: item.id,
+                                        userID: userID,
                                     });
 
                                 }}

@@ -15,14 +15,18 @@ export default class ChatClientClass extends React.Component {
       messages: [],
       date: '',
       uuid: '',
-      
+      roomId: 'chat_channel',
     };
   
 
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
-    this.chatChannel = this.pusher.subscribe('chat_channel'); // (2)
+    this.chatChannel = this.pusher.subscribe(this.state.roomId); // (2)
     this.chatChannel.bind('pusher:subscription_succeeded', () => { // (3)
+      this.chatChannel.bind('chat', function(data) {
+          console.log(data)
+      });
+
       this.chatChannel.bind('join', (data) => { // (4)
         this.handleJoin(data.name);
       });
@@ -115,9 +119,11 @@ export default class ChatClientClass extends React.Component {
     const first_name = this.props.first_name;
     const last_name = this.props.last_name;
     const roomId = this.props.roomId;
+    const userID = this.props.myID;
+    //this.state.roomId = roomId;
     
     return (
-        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId}/>
+        <ChatView message={ messages } onSendMessage={ this.handleSendMessage } name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID}/>
     );
   }
 }

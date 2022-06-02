@@ -127,6 +127,33 @@ const Calendar = ({ navigation, route })  => {
             //const token = userInfoToken.accessToken;
 
             await axios.get(
+                `https://beta.centaurmd.com/api/schedules`,
+                { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
+                }).then(response => {
+                    console.log("response", response.data);
+                    tempItems.push(response.data);
+                    const mappedData = response.data.map((data) => {
+                        const date = data.date_from;
+                        return {
+                            ...data,
+                            date: moment(date).format('YYYY-MM-DD')
+                        };
+                    });
+    
+    
+                    mappedData.map(
+                        (currentItem) => {
+                            const { date, ...coolItem } = currentItem;
+                            if (!arrTemp[date]) {
+                                arrTemp[date] = [];
+                            }
+                            arrTemp[date].push(coolItem);
+                        },
+                    );
+                }
+            );
+
+            await axios.get(
                 `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${userInfoToken.accessToken}`
             ).then(response =>{
                 const mappedData = response.data.items.map((data, index) => {
@@ -180,32 +207,6 @@ const Calendar = ({ navigation, route })  => {
 
         if(email !== null){
             SyncGoogleCalendar();
-            await axios.get(
-                `https://beta.centaurmd.com/api/schedules`,
-                { headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
-                }).then(response => {
-                    console.log("response", response.data);
-                    tempItems.push(response.data);
-                    const mappedData = response.data.map((data) => {
-                        const date = data.date_from;
-                        return {
-                            ...data,
-                            date: moment(date).format('YYYY-MM-DD')
-                        };
-                    });
-    
-    
-                    mappedData.map(
-                        (currentItem) => {
-                            const { date, ...coolItem } = currentItem;
-                            if (!arrTemp[date]) {
-                                arrTemp[date] = [];
-                            }
-                            arrTemp[date].push(coolItem);
-                        },
-                    );
-                }
-            );
         }
         else{
             await axios.get(
