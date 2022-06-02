@@ -75,9 +75,7 @@ const Home = ({navigation, route}) => {
             />
             <Tab.Screen 
                 name="Messaging" 
-                // component={ChatList} 
                 options={{
-                    // tabBarBadge: 3,
                     headerShown:false,
                     tabBarLabel: 'Messaging',
                     tabBarIcon: ({ color, size }) => (

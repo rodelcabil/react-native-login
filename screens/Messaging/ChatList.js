@@ -81,7 +81,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     let sort = newList.sort(function (a, b) {
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
                     });
-
+                    // console.log("USER DETAILS: ", sort)
                     setUserList(sort)
                     setColleagueLoader(false);
                     // console.log("ROUTESSS: ", route.params.token);
@@ -199,43 +199,11 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
         }
 
 
-        const addChat = async () => {
-
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.post('https://beta.centaurmd.com/api/chat/group/13', {
-                sender_id: 37,
-                message: 'Hi'
-            }, {
-                headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
-            }).then(response => {
-                console.log("GROUP 13 CHATS: ", response.data);
-            })
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/chat/client-group-message?group_id=13`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-
-
-                    console.log("GROUP CHAT LIST: ", response.data)
-
-                })
-
-        }
-
-
-
+    
         getUserList();
         getGroupList();
         getCombinedList();
         // tryCombineAPI();
-        //addChat();
 
     }, [isFocused]);
 

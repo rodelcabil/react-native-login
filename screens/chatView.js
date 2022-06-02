@@ -8,28 +8,38 @@ import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Searchbar } from 'react-native-paper';
-import { useRoute } from '@react-navigation/native';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import ChatAppBar from './ReusableComponents/ChatAppBar';
 var width = Dimensions.get('window').width - 20;
 
 const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, userID }) => {
-
+    const isFocused = useIsFocused();
     const [messages, setMessages] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchBG, setSearchBG] = useState('');
+    const [myID, setMyID] = useState('');
 
     const myRef = useRef();
     const scrollRef = useRef();
- 
+
+    useEffect(() => {
+        const getUserDetails = async () => { 
+            const value = await AsyncStorage.getItem('userDetails')
+            const data = JSON.parse(value)
+            setMyID(data?.id)
+        }
+
+        getUserDetails();
+        
+    },[isFocused])
 
     const onChangeSearch = query => { setSearchQuery(query) };
 
-    const newList = searchQuery === "" ? message : message.filter(item => { return String(item.message).includes(searchQuery) });
+    const newList = searchQuery === "" ? message : message.filter(item => { return String(item?.message).includes(searchQuery) });
 
 
     const handleSendMessage = async () => {
-        onSendMessage(messages, moment().calendar(), myUuid);
+        onSendMessage(messages, moment().calendar(), myID);
 
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
@@ -108,20 +118,6 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
                     />
                 </View>
-                {/* <FlatList
-                    ref={scrollRef}
-                    onContentSizeChange={(contentWidth, contentHeight)=> {scrollRef.current?.scrollToEnd({animated: true})}}
-                    data={message}
-                    renderItem={renderItem}
-                    inverted
-                    contentContainerStyle={{ flexDirection: 'column-reverse', }}
-                 
-                // keyExtractor={this._keyExtractor}
-
-
-                /> */}
-
-
                 <View style={{ flex: 1 }}>
                     <ScrollView
                         ref={scrollRef}
@@ -129,31 +125,35 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                     >
                         <View>
                             {newList.map((item, key) => {
-                                return <>{item?.action == 'join' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has joined</Text></View>
+                                return <>
+                                {
+                                    /* {item?.action == 'join' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has joined</Text></View>
                                     :
                                     item?.action == 'part' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has left</Text></View>
                                         :
-                                        item?.action == 'message' ? item.uuid === myUuid ?
+                                        item?.action == 'message' ? 
+                                         */}
+                                       { item?.sender_id === myID ?
                                             <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                                <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{item?.date}</Text>
+                                                <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{item?.created_at}</Text>
                                                 <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
 
                                             </View>
                                             :
                                             <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
                                                 <View style={styles.othersChat}>
-                                                    <Avatar.Text size={45} label={item?.name[0]} />
+                                                    <Avatar.Text size={45} label={"S"} />
                                                     <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                                        <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.name}, {item?.date} </Text>
+                                                        <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {item?.created_at} </Text>
                                                         <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
                                                     </View>
                                                 </View>
                                             </View>
-                                            :
-                                            <></>
-                                }
+                                            
+                                       }
+                                {/* } */}
                                 </>
 
 
