@@ -10,14 +10,16 @@ const first_name =  route.params.first_name;
 const last_name =  route.params.last_name;
 const type = route.params.type;
 const roomId =  route.params.roomId;
+//const groupName = route.params.groupName;
 
 console.log("PASSED NAME: ",user_name)
 console.log("PASSED TYPE: ",type)
 console.log("PASSED ROOM ID: ",roomId)
+//console.log("PASSED ROOM NAME : ",groupName)
 console.log(myID)
 
   return (
-    <ChatClientClass name={name} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID}/>
+    <ChatClientClass name={name} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name}/>
   )
 }
 

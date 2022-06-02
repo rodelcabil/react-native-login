@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 app.put('/users/:name', function(req, res) { // (3)
     console.log('User joined: ' + req.params.name);
-    pusherClient.trigger('chat_channel', 'join', {
+    pusherClient.trigger(`${req.body.channelName}`, 'join', {
         name: req.params.name
     });
     res.sendStatus(204);
@@ -18,15 +18,15 @@ app.put('/users/:name', function(req, res) { // (3)
 
 app.delete('/users/:name', function(req, res) { // (4)
     console.log('User left: ' + req.params.name);
-    pusherClient.trigger('chat_channel', 'part', {
+    pusherClient.trigger(`${req.body.channelName}`, 'part', {
         name: req.params.name
     });
     res.sendStatus(204);
 });
 
 app.post('/users/:name/messages', function(req, res) { // (5)
-    console.log('User ' + req.params.name + ' sent message: ' + req.body.message + " Time: ", req.body.date + " uuid: ", req.body.uuid);
-    pusherClient.trigger('chat_channel', 'message', {
+    console.log('User ' + req.params.name + ' sent message: ' + req.body.message + " Time: ", req.body.date + " uuid: ", req.body.uuid, `Channel Name ${req.body.channelName}`);
+    pusherClient.trigger(`${req.body.channelName}`, 'message', {
         name: req.params.name,
         message: req.body.message,
         date: req.body.date,

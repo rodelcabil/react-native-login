@@ -15,7 +15,7 @@ export default class ChatClientClass extends React.Component {
       messages: [],
       date: '',
       uuid: '',
-      roomId: 'chat_channel',
+      roomId: `${this.props.roomId}`,
     };
   
 
@@ -44,7 +44,7 @@ export default class ChatClientClass extends React.Component {
 
   handleJoin(name) { // (4)
     const messages = this.state.messages.slice();
-    messages.push({ action: 'join', name: name });
+    messages.push({ action: 'join', name: name, channelName: this.state.roomId });
     this.setState({
       messages: messages
     });
@@ -53,7 +53,7 @@ export default class ChatClientClass extends React.Component {
 
   handlePart(name) { // (5)
     const messages = this.state.messages.slice();
-    messages.push({ action: 'part', name: name });
+    messages.push({ action: 'part', name: name, channelName: this.state.roomId  });
     this.setState({
       messages: messages
     });
@@ -65,7 +65,7 @@ export default class ChatClientClass extends React.Component {
     const messages = this.state.messages.slice();
     const ddate = this.state.date;
     const unique_id = this.state.uuid;
-    messages.push({ action: 'message', name: name, message: message , date: date, uuid: uuid});
+    messages.push({ action: 'message', name: name, message: message , date: date, uuid: uuid, channelName: this.state.roomId });
     this.setState({
       messages: messages,
       date: ddate,
@@ -92,7 +92,8 @@ export default class ChatClientClass extends React.Component {
     const payload = {
       message: text,
       date: date,
-      uuid: uuid
+      uuid: uuid,
+      channelName: this.state.roomId 
     };
     try {
       fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {

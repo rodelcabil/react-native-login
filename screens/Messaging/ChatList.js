@@ -235,7 +235,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
         getGroupList();
         getCombinedList();
         // tryCombineAPI();
-        addChat();
+        //addChat();
 
     }, [isFocused]);
 
