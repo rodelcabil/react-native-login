@@ -43,7 +43,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             const tokenget = token === null ? route.params.token : token;
 
             await axios.get(
-                `https://beta.centaurmd.com/api/chat/client-group`,
+                `https://beta.centaurmd.com/api/chat/user-group`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -119,7 +119,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                 })
 
             await axios.get(
-                `https://beta.centaurmd.com/api/chat/client-group`,
+                `https://beta.centaurmd.com/api/chat/user-group`,
                 {
                     headers: {
                         'Accept': 'application/json',

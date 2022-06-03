@@ -12,7 +12,7 @@ export default class ChatClientClass extends React.Component {
 
     super(props);
     this.state = {
-      messages: [],
+      messages: this.props.groupMessage,
       date: '',
       uuid: '',
       roomId: `${this.props.roomId}`,

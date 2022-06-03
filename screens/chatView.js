@@ -18,24 +18,26 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
+    const [groupMessage, setGroupMessage] = useState([...message])
 
     const myRef = useRef();
     const scrollRef = useRef();
 
     useEffect(() => {
-        const getUserDetails = async () => { 
+        const getUserDetails = async () => {
             const value = await AsyncStorage.getItem('userDetails')
             const data = JSON.parse(value)
             setMyID(data?.id)
         }
+      
 
         getUserDetails();
-        
-    },[isFocused])
+
+    }, [isFocused, message])
 
     const onChangeSearch = query => { setSearchQuery(query) };
 
-    const newList = searchQuery === "" ? message : message.filter(item => { return String(item?.message).includes(searchQuery) });
+    const newList = searchQuery === "" ? groupMessage : groupMessage.filter(item => { return String(item?.message).includes(searchQuery) });
 
 
     const handleSendMessage = async () => {
@@ -44,23 +46,39 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
 
-        console.log("User ID", userID, "Room ID: ",  roomId, "Message", messages);
-        const resp =   await axios({
+        console.log("User ID", userID, "Room ID: ", roomId, "Message", messages);
+        const resp = await axios({
             method: 'post',
             url: `https://beta.centaurmd.com/api/chat/group/${roomId}`,
             data: {
-               sender_id: userID,
-               message: messages,
+                sender_id: userID,
+                message: messages,
             },
-            headers: { 'Accept': 'application/json','Authorization': 'Bearer ' + tokenget, },
-         });
+            headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
+        });
 
-         if(resp.status === 200){
+        if (resp.status === 200) {
+            await axios.get(
+            `https://beta.centaurmd.com/api/chat/client-group-message?group_id=${roomId}`,
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                
+    
+                setGroupMessage(response.data)
+    
+            })
             console.log(resp.data);
-         }
-         else{
-             console.log("error");
-         }
+        }
+        else {
+            console.log("error");
+        }
+
+     
+
 
         myRef.current.clear();
         setMessages('')
@@ -105,7 +123,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
             <View style={styles.container}>
-                <ChatAppBar title={name} type={type} first_name={first_name} last_name={last_name} roomId={roomId}/>
+                <ChatAppBar title={name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} />
                 <View style={{ backgroundColor: '#fff', }} >
                     <Searchbar
                         style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}
@@ -126,34 +144,33 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                         <View>
                             {newList.map((item, key) => {
                                 return <>
-                                {
+                                    {
                                     /* {item?.action == 'join' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has joined</Text></View>
                                     :
                                     item?.action == 'part' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has left</Text></View>
                                         :
                                         item?.action == 'message' ? 
                                          */}
-                                       { item?.sender_id === myID ?
-                                            <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                                <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{item?.created_at}</Text>
-                                                <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+                                    {item?.sender_id === myID ?
+                                        <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+                                            <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{item?.created_at}</Text>
+                                            <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+                                        </View>
+                                        :
+                                        <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+                                            <View style={styles.othersChat}>
+                                                <Avatar.Text size={45} label={"S"} />
+                                                <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                            </View>
-                                            :
-                                            <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-                                                <View style={styles.othersChat}>
-                                                    <Avatar.Text size={45} label={"S"} />
-                                                    <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
+                                                    <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {item?.created_at} </Text>
+                                                    <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
-                                                        <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {item?.created_at} </Text>
-                                                        <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
-
-                                                    </View>
                                                 </View>
                                             </View>
-                                            
-                                       }
-                                {/* } */}
+                                        </View>
+
+                                    }
+                                    {/* } */}
                                 </>
 
 
