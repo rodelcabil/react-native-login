@@ -18,7 +18,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
-    const [groupMessage, setGroupMessage] = useState([...message])
+    const [groupMessage, setGroupMessage] = useState([])
 
     const myRef = useRef();
     const scrollRef = useRef();
@@ -29,11 +29,32 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
             const data = JSON.parse(value)
             setMyID(data?.id)
         }
-      
 
+        
+      
+        getGroupMessages();
         getUserDetails();
 
-    }, [isFocused, message])
+    }, [isFocused])
+
+
+    const getGroupMessages = async () =>{
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+        await axios.get(
+            `https://beta.centaurmd.com/api/chat/client-group-message?group_id=${roomId}`,
+            {
+                headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                
+    
+                setGroupMessage(response.data)
+    
+            })
+    }
 
     const onChangeSearch = query => { setSearchQuery(query) };
 
@@ -41,7 +62,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
 
     const handleSendMessage = async () => {
-        onSendMessage(messages, moment().calendar(), myID);
+        onSendMessage(messages, moment().calendar(), myID,  roomId);
 
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
@@ -58,20 +79,9 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         });
 
         if (resp.status === 200) {
-            await axios.get(
-            `https://beta.centaurmd.com/api/chat/client-group-message?group_id=${roomId}`,
-            {
-                headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + tokenget
-                },
-            }).then(response => {
-                
-    
-                setGroupMessage(response.data)
-    
-            })
+           
             console.log(resp.data);
+            getGroupMessages()
         }
         else {
             console.log("error");

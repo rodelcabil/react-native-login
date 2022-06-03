@@ -4,7 +4,7 @@ import pusherConfig from '../../pusher.json';
 import ChatViewClass from '../Messaging/ChatViewClass'
 import ChatView from '../chatView';
 import { useRoute } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default class ChatClientClass extends React.Component {
   
   constructor(props) {
@@ -87,7 +87,9 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
-  onSendMessage(text, date, uuid) { // (9)
+  async onSendMessage(text, date, uuid, roomId) { // (9)
+    const token = await AsyncStorage.getItem('token');
+    const tokenget = token === null ? route.params.token : token;
     console.log("called onSendMessage");
     const payload = {
       message: text,
@@ -96,11 +98,15 @@ export default class ChatClientClass extends React.Component {
       channelName: this.state.roomId 
     };
     try {
-      fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
+      fetch(`https://beta.centaurmd.com/api/chat/group/${roomId}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
         },
+        data: {
+          sender_id: userID,
+          message: messages,
+      },
         body: JSON.stringify(payload)
       })
     }

@@ -96,7 +96,7 @@ const MessageWrapper = ({ name, myID, clientID }) => {
   }, [])
 
   return (
-    <ChatClientClass name={name} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name} groupMessage={groupMessage} />
+    <ChatClientClass name={name} route={route} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name} groupMessage={groupMessage} />
   )
 }
 
