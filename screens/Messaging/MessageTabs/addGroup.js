@@ -11,11 +11,14 @@ import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import { Avatar } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
+import SelectBox from 'react-native-multi-selectbox'
+import { xorBy } from 'lodash'
 
 const AddGroup = ({ route, userID}) => {
     const isFocused = useIsFocused();
     const navigation = useNavigation(); 
     const [userList, setUserList] = useState([]);
+    const [userList2, setUserList2] = useState([]);
     const [title, setTitle] = useState("");
     const [addLoader, setAddLoader] = useState(false);
 
@@ -24,12 +27,15 @@ const AddGroup = ({ route, userID}) => {
 
     const [creator, setCreator] = useState([]);
 
+    const [userList3, setUserList3] = useState([]);
+
     useEffect(() => {
-        console.log(userID);
+        console.log("ID ",userID);
         const getUserList = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
             const userList = [];
+            const userListNew = [];
             await axios.get(
                 `https://beta.centaurmd.com/api/users/2`,
                 {
@@ -52,15 +58,19 @@ const AddGroup = ({ route, userID}) => {
                                 last_name: last_name,
                                 first_name: first_name,
                             });
+                            userListNew.push({
+                                id: id,
+                                item: first_name + " " + last_name,
+                            });
                         }
                         else{
-                            selectedMemberDisplay.push({
+                           /* selectedMemberDisplay.push({
                                 id: id,
                                 name: name,
                                 avatar: avatar,
                                 last_name: last_name,
                                 first_name: first_name,
-                            })
+                            })*/
                             creator.push({
                                 id: id,
                                 name: name,
@@ -71,6 +81,8 @@ const AddGroup = ({ route, userID}) => {
                         }
                     });
                     setUserList(userList)
+                    setUserList2(userList);
+                    setUserList3(userListNew)
                 })
                 console.log("USER LIST: ", userList)
         }
@@ -81,26 +93,38 @@ const AddGroup = ({ route, userID}) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-    const [selectedMember, setSelectedMember] = useState([route.params.userID]);
+    const [selectedMember, setSelectedMember] = useState();
 
     const [selectedMemberDisplay, setSelectedMemberDisplay] = useState([]);
 
     const onSelectedItemsChange = (selectedItem) => {
         setSelectedMember(selectedItem);
+
+
         console.log('Members', selectedItem);
-        const newArr = [];
-        newArr.push(creator)
-        for(let x = 0; x<=selectedItem.length; x++){
-            const add = userList.filter(item => { return item.id === selectedItem[x] });
-            newArr.push(add)
-        }
-        const newData = [].concat(...newArr);
-        setSelectedMemberDisplay(newData);
-        console.log(newData);
+        
+        let Users = userList2.filter((itemA)=> {
+            return selectedItem.find((itemB)=> {
+                return itemA.id === itemB;
+            })
+          })
+
+        const newData2 = [].concat(...Users);
+        setSelectedMemberDisplay(newData2)
+
+        let Users2 = userList.filter((itemA)=> {
+            return !selectedItem.find((itemB)=> {
+                return itemA.id === itemB;
+            })
+          })
+
+        const newData = [].concat(...Users2);
+        setUserList(newData)
     } 
 
     const addGroup = async () => {
         setAddLoader(true);
+        selectedMember.push(route.params.userID)
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
         console.log(title, tokenget);
@@ -176,6 +200,15 @@ const AddGroup = ({ route, userID}) => {
         newArr2.splice(newArr2.findIndex(item => item.id === id), 1)
         setSelectedMemberDisplay(newArr2)
 
+        let Users2 = userList2.filter((itemA)=> {
+            return !newArr.find((itemB)=> {
+                return itemA.id === itemB;
+            })
+          })
+
+        const newData = [].concat(...Users2);
+        setUserList(newData)
+
         console.log("Updated Memebrs", selectedMember);
         console.log("Updated Memebrs List", selectedMemberDisplay);
     }
@@ -234,6 +267,13 @@ const AddGroup = ({ route, userID}) => {
       );
   }
 
+  const [selectedMem, setSelectedMem] = useState([])
+  
+    function onMultiChange() {
+        return (item) => setSelectedMem(xorBy(selectedMem, [item], 'id'))
+    }
+
+
     return (
         <View style={styles.container}>
             <DialogBox/>   
@@ -246,15 +286,15 @@ const AddGroup = ({ route, userID}) => {
             </View>
 
             <View style={{flexDirection: 'row',  marginLeft: 25, marginTop: 10}}>
-                      <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>All fields marked with </Text>
+                      <Text style={{fontSize: 15, color: 'black'}}>All fields marked with </Text>
                       <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
-                      <Text style={{fontSize: 15, fontWeight: 'bold', color: 'black'}}> are required.</Text>
+                      <Text style={{fontSize: 15,  color: 'black'}}> are required.</Text>
             </View>
 
             <View style={styles.formContainer}>
 
                 <View style={[styles.card, styles.shadowProp]}>
-                    <View style={{flexDirection: 'row', marginVertical: 5}}>
+                    <View style={{flexDirection: 'row'}}>
                           <Text style={styles.formText}>Group Name</Text>
                           <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
                     </View>
@@ -272,50 +312,30 @@ const AddGroup = ({ route, userID}) => {
                                 asterik />
 
 
-                    <View style={{flexDirection: 'row', marginVertical: 5}}>
+                    <View style={{flexDirection: 'row', marginBottom: 10}}>
+                          <Text style={styles.formText}>Creator</Text>
+                    </View>
+                    
+                    {
+                        creator.length === 0? <></> :
+                        <View style={{flexDirection: 'row', marginBottom: 15, alignItems: 'center'}}>
+                            <Avatar.Text size={45} label={getInitials(creator[0].first_name, creator[0].last_name)} />
+                            <Text style={{marginLeft: 10, fontSize: 15}}>{creator[0].first_name + "  " + creator[0].last_name}</Text>
+                        </View>
+                    }
+
+
+                    <View style={{flexDirection: 'row'}}>
                           <Text style={styles.formText}>Members</Text>
                           <Text style={{color: 'red', fontSize: 15, fontWeight: 'bold'}}>*</Text>
                     </View>
-                {showErrorListMember === true ? 
-                                <Animatable.View animation='fadeInLeft' duration={500}>
-                                  <Text style={styles.errorMsg}>Please select Group Members</Text>
-                                </Animatable.View>
-                          :<></>}
-                <MultiSelect
-                    hideTags
-                    hideSubmitButton
-                    items={userList}
-                    uniqueKey='id'
-                    //ref={(component) => {this.multiSelect = component}}
-                    onSelectedItemsChange={onSelectedItemsChange}
-                    selectedItems={selectedMember}
-                    selectText='Select Member'
-                    searchInputPlaceholderText='Search Name'
-                    onChangeInput={(text) => console.log(text)}
-                    altFontFamily='ProximaNova-Light'
-                    tagRemoveIconColor='red'
-                    tagBorderColor='#CCC'
-                    tagTextColor='#CCC'
-                    selectedItemIconColor='green'
-                    selectedItemTextColor='green'
-                    itemTextColor='#000'
-                    displayKey='name'
-                    searchInputStyle={{color: '#CCC'}}
-                    submitButtonColor='blue'
-                    submitButtonText='Submit'
 
-                />
-
-                    <View style={{flex: 1,  marginTop: 10}}>
+                    <View style={{marginTop: 10,}}>
+                        <ScrollView>
                         {selectedMemberDisplay.map((item, i) => {
                            return <View  key={i}  style={{flexDirection: 'row', marginBottom: 8, justifyContent: 'space-between'}}>
                                <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
                                 <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
-                                {/*<Avatar.Image size={45} 
-                                    source={{
-                                        uri:
-                                        item.avatar,
-                                    }} />*/}
                                 <Text style={{marginLeft: 10, fontSize: 15}}>{item.id === route.params.userID ? item.name + " ( Creator )" : item.name }</Text>
                             </View>
                             
@@ -336,16 +356,62 @@ const AddGroup = ({ route, userID}) => {
 
                            </View>
                         })}
+                        </ScrollView>
                     </View>
+                    
+                {showErrorListMember === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please select Group Members</Text>
+                                </Animatable.View>
+                          :<></>}
+               
+               <MultiSelect
+                    hideTags
+                    hideSubmitButton
+                    items={userList}
+                    uniqueKey='id'
+                    //ref={(component) => {this.multiSelect = component}}
+                    onSelectedItemsChange={onSelectedItemsChange}
+                    selectedItems={selectedMember}
+                    selectText='Select People'
+                    searchInputPlaceholderText='Search Name'
+                    onChangeInput={(text) => console.log(text)}
+                    altFontFamily='ProximaNova-Light'
+                    tagRemoveIconColor='red'
+                    tagBorderColor='#CCC'
+                    tagTextColor='black'
+                    selectedItemIconColor='green'
+                    selectedItemTextColor='green'
+                    itemTextColor='#000'
+                    displayKey='name'
+                    searchInputStyle={{color: 'black'}}
+                    submitButtonColor='blue'
+                    submitButtonText='Submit'
+                />
 
+                     {/* <SelectBox
+                        width= '100%'
+                        labelStyle={{fontSize: 0, color: 'transparent'}}
+                        inputFilterStyle={{fontSize: 15}}
+                        options={userList3}
+                        selectedValues={selectedMem}
+                        onMultiSelect={onMultiChange()}
+                        onTapClose={onMultiChange()}
+                        multiOptionContainerStyle={{backgroundColor: '#075DA7'}}
+                        multiOptionsLabelStyle={{fontSize: 15}}
+                        arrowIconColor='gray'
+                        searchIconColor='gray'
+                        toggleIconColor='#075DA7'
+                        isMulti
+                    />*/}
                     {addLoader === true? 
                           <LoaderSmall/> : 
-                           <View style={{marginTop: 10}}>
+                           <View style={{marginTop: 20}}>
                             <Button 
                                 style={styles.buttonCont}
                                 title="Submit" 
                                 onPress={() => {
-                                  if(title !== "" && selectedMember.length !== 0){
+                                  if(title !== "" && selectedMem.length !== 0){
                                      setShowErrorTitle(false) 
                                      setShowErrorListMember(false) 
                                      addGroup();
@@ -357,7 +423,7 @@ const AddGroup = ({ route, userID}) => {
                                     else{
                                        setShowErrorTitle(false) 
                                     }
-                                    if(selectedMember.length === 0){
+                                    if(selectedMem.length === 0){
                                        setShowErrorListMember(true)
                                     }
                                     else{
@@ -383,7 +449,7 @@ const styles = StyleSheet.create({
     header:{
         width: Dimensions.get('window').width,
         //backgroundColor: '#3a87ad',
-        paddingTop: 25,
+        paddingTop: 15,
         paddingLeft: 30,
         paddingRight: 30,
         paddingBottom: 5,

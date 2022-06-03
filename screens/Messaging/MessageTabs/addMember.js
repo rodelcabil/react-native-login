@@ -19,6 +19,7 @@ const AddMembers = ({ route }) => {
     const isFocused = useIsFocused();
     const navigation = useNavigation(); 
     const [userList, setUserList] = useState([]);
+    const [userList2, setUserList2] = useState([]);
     const [membersId, setMembersId] = useState([]);
     const [addLoader, setAddLoader] = useState(false);
 
@@ -68,14 +69,16 @@ const AddMembers = ({ route }) => {
                     });
                     console.log("data details ", users);
 
-                    const newArr = [];
-                    for(let x = 0; x<=ids.length; x++){
-                        const add = users.filter(item => { return item.id !== ids[x] });
-                        newArr.push(add)
-                    }
-                    const newData = [].concat(...newArr);
+                    let Users = users.filter((itemA)=> {
+                        return !ids.find((itemB)=> {
+                            return itemA.id === itemB;
+                        })
+                      })
+
+                    const newData = [].concat(...Users);
                     setUserList(newData)
-                    console.log('new arr ',newArr);
+                    setUserList2(newData)
+                    console.log('new arr ',Users);
 
             })
 
@@ -96,15 +99,24 @@ const AddMembers = ({ route }) => {
         setSelectedMember(selectedItem);
         console.log('Members', selectedItem);
         
-        const newArr = [];
-        for(let x = 0; x<=selectedItem.length; x++){
-            const add = userList.filter(item => { return item.id === selectedItem[x] });
-            const obj = [...new Map(add.map(item => [JSON.stringify(item), item])).values()];
-            newArr.push(obj)
-        }
-        const newData = [].concat(...newArr);
-        setSelectedMemberDisplay(newData);
-        console.log(newData);
+        let Users = userList2.filter((itemA)=> {
+            return selectedItem.find((itemB)=> {
+                return itemA.id === itemB;
+            })
+          })
+
+        const newData2 = [].concat(...Users);
+        setSelectedMemberDisplay(newData2)
+
+        let Users2 = userList.filter((itemA)=> {
+            return !selectedItem.find((itemB)=> {
+                return itemA.id === itemB;
+            })
+          })
+
+        const newData = [].concat(...Users2);
+        setUserList(newData)
+
     } 
 
     const addMembers = async () => {
@@ -142,6 +154,15 @@ const AddMembers = ({ route }) => {
         const newArr2 = [...selectedMemberDisplay];
         newArr2.splice(newArr2.findIndex(item => item.id === id), 1)
         setSelectedMemberDisplay(newArr2)
+
+        let Users2 = userList2.filter((itemA)=> {
+            return !newArr.find((itemB)=> {
+                return itemA.id === itemB;
+            })
+          })
+
+        const newData = [].concat(...Users2);
+        setUserList(newData)
 
         console.log("Updated Memebrs", selectedMember);
         console.log("Updated Memebrs List", selectedMemberDisplay);
@@ -183,10 +204,10 @@ const AddMembers = ({ route }) => {
                     selectedItemTextColor='green'
                     itemTextColor='#000'
                     displayKey='name'
-                    searchInputStyle={{color: '#CCC'}}
+                    searchInputStyle={{color: 'transparent'}}
                     submitButtonColor='blue'
                     submitButtonText='Submit'
-
+                    styleMainWrapper={{ margin: 10, borderRadius: 5}}
                 />
             </View>
 
@@ -273,7 +294,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 8,
         width: '100%',
-        marginVertical: 10,
+        marginVertical: 5,
       },
       shadowProp: {
         shadowColor: 'black',

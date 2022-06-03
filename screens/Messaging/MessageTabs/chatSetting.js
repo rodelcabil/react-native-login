@@ -7,13 +7,14 @@ import { Form, FormItem, Label } from 'react-native-form-component';
 import * as Animatable from 'react-native-animatable';
 import MultiSelect from 'react-native-multiple-select';
 import { useIsFocused } from '@react-navigation/native';
-import LoaderSmall from '../../ReusableComponents/LottieLoader-FullScreen';
+import LoaderFullScreen from '../../ReusableComponents/LottieLoader-FullScreen';
 import { Avatar } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/Ionicons';
 import Dots from 'react-native-vector-icons/Entypo';
 import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuItem, MenuDivider } from 'react-native-material-menu';
 import { id } from 'date-fns/locale';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 const ChatSetting = ({ route }) => {
     const isFocused = useIsFocused();
@@ -69,6 +70,7 @@ const ChatSetting = ({ route }) => {
                     }
                     const newData = [].concat(...newArr);
                     setUserList(newData)
+                    setAddLoader(false);
             })
 
         }
@@ -89,7 +91,17 @@ const ChatSetting = ({ route }) => {
         <View style={styles.container}>
             <View style={styles.headerWrapper}> 
                     <Icon name="arrow-back" size={30} color="black"  onPress={()=> navigation.goBack()}/>
-                    <Menu
+                    <TouchableOpacity activeOpacity={0.5}
+                        onPress={() => {
+                            navigation.navigate('Add Members',{
+                                route: route,
+                                roomId: route.params.roomId
+                            });
+                        }}>
+                    <Icon name='group-add' size={30} color='black'/>
+                    </TouchableOpacity>
+
+                    {/**<Menu
                         style={styles.containerMenu}
                         visible={visible}
                         anchor={
@@ -104,11 +116,11 @@ const ChatSetting = ({ route }) => {
                                     });
                     }}>Add Member</MenuItem>
                     <MenuDivider />
-                    </Menu>
+                    </Menu> */}
             </View>
             
             <View style={{width: Dimensions.get('window').width, backgroundColor: '#e8e8e8', alignItems: 'center', padding: 30}}>
-                <Avatar.Icon size={100} icon="account-group" style={styles.avatar}/>
+                <Avatar.Icon size={100} icon="account-group" style={{backgroundColor: '#075DA7'}}/>
                 <Text style={{marginTop: 10, fontSize: 20, color: 'black', textAlign: 'center', fontWeight: 'bold'}}>
                     {route.params.user_name}
                 </Text>
@@ -119,19 +131,19 @@ const ChatSetting = ({ route }) => {
             </Text>
 
             <View style={{margin: 15, flex: 1}}>
-            {loader !== true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
+            {loader === true ? <View style={{height: Dimensions.get('window').height/2}}><LoaderFullScreen /></View> :
                    userList.map((item, i) => {
                                 return (
                                 <View style={{flex:1,}} key={i}>
                                 <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}  key={i} >
-                                    <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                                    <Avatar.Text size={45} style={{backgroundColor: '#075DA7'}} label={getInitials(item.first_name, item.last_name)} />
                                     <Text style={{marginLeft: 10, fontSize: 15}}>{item.first_name +" " + item.last_name }</Text>
                                 </View>
                                 </View>
                                 )
-                    })
-                }
+                    })}
             </View> 
+            
 
 
 
