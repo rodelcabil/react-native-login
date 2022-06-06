@@ -32,64 +32,19 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
         
       
-        getGroupMessages();
+       
         getUserDetails();
-
+        // getGroupMessages();
     }, [isFocused])
 
 
-    const getGroupMessages = async () =>{
-        const token = await AsyncStorage.getItem('token');
-        const tokenget = token === null ? route.params.token : token;
-        await axios.get(
-            `https://beta.centaurmd.com/api/chat/client-group-message?group_id=${roomId}`,
-            {
-                headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + tokenget
-                },
-            }).then(response => {
-                
-    
-                setGroupMessage(response.data)
-    
-            })
-    }
-
     const onChangeSearch = query => { setSearchQuery(query) };
 
-    const newList = searchQuery === "" ? groupMessage : groupMessage.filter(item => { return String(item?.message).includes(searchQuery) });
+    const newList = searchQuery === "" ? message : message.filter(item => { return String(item?.message).includes(searchQuery) });
 
 
     const handleSendMessage = async () => {
-        onSendMessage(messages, moment().calendar(), myID,  roomId);
-
-        const token = await AsyncStorage.getItem('token');
-        const tokenget = token === null ? route.params.token : token;
-
-        console.log("User ID", userID, "Room ID: ", roomId, "Message", messages);
-        const resp = await axios({
-            method: 'post',
-            url: `https://beta.centaurmd.com/api/chat/group/${roomId}`,
-            data: {
-                sender_id: userID,
-                message: messages,
-            },
-            headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
-        });
-
-        if (resp.status === 200) {
-           
-            console.log(resp.data);
-            getGroupMessages()
-        }
-        else {
-            console.log("error");
-        }
-
-     
-
-
+        onSendMessage(messages, myID, roomId);
         myRef.current.clear();
         setMessages('')
     }
