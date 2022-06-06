@@ -24,13 +24,12 @@ app.delete('/users/:name', function(req, res) { // (4)
     res.sendStatus(204);
 });
 
-app.post('/users/:name/messages', function(req, res) { // (5)
-    console.log('User ' + req.params.name + ' sent message: ' + req.body.message + " Time: ", req.body.date + " uuid: ", req.body.uuid, `Channel Name ${req.body.channelName}`);
-    pusherClient.trigger(`${req.body.channelName}`, 'message', {
-        name: req.params.name,
-        message: req.body.message,
-        date: req.body.date,
-        uuid: req.body.uuid
+app.post('/api/chat/group/:roomId', function(req, res) { // (5)
+   const { message, sender_id, channelName } = req.body;   
+   console.log(' sent message: ' +message + " uuid: ", sender_id, `Channel Name ${channelName}`);
+    pusherClient.trigger(`${channelName}`, 'message', {
+        message: message,
+        sender_id: sender_id
     });
     res.sendStatus(204);
 });
