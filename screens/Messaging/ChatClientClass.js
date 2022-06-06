@@ -36,9 +36,9 @@ export default class ChatClientClass extends React.Component {
       this.chatChannel.bind('part', (data) => { // (5)
         this.handlePart(data.name);
       });
-      this.chatChannel.bind('message', async (data) => { // (6)
+      this.chatChannel.bind('message', async () => { // (6)
         await axios.get(
-          `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${data.channelName}`,
+          `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${this.props.roomId}`,
           {
               headers: {
               'Accept': 'application/json',
