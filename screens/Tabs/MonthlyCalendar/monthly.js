@@ -17,7 +17,7 @@ const MonthlyCTab = ({loader, monthlyData, empty}) => {
 
   return (
     loader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
-     <View style={{ flex: 1}}>
+     <View style={{ height: '100%'}}>
             {empty === true ?
             <View style={styles.itemEmptyContainer}>
             <Image
@@ -27,7 +27,7 @@ const MonthlyCTab = ({loader, monthlyData, empty}) => {
             <Text style={styles.text1}>You have no schedule at the moment for this Month</Text>
         </View>
         :
-        <ScrollView  contentContainerStyle={{ flexGrow: 1, height: '100%'}}>
+        <ScrollView nestedScrollEnabled = {true}>
                {monthlyData?.map((item, i) => {
                     return <TouchableOpacity
                     key={i}

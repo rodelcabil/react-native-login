@@ -175,16 +175,25 @@ const AddMembers = ({ route }) => {
                     <Icon name="arrow-back" size={30} color="black"  onPress={()=> navigation.goBack()}/>
                     <Text style={{marginLeft: 10 , fontSize: 16, fontWeight: 'bold', color: 'black'}}>Add Member</Text>
             </View>
-
+            <View
+                style={{
+                    borderBottomColor: 'gray',
+                    borderBottomWidth: 0.5,
+                    elevation: 1
+                }}
+                />
             <ScrollView >
 
             <View style={{marginLeft: 15, marginRight: 15, flex: 1}}>
 
-            {showErrorListMember === true ? 
-                                <Animatable.View animation='fadeInLeft' duration={500}>
-                                  <Text style={styles.errorMsg}>Please select People</Text>
-                                </Animatable.View>
-                          :<></>}
+            <View style={{
+                borderWidth: 2,
+                borderColor: '#c7c6c5',
+                padding: 8,
+                borderRadius: 15,
+                marginTop: 15
+            }}>
+
             <MultiSelect
                     hideTags
                     hideSubmitButton
@@ -207,8 +216,14 @@ const AddMembers = ({ route }) => {
                     searchInputStyle={{color: 'transparent'}}
                     submitButtonColor='blue'
                     submitButtonText='Submit'
-                    styleMainWrapper={{ margin: 10, borderRadius: 5}}
+                    styleMainWrapper={{borderColor: 'white', fontSize: 15,}}
                 />
+            </View>
+            {showErrorListMember === true ? 
+                                <Animatable.View animation='fadeInLeft' duration={500}>
+                                  <Text style={styles.errorMsg}>Please select People</Text>
+                                </Animatable.View>
+                          :<></>}
             </View>
 
             <View style={{marginLeft: 15, marginRight: 15, marginBottom: 15, flex: 1}}>
@@ -278,6 +293,7 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
         alignItems: 'center',
+        
     },
     header:{
         width: Dimensions.get('window').width,
@@ -383,7 +399,8 @@ const styles = StyleSheet.create({
     errorMsg: {
         color: 'red',
         fontSize: 13,
-        marginBottom: 10,
+        marginTop: 10,
+        marginLeft: 15
     },
     buttonCont: {
         marginHorizontal: 5,
