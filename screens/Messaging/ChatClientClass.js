@@ -37,6 +37,8 @@ export default class ChatClientClass extends React.Component {
         this.handlePart(data.name);
       });
       this.chatChannel.bind('message', async () => { // (6)
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
         await axios.get(
           `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${this.props.roomId}`,
           {
