@@ -36,8 +36,22 @@ export default class ChatClientClass extends React.Component {
       this.chatChannel.bind('part', (data) => { // (5)
         this.handlePart(data.name);
       });
-      this.chatChannel.bind('message', (data) => { // (6)
-        this.handleMessage(data.message, data.sender_id, data.channelName);
+      this.chatChannel.bind('message', async (data) => { // (6)
+        await axios.get(
+          `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${data.channelName}`,
+          {
+              headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer ' + tokenget
+              },
+          }).then(response => {
+            this.setState({ 
+              messages: response.data
+            })
+            
+  
+  
+          })
       });
     });
 
@@ -99,6 +113,8 @@ export default class ChatClientClass extends React.Component {
           this.setState({ 
             messages: response.data
           })
+          
+
 
         })
   }
@@ -135,6 +151,8 @@ export default class ChatClientClass extends React.Component {
       if (resp.status === 200) {
 
         console.log(resp.data);
+
+       
         await axios.get(
           `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${roomId}`,
           {
@@ -147,9 +165,6 @@ export default class ChatClientClass extends React.Component {
             this.setState({ 
               messages: response.data
             })
-
-            
-
       })
 
 

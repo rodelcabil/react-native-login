@@ -26,7 +26,8 @@ app.delete('/users/:name', function(req, res) { // (4)
 
 app.post('/api/chat/group/:roomId', function(req, res) { // (5)
    const { message, sender_id, channelName } = req.body;   
-   console.log(' sent message: ' +message + " uuid: ", sender_id, `Channel Name ${channelName}`);
+   console.log("Working")
+   console.log(' sent message: ' +message + " sender_id: ", sender_id, `Channel Name ${channelName}`);
     pusherClient.trigger(`${channelName}`, 'message', {
         message: message,
         sender_id: sender_id
