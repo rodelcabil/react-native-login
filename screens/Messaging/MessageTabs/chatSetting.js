@@ -125,12 +125,13 @@ const ChatSetting = ({ route }) => {
                     {route.params.user_name}
                 </Text>
             </View>
-            <ScrollView >
-            <Text style={{marginTop: 15, marginLeft: 15, fontSize: 18, color: 'black',}}>
-                Members
-            </Text>
 
-            <View style={{margin: 15, flex: 1}}>
+            <Text style={{margin: 15, fontSize: 18, color: 'black',}}>
+                {userList.length === 1 ? "Member" :  `Members (${userList.length})`}
+            </Text>
+            <ScrollView >
+
+            <View style={{marginLeft: 15, marginRight: 15, marginBottom: 10, flex: 1}}>
             {loader === true ? <View style={{height: Dimensions.get('window').height/2}}><LoaderFullScreen /></View> :
                    userList.map((item, i) => {
                                 return (

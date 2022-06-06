@@ -128,7 +128,7 @@ const MonthlySchedChart = ({ navigation, route }) => {
                                 title="Monthly Calendar"
                                 titleStyle={{ color: '#fff', fontWeight: 'bold', }}
                                 style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 350, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
+                                <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 600, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
 
                                 <TabView
                                     navigationState={{ index, routes }}
