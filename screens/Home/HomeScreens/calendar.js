@@ -166,9 +166,9 @@ const Calendar = ({ navigation, route })  => {
                     arrTemp[date].push({
                          title: data.summary, 
                          description: data.description, 
-                         date_from:  moment(data.start.dateTime).format("YYYY-MM-DD"), 
+                         date_from:  moment.utc(data.start.dateTime, 'YYYY-MM-DD').format("YYYY-MM-DD"), 
                          time_from:  moment(data.start.dateTime).format("HH:mm"), 
-                         date_to: moment(data.end.dateTime).format("YYYY-MM-DD"), 
+                         date_to: moment.utc(data.end.dateTime, 'YYYY-MM-DD').format("YYYY-MM-DD"), 
                          time_to: moment(data.end.dateTime).format("HH:mm"), 
                          category: "other",
                          googleEventId: data.id, 
@@ -177,9 +177,9 @@ const Calendar = ({ navigation, route })  => {
                          tempItems.push({
                             title: data.summary, 
                             description: data.description, 
-                            date_from:  moment(data.start.dateTime).format("YYYY-MM-DD"), 
+                            date_from:  moment.utc(data.start.dateTime, 'YYYY-MM-DD').format("YYYY-MM-DD"), 
                             time_from:  moment(data.start.dateTime).format("HH:mm"), 
-                            date_to: moment(data.end.dateTime).format("YYYY-MM-DD"), 
+                            date_to: moment.utc(data.end.dateTime, 'YYYY-MM-DD').format("YYYY-MM-DD"), 
                             time_to: moment(data.end.dateTime).format("HH:mm"), 
                             category: "other",
                             googleEventId: data.id, 
