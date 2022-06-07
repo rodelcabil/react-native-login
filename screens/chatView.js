@@ -14,7 +14,7 @@ var width = Dimensions.get('window').width - 20;
 
 const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, userID }) => {
     const isFocused = useIsFocused();
-    const [messages, setMessages] = useState('');
+    const [myMessage, setMyMessage] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
@@ -30,9 +30,9 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
             setMyID(data?.id)
         }
 
-        
-      
-       
+
+
+
         getUserDetails();
         // getGroupMessages();
     }, [isFocused])
@@ -44,9 +44,34 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
 
     const handleSendMessage = async () => {
-        onSendMessage(messages, myID, roomId);
+
+        // onSendMessage(myMessage, myID, roomId);
+        onSendMessage(uuid.v4(), myMessage, myID, moment(new Date(Date.now())).format("YYYY-MM-DD"), moment(new Date(Date.now())).format("YYYY-MM-DD"), roomId)
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+        try {
+
+            const resp = await axios({
+                method: 'post',
+                url: `https://beta.centaurmd.com/api/chat/group/${roomId}`,
+                data: {
+                    sender_id: myID,
+                    message: myMessage,
+                },
+                // body: JSON.stringify(payload),
+                headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
+            });
+
+            if (resp.status === 200) {
+                console.log(resp.data);
+                
+            }
+        }
+        catch (error) {
+            console.log("Error here: ", error);
+        }
         myRef.current.clear();
-        setMessages('')
+        setMyMessage('')
     }
 
     const _keyExtractor = item => item.id;
@@ -155,7 +180,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                             enablesReturnKeyAutomatically
                             placeholder='Type a message'
                             style={{
-                                width: messages.length === 0 ? Dimensions.get('window').width - 20 : Dimensions.get('window').width - 60,
+                                width: myMessage.length === 0 ? Dimensions.get('window').width - 20 : Dimensions.get('window').width - 60,
 
                                 paddingVertical: 10,
                                 paddingHorizontal: 20,
@@ -168,13 +193,13 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                             }}
                             blurOnSubmit={false}
                             // onSubmitEditing={this.handleSendMessage}
-                            value={messages}
-                            onChangeText={message => { setMessages(message) }}
+                            value={myMessage}
+                            onChangeText={message => { setMyMessage(message) }}
                             ref={myRef}
                             multiline={true}
                         />
                     </KeyboardAvoidingView>
-                    <Icon name='send-circle' size={40} color="#3a87ad" onPress={() => handleSendMessage()} style={{ display: messages.length === 0 ? 'none' : 'flex', marginBottom: 12.6 }} />
+                    <Icon name='send-circle' size={40} color="#3a87ad" onPress={() => handleSendMessage()} style={{ display: myMessage.length === 0 ? 'none' : 'flex', marginBottom: 12.6 }} />
                 </View>
             </View>
         </View>

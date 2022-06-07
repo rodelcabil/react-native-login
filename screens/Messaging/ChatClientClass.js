@@ -6,6 +6,9 @@ import ChatView from '../chatView';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import uuid from 'react-native-uuid';
+import { update } from 'lodash';
+
 
 export default class ChatClientClass extends React.Component {
 
@@ -21,7 +24,7 @@ export default class ChatClientClass extends React.Component {
       roomId: `${this.props.roomId}`,
     };
 
-   
+
     this.pusher = new Pusher(pusherConfig.key, pusherConfig); // (1)
 
     this.chatChannel = this.pusher.subscribe(this.state.roomId); // (2)
@@ -36,24 +39,8 @@ export default class ChatClientClass extends React.Component {
       this.chatChannel.bind('part', (data) => { // (5)
         this.handlePart(data.name);
       });
-      this.chatChannel.bind('message', async () => { // (6)
-        const token = await AsyncStorage.getItem('token');
-        const tokenget = token === null ? route.params.token : token;
-        await axios.get(
-          `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${this.props.roomId}`,
-          {
-              headers: {
-              'Accept': 'application/json',
-              'Authorization': 'Bearer ' + tokenget
-              },
-          }).then(response => {
-            this.setState({ 
-              messages: response.data
-            })
-            
-  
-  
-          })
+      this.chatChannel.bind('message', (data) => { // (6)
+        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.channelName);
       });
     });
 
@@ -80,22 +67,21 @@ export default class ChatClientClass extends React.Component {
 
 
 
-  async handleMessage(message, sender_id, roomId) { // (6)
+  async handleMessage(id, message, sender_id, roomId, created_at, updated_at) { // (6)
 
     const messages = this.state.messages.slice();
-    messages.push({ 
+    messages.push({
+      id: id,
       group_id: roomId,
       sender_id: sender_id,
       message: message,
-      created_at: new Date.now,
-      updated_at:  new Date.now
-     });
+      created_at: created_at,
+      updated_at: updated_at
+    });
     this.setState({
       messages: messages,
-      
     });
-    console.log(" MMessage", message, 'room id: ', roomId, "sender_id: ", sender_id);
-   
+
   }
 
   async componentDidMount() { // (7)
@@ -105,20 +91,20 @@ export default class ChatClientClass extends React.Component {
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
-        `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${this.props.roomId}`,
-        {
-            headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + tokenget
-            },
-        }).then(response => {
-          this.setState({ 
-            messages: response.data
-          })
-          
-
-
+      `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${this.props.roomId}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response => {
+        this.setState({
+          messages: response.data
         })
+
+
+
+      })
   }
 
   componentWillUnmount() { // (8)
@@ -127,94 +113,99 @@ export default class ChatClientClass extends React.Component {
     });
   }
 
-  async onSendMessage(text,sender_id, roomId) { // (9)
-    const token = await AsyncStorage.getItem('token');
-    const tokenget = token === null ? route.params.token : token;
+  // async onSendMessage(text, sender_id, roomId) { // (9)
+  //   const token = await AsyncStorage.getItem('token');
+  //   const tokenget = token === null ? route.params.token : token;
+  //   console.log("called onSendMessage");
+  //   console.log("User ID:", sender_id, "Room ID: ", roomId, "Message:", text);
+  //   const payload = {
+  //     message: text,
+  //     sender_id: sender_id,
+  //     channelName: this.state.roomId
+  //   };
+  //   try {
+
+  //     const resp = await axios({
+  //       method: 'post',
+  //       url: `${pusherConfig.restServer}/api/chat/group/${roomId}`,
+  //       data: {
+  //         sender_id: sender_id,
+  //         message: text,
+  //       },
+  //       body: JSON.stringify(payload),
+  //       headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
+  //     });
+
+  //     if (resp.status === 200) {
+
+  //       console.log(resp.data);
+
+
+  //       await axios.get(
+  //         `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${roomId}`,
+  //         {
+  //           headers: {
+  //             'Accept': 'application/json',
+  //             'Authorization': 'Bearer ' + tokenget
+  //           },
+  //         }).then(response => {
+
+  //           this.setState({
+  //             messages: response.data
+  //           })
+  //         })
+
+
+  //     }
+  //   }
+  //   catch (error) {
+  //     console.log(error);
+  //   }
+
+  //   console.log(text, " Room ID: ", roomId, 'uuid: ', sender_id);
+  // }
+
+  async onSendMessage(id, message, sender_id, created_at, updated_at, roomId) { // (9)
+    
     console.log("called onSendMessage");
-    console.log("User ID:", sender_id, "Room ID: ", roomId, "Message:", text);
     const payload = {
-      message: text,
+      id: id,
+      group_id: roomId,
       sender_id: sender_id,
+      message: message,
+      created_at: created_at,
+      updated_at: updated_at,
       channelName: this.state.roomId
     };
     try {
-
-      const resp = await axios({
-        method: 'post',
-        url: `${pusherConfig.restServer}/api/chat/group/${roomId}`,
-        data: {
-          sender_id: sender_id,
-          message: text,
+      fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
-        headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
-      });
-
-      if (resp.status === 200) {
-
-        console.log(resp.data);
-
-       
-        await axios.get(
-          `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${roomId}`,
-          {
-            headers: {
-              'Accept': 'application/json',
-              'Authorization': 'Bearer ' + tokenget
-            },
-          }).then(response => {
-            
-            this.setState({ 
-              messages: response.data
-            })
+        body: JSON.stringify(payload)
       })
-
-
     }
+    catch (error) {
+      console.log(error);
     }
-  catch(error) {
-    console.log(error);
+    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId);
   }
 
-    console.log(text, " Room ID: ", roomId, 'uuid: ', sender_id);
-}
-
-//  onSendMessage(text, date, uuid, roomId) { // (9)
-//   const payload = {
-//     message: text,
-//     date: date,
-//     uuid: uuid,
-//     channelName: this.state.roomId
-//   };
-//   try {
-//     fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json'
-//       },
-//       body: JSON.stringify(payload)
-//     })
-//   }
-//   catch (error) {
-//     console.log(error);
-//   }
-//   console.log(text, " Time: ", date, 'uuid: ', uuid);
-// }
 
 
+  render() {
+    // const messages = this.props.groupMessage;
+    const user_name = this.props.chatMateName;
+    const type = this.props.type;
+    const first_name = this.props.first_name;
+    const last_name = this.props.last_name;
+    const roomId = this.props.roomId;
+    const userID = this.props.myID;
+    //this.state.roomId = roomId;
 
-render() {
-  // const messages = this.props.groupMessage;
-  const user_name = this.props.chatMateName;
-  const type = this.props.type;
-  const first_name = this.props.first_name;
-  const last_name = this.props.last_name;
-  const roomId = this.props.roomId;
-  const userID = this.props.myID;
-  //this.state.roomId = roomId;
-
-  return (
-    <ChatView message={this.state.messages} onSendMessage={this.handleSendMessage} name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID} />
-  );
-}
+    return (
+      <ChatView message={this.state.messages} onSendMessage={this.handleSendMessage} name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID} />
+    );
+  }
 }
