@@ -18,7 +18,8 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
-
+    const [firstName, setFirstName] = useState();
+    const [lastName, setLastName] = useState();
     const myRef = useRef();
     const scrollRef = useRef();
 
@@ -27,6 +28,8 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
             const value = await AsyncStorage.getItem('userDetails')
             const data = JSON.parse(value)
             setMyID(data?.id)
+            setFirstName(data?.first_name)
+            setLastName(data?.last_name)
         }
 
 
@@ -63,7 +66,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
             if (resp.status === 200) {
                 console.log(resp.data);
-                onSendMessage(uuid.v4(), myMessage, myID, Date.now(), Date.now(), roomId)
+                onSendMessage(uuid.v4(), myMessage, myID, Date.now(), Date.now(), roomId, firstName, lastName)
                 myRef.current.clear();
                 setMyMessage('')
             }
