@@ -1,6 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableHighlight, useWindowDimensions, Dimensions, Button, Animated, TouchableOpacity, LogBox } from 'react-native';
-import CheckBox from '@react-native-community/checkbox';
 import AppBar from '../../ReusableComponents/AppBar';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Card, Avatar, } from 'react-native-paper';
@@ -9,35 +8,9 @@ import { List, DefaultTheme, Provider as PaperProvider } from 'react-native-pape
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import moment from 'moment';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import * as Animatable from 'react-native-animatable';
-import AntdIcon from 'react-native-vector-icons/AntDesign';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
-import {
-    LineChart,
-    BarChart,
-    PieChart,
-    ProgressChart,
-    ContributionGraph,
-    StackedBarChart
-} from "react-native-chart-kit";
-import {
-    Menu,
-    MenuOptions,
-    MenuOption,
-    MenuTrigger,
-} from 'react-native-popup-menu';
-import Dialog, {
-    DialogFooter,
-    DialogButton,
-    DialogContent
-} from "react-native-popup-dialog";
 import { MenuProvider } from 'react-native-popup-menu';
-import HorizontalBarGraph from '@chartiful/react-native-horizontal-bar-graph'
-import VerticalBarGraph from '@chartiful/react-native-vertical-bar-graph';
-import { VictoryBar, VictoryChart, VictoryGroup, VictoryLegend } from "victory-native";
+import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
 
 
 import ReportSummary from '../../Charts/ReportSummary/reportSummary';
@@ -62,6 +35,17 @@ const black_theme = {
 
 
 const Dashboard = ({ navigation, route }) => {
+    GoogleSignin.configure({
+        scopes: [
+          "profile",
+          "email",
+          "https://www.googleapis.com/auth/calendar.events"
+        ],
+        webClientId: '909386486823-jd4it3bachacc8fbmp8dfo5clnd4hmru.apps.googleusercontent.com',
+        offlineAccess: true,
+      });
+
+      
     LogBox.ignoreLogs([
         "ViewPropTypes will be removed",
         "ColorPropType will be removed",
