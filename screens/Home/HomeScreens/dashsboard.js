@@ -46,6 +46,7 @@ import ProceduresChart from '../../Charts/Procedures/proceduresChart';
 import LocationChart from '../../Charts/Location/locationChart';
 import SourceOfInquiryChart from '../../Charts/SourceofInquiry/source_of_inquiry';
 import MonthlyChart from '../../Charts/MonthlyCalendar/monthlyCalendar';
+import LeadsFunnel from '../../Charts/LeadsFunnel/LeadsFunnelChart';
 
 
 const black_theme = {
@@ -75,9 +76,6 @@ const Dashboard = ({ navigation, route }) => {
 
     const initialLayout = { width: Dimensions.get('window').width };
 
-    const [DataBar, setDataBar] = useState({});
-    
-    const [DataBarLegend, setDataBarLegend] = useState({});
 
     const dataBar2 = {
         planned: [null, { x: 'Week 1', y: 20 }],
@@ -88,10 +86,7 @@ const Dashboard = ({ navigation, route }) => {
         ]
     }
 
-
    
-
-
     useEffect(() => {
         const getMySchedule = async () => {
             console.log("GET SCHED LOADING");
@@ -139,136 +134,8 @@ const Dashboard = ({ navigation, route }) => {
             console.log("DASHBOARD DATA: ", dashboardData.data)
         }
 
-
-      
-        const getLeadsFunnelData = async () => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/dashboard/charts?filter=Leads Funnel`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    console.log('lead funnels', response.data)
-                    //  setProceduresProcedures(response.data)
-                    let data = [];
-                    let dataLegend = [];
-                    let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                    for (var i = 0; i < response.data.datasets.length; i++) {
-                        data.push({
-                            data: response.data.datasets[i].data,
-                            name: response.data.datasets[i].label,
-                        });
-                        dataLegend.push({
-                            name: response.data.datasets[i].label,
-                            symbol: {fill: response.data.datasets[i].backgroundColor,}
-                        });
-                    }
-
-                    const mappedData = data.map((data) => {
-                        return {
-                            // ...data,
-
-                            seriesname: data.name,
-                            data: data.data.map((item) => {
-                                return { values: item }
-                            }),
-
-                        };
-                    });
-                    // setProcedureDataProcedures(data[0].data);
-                    console.log("LOOOOPPP: ", data)
-
-                    let data2 = {
-                        Inquiry: [
-                            {x: months[0], y: data[0].data[0]},
-                            {x: months[1], y: data[0].data[1]},
-                            {x: months[2], y: data[0].data[2]},
-                            {x: months[3], y: data[0].data[3]},
-                            {x: months[4], y: data[0].data[4]},
-                            {x: months[5], y: data[0].data[5]},
-                            {x: months[6], y: data[0].data[6]},
-                            {x: months[7], y: data[0].data[7]},
-                            {x: months[8], y: data[0].data[8]},
-                            {x: months[9], y: data[0].data[9]},
-                            {x: months[10], y: data[0].data[10]},
-                            {x: months[11], y: data[0].data[11]},
-                        ],
-                        ConsultForm: [
-                            {x: months[0], y: data[1].data[0]},
-                            {x: months[1], y: data[1].data[1]},
-                            {x: months[2], y: data[1].data[2]},
-                            {x: months[3], y: data[1].data[3]},
-                            {x: months[4], y: data[1].data[4]},
-                            {x: months[5], y: data[1].data[5]},
-                            {x: months[6], y: data[1].data[6]},
-                            {x: months[7], y: data[1].data[7]},
-                            {x: months[8], y: data[1].data[8]},
-                            {x: months[9], y: data[1].data[9]},
-                            {x: months[10], y: data[1].data[10]},
-                            {x: months[11], y: data[1].data[11]},
-                        ],
-                        BookedConsult: [
-                            {x: months[0], y: data[2].data[0]},
-                            {x: months[1], y: data[2].data[1]},
-                            {x: months[2], y: data[2].data[2]},
-                            {x: months[3], y: data[2].data[3]},
-                            {x: months[4], y: data[2].data[4]},
-                            {x: months[5], y: data[2].data[5]},
-                            {x: months[6], y: data[2].data[6]},
-                            {x: months[7], y: data[2].data[7]},
-                            {x: months[8], y: data[2].data[8]},
-                            {x: months[9], y: data[2].data[9]},
-                            {x: months[10], y: data[2].data[10]},
-                            {x: months[11], y: data[2].data[11]},
-                        ],
-                        BookedProcedure: [
-                            {x: months[0], y: data[3].data[0]},
-                            {x: months[1], y: data[3].data[1]},
-                            {x: months[2], y: data[3].data[2]},
-                            {x: months[3], y: data[3].data[3]},
-                            {x: months[4], y: data[3].data[4]},
-                            {x: months[5], y: data[3].data[5]},
-                            {x: months[6], y: data[3].data[6]},
-                            {x: months[7], y: data[3].data[7]},
-                            {x: months[8], y: data[3].data[8]},
-                            {x: months[9], y: data[3].data[9]},
-                            {x: months[10], y: data[3].data[10]},
-                            {x: months[11], y: data[3].data[11]},
-                        ],
-                        Closed: [
-                            {x: months[0], y: data[4].data[0]},
-                            {x: months[1], y: data[4].data[1]},
-                            {x: months[2], y: data[4].data[2]},
-                            {x: months[3], y: data[4].data[3]},
-                            {x: months[4], y: data[4].data[4]},
-                            {x: months[5], y: data[4].data[5]},
-                            {x: months[6], y: data[4].data[6]},
-                            {x: months[7], y: data[4].data[7]},
-                            {x: months[8], y: data[4].data[8]},
-                            {x: months[9], y: data[4].data[9]},
-                            {x: months[10], y: data[4].data[10]},
-                            {x: months[11], y: data[4].data[11]},
-                        ],
-                    };
-
-                    console.log("SET LEAD FUNNELS", data2);
-                    setDataBarLegend(dataLegend)
-                    setDataBar(data2)
-
-                    console.log("LEADS FUNNEL DATA: ", data[0].data, data[1].data, data[2].data, data[3].data, data[4].data)
-                })
-            // console.log("DASHBOARD - SCHEDULES: ", schedule)
-        }
-
-
         getMySchedule();
         getDashboardData();
-        getLeadsFunnelData();
 
     }, [])
 
@@ -453,49 +320,8 @@ const Dashboard = ({ navigation, route }) => {
                             <SurgeonsChart route={route} />
                             <LocationChart route={route} />
                             <SourceOfInquiryChart route={route} />
+                            <LeadsFunnel route={route}/>
 
-                            <View style={{ marginBottom: 5 }} />
-                            <List.Accordion
-                                title="Leads Funnel"
-                                titleStyle={{ color: '#fff', fontWeight: 'bold', }}
-                            
-                                style={{ borderWidth: 1, flex: 1, borderColor: '#e3e3e3', borderRadius: 5, color: 'black', float: 'left', backgroundColor: '#2A2B2F', }}>
-                                <ScrollView nestedScrollEnabled = {true} horizontal={true}>
-                                <View style={{ paddingVertical: 12,  backgroundColor: '#fff', borderBottomWidth: 1, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: -2, }}>
-
-                                   <VictoryChart width={ Dimensions.get("window").width+500}>
-                                       <VictoryGroup offset={5}>
-                                        <VictoryBar
-                                            data={DataBar.Inquiry}
-                                            style={{data:{fill: '#4472C4'}}}
-                                        />
-                                         <VictoryBar
-                                            data={DataBar.ConsultForm}
-                                            style={{data:{fill: '#5B9BD5'}}}
-                                        />
-                                        <VictoryBar
-                                            data={DataBar.BookedConsult}
-                                            style={{data:{fill: '#ED7D31'}}}
-                                        />
-                                        <VictoryBar
-                                            data={DataBar.BookedProcedure}
-                                            style={{data:{fill: '#FFC000'}}}
-                                        />
-                                        <VictoryBar
-                                            data={DataBar.Closed}
-                                            style={{data:{fill: '#A9D18E'}}}
-                                        />
-                                       </VictoryGroup>
-                                       <VictoryLegend
-                                            x={Dimensions.get('screen').width/500}
-                                            orientation="horizontal"
-                                            data={DataBarLegend}
-                                                
-                                       />
-                                   </VictoryChart>
-                                </View>
-                                </ScrollView>
-                            </List.Accordion>
                             <View style={{ marginBottom: 5 }} />
                         </View>
                     </ScrollView>

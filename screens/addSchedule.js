@@ -313,19 +313,20 @@ const AddSchedule = ({ route, navigation }) => {
                                 style={styles.buttonCont}
                                 title="Submit" 
                                 onPress={() => {
+                                  console.log(endDate);
                                   if(startTime !== null && endTime !== null && title !== null && desc !== null){
                                     if(route.params.getdate === endDate){
-                                          if(endTime < startTime){
+                                        if(endTime < startTime){
                                             setShowErrorEndTimeAhead(true)
                                         }
                                         else{
                                             setShowErrorEndTimeAhead(false)
-                                            setDialogBoxEdit(true)
+                                            create()
                                         }
                                     }
                                     else{
                                       setShowErrorEndTimeAhead(false)
-                                      route.params.user.idToken === null ? signIn() : create()
+                                      create()
                                     }
                                   }
                                   else{
