@@ -30,7 +30,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         }
 
 
-        console.log("MAPPED MESSAGE: ",message)
+    
 
         getUserDetails();
         // getGroupMessages();

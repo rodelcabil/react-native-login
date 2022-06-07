@@ -66,19 +66,20 @@ const MessageWrapper = ({ name, myID, clientID }) => {
       
             groupMessage.map((item) => {
               
-             
-              tempArr.push({
-                ...item,
-                first_name: user.first_name, 
-                last_name: user.last_name
-              })
-             
+              const senderID = item.sender_id;
+              if(senderID !== userID){
+                tempArr.push({
+                  ...item,
+                  first_name: user.first_name, 
+                  last_name: user.last_name
+                })
+              }
             })
       
             return tempArr
           })
       
-          console.log("MAPPED [0]: ",mappedData[0])
+          console.log("MAPPED [0]: ",mappedData)
           setTempArr(mappedData[0])
         })
 

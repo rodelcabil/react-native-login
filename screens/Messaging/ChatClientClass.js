@@ -89,6 +89,7 @@ export default class ChatClientClass extends React.Component {
     fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
       method: 'PUT'
     });
+    
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -116,27 +117,31 @@ export default class ChatClientClass extends React.Component {
         this.setState({
           allUser: response.data
         })
-        const mappedData = response.data.map((user) => {
+
+        const tempArr = [];
+        response.data.map((user) => {
           const userID = user.id;
-          const tempArr = [];
+          
 
           this.state.messages.map((item) => {
+            const senderID = item.sender_id;
 
-
-            tempArr.push({
-              ...item,
-              first_name: user.first_name,
-              last_name: user.last_name
-            })
-
+              if(senderID === userID ){
+                tempArr.push({
+                  ...item,
+                  first_name: user.first_name,
+                  last_name: user.last_name
+                })
+              }
+           
           })
-
+          console.log("MAPPEDD DATA:",tempArr)
           return tempArr
         })
 
-
+       
         this.setState({
-          messages: mappedData[0]
+          messages: tempArr
         })
       })
   }
@@ -160,41 +165,45 @@ export default class ChatClientClass extends React.Component {
         })
       })
 
-    await axios.get(
-      `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ' + tokenget
-        },
-      }).then(response => {
-
-        this.setState({
-          allUser: response.data
-        })
-        const mappedData = response.data.map((user) => {
-          const userID = user.id;
-          const tempArr = [];
-
-          this.state.messages.map((item) => {
-
-
-            tempArr.push({
-              ...item,
-              first_name: user.first_name,
-              last_name: user.last_name
-            })
-
+      await axios.get(
+        `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + tokenget
+          },
+        }).then(response => {
+  
+          this.setState({
+            allUser: response.data
           })
-
-          return tempArr
+  
+          const tempArr = [];
+          response.data.map((user) => {
+            const userID = user.id;
+            
+  
+            this.state.messages.map((item) => {
+              const senderID = item.sender_id;
+  
+                if(senderID === userID ){
+                  tempArr.push({
+                    ...item,
+                    first_name: user.first_name,
+                    last_name: user.last_name
+                  })
+                }
+             
+            })
+            console.log("MAPPEDD DATA:",tempArr)
+            return tempArr
+          })
+  
+         
+          this.setState({
+            messages: tempArr
+          })
         })
-
-
-        this.setState({
-          messages: mappedData[0]
-        })
-      })
   }
 
 
