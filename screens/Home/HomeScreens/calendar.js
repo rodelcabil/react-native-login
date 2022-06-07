@@ -156,45 +156,36 @@ const Calendar = ({ navigation, route })  => {
             await axios.get(
                 `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${userInfoToken.accessToken}`
             ).then(response =>{
-                
-                const mappedData = response.data.items.map((data, index) => {
-                    const date = data.start.dateTime
-                    return {
-                        ...data,
-                        date: moment(date).format('YYYY-MM-DD')
-                    };
+                response.data.items.map((data, index) => {
+                    const date = moment.utc(data.start.dateTime, 'YYYY-MM-DD').format("YYYY-MM-DD")
+                    console.log(" ITEM1 ", data.start.dateTime);
+                    console.log(" ITEM ", date);
+                    if (!arrTemp[date]) {
+                        arrTemp[date] = [];
+                    }
+                    arrTemp[date].push({
+                         title: data.summary, 
+                         description: data.description, 
+                         date_from:  moment(data.start.dateTime).format("YYYY-MM-DD"), 
+                         time_from:  moment(data.start.dateTime).format("HH:mm"), 
+                         date_to: moment(data.end.dateTime).format("YYYY-MM-DD"), 
+                         time_to: moment(data.end.dateTime).format("HH:mm"), 
+                         category: "other",
+                         googleEventId: data.id, 
+                         googleCalendar: true });
+
+                         tempItems.push({
+                            title: data.summary, 
+                            description: data.description, 
+                            date_from:  moment(data.start.dateTime).format("YYYY-MM-DD"), 
+                            time_from:  moment(data.start.dateTime).format("HH:mm"), 
+                            date_to: moment(data.end.dateTime).format("YYYY-MM-DD"), 
+                            time_to: moment(data.end.dateTime).format("HH:mm"), 
+                            category: "other",
+                            googleEventId: data.id, 
+                            googleCalendar: true });
                 });
 
-                mappedData.map(
-                    (currentItem, index) => {
-                        const { date, ...coolItem } = currentItem;
-                        console.log(" ITEM ", coolItem);
-                        if (!arrTemp[date]) {
-                            arrTemp[date] = [];
-                        }
-                        arrTemp[date].push({
-                             title: coolItem.summary, 
-                             description: coolItem.description, 
-                             date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
-                             time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
-                             date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
-                             time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
-                             category: "other",
-                             googleEventId: coolItem.id, 
-                             googleCalendar: true });
-
-                             tempItems.push({
-                                title: coolItem.summary, 
-                                description: coolItem.description, 
-                                date_from:  moment(coolItem.start.dateTime).format("YYYY-MM-DD"), 
-                                time_from:  moment(coolItem.start.dateTime).format("HH:mm"), 
-                                date_to: moment(coolItem.end.dateTime).format("YYYY-MM-DD"), 
-                                time_to: moment(coolItem.end.dateTime).format("HH:mm"), 
-                                category: "other",
-                                googleEventId: coolItem.id, 
-                                googleCalendar: true });
-                    },
-                );
                 console.log('Done Sync Google Calendar');
                 console.log("TEMP ARRAY with Google Calendar", arrTemp);
                 setTempItems(tempItems);
