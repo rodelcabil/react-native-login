@@ -26,7 +26,7 @@ app.delete('/users/:name', function (req, res) { // (4)
 
 app.post('/users/:name/messages', function (req, res) {
     
-    console.log("Message: ",req.body.message, "\nMessage ID: ", req.body.id,"\nSender ID: ", req.body.sender_id, '\nCreated at: ', req.body.created_at, '\nUpdated at: ', req.body.updated_at, '\nGroup ID: ', req.body.group_id, "\nFirst Name: ",  req.body.first_name, "\nLast Name: ",  req.body.last_name  );
+    console.log("Message: ",req.body.message, "\nMessage ID: ", req.body.id,"\nSender ID: ", req.body.sender_id, '\nCreated at: ', req.body.created_at, '\nUpdated at: ', req.body.updated_at, '\nGroup ID: ', req.body.group_id, "\nFirst Name: ",  req.body.first_name, "\nLast Name: ",  req.body.last_name  + "\n");
     pusherClient.trigger(`${req.body.channelName}`, 'message', {
         id: req.body.id,
         group_id: req.body.roomId,
@@ -35,7 +35,8 @@ app.post('/users/:name/messages', function (req, res) {
         created_at: req.body.created_at,
         updated_at: req.body.updated_at,
         first_name: req.body.first_name,
-        last_name: req.body.last_name
+        last_name: req.body.last_name,
+        roomId: req.body.roomId,
     });
     res.sendStatus(204);
 });

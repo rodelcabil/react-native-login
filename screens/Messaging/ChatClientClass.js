@@ -41,7 +41,7 @@ export default class ChatClientClass extends React.Component {
         this.handlePart(data.name);
       });
       this.chatChannel.bind('message', (data) => { // (6)
-        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.channelName, data.first_name, data.last_name);
+        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name,  data.channelName,);
       });
     });
 
@@ -69,18 +69,18 @@ export default class ChatClientClass extends React.Component {
 
 
   async handleMessage(id, message, sender_id, roomId, created_at, updated_at, first_name, last_name) { // (6)
-
     const messages = this.state.messages.slice();
     messages.push({
-      id: id,
-      group_id: roomId,
-      sender_id: sender_id,
-      message: message,
       created_at: created_at,
-      updated_at: updated_at,
       first_name: first_name,
+      group_id: roomId,
+      id: id,
       last_name: last_name,
+      message: message,
+      sender_id: sender_id,
+      updated_at: updated_at,
     });
+    console.log("HANDLE MESSAGE: ", messages)
     this.setState({
       messages: messages,
     });
@@ -235,7 +235,7 @@ export default class ChatClientClass extends React.Component {
     catch (error) {
       console.log(error);
     }
-    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId);
+    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ',first_name, 'Last Name: ', last_name );
   }
 
 

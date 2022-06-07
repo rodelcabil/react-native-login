@@ -30,10 +30,8 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
             setMyID(data?.id)
             setFirstName(data?.first_name)
             setLastName(data?.last_name)
+           
         }
-
-
-    
 
         getUserDetails();
         // getGroupMessages();
