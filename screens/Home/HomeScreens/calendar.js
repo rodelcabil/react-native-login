@@ -156,6 +156,7 @@ const Calendar = ({ navigation, route })  => {
             await axios.get(
                 `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${userInfoToken.accessToken}`
             ).then(response =>{
+                
                 const mappedData = response.data.items.map((data, index) => {
                     const date = data.start.dateTime
                     return {
@@ -167,6 +168,7 @@ const Calendar = ({ navigation, route })  => {
                 mappedData.map(
                     (currentItem, index) => {
                         const { date, ...coolItem } = currentItem;
+                        console.log(" ITEM ", coolItem);
                         if (!arrTemp[date]) {
                             arrTemp[date] = [];
                         }
