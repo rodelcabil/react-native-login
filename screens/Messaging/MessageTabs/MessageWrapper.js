@@ -66,21 +66,20 @@ const MessageWrapper = ({ name, myID, clientID }) => {
       
             groupMessage.map((item) => {
               
-              const senderID = item.sender_id;
-              if(senderID === userID){
-                tempArr.push({
-                  ...item,
-                  first_name: user.first_name, 
-                  last_name: user.last_name
-                })
-              }
+             
+              tempArr.push({
+                ...item,
+                first_name: user.first_name, 
+                last_name: user.last_name
+              })
+             
             })
       
             return tempArr
           })
       
-          console.log("MAPPED: ",mappedData)
-          setTempArr(mappedData)
+          console.log("MAPPED [0]: ",mappedData[0])
+          setTempArr(mappedData[0])
         })
 
 
@@ -89,14 +88,14 @@ const MessageWrapper = ({ name, myID, clientID }) => {
     
 
     getGroupMessages();
-    // getUserList();
+    getUserList();
 
 
 
   }, [])
 
   return (
-    <ChatClientClass name={name} route={route} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name} groupMessage={groupMessage} />
+    <ChatClientClass name={name} route={route} clientID={clientID} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name} groupMessage={groupMessage} />
   )
 }
 

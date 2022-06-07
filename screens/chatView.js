@@ -18,7 +18,6 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
-    const [groupMessage, setGroupMessage] = useState([])
 
     const myRef = useRef();
     const scrollRef = useRef();
@@ -31,11 +30,11 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         }
 
 
-
+        console.log("MAPPED MESSAGE: ",message)
 
         getUserDetails();
         // getGroupMessages();
-    }, [isFocused])
+    }, [isFocused, scrollRef])
 
 
     const onChangeSearch = query => { setSearchQuery(query) };
@@ -46,7 +45,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
     const handleSendMessage = async () => {
 
         // onSendMessage(myMessage, myID, roomId);
-        onSendMessage(uuid.v4(), myMessage, myID, moment(new Date(Date.now())).format("YYYY-MM-DD"), moment(new Date(Date.now())).format("YYYY-MM-DD"), roomId)
+     
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
         try {
@@ -64,14 +63,15 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
             if (resp.status === 200) {
                 console.log(resp.data);
-                
+                onSendMessage(uuid.v4(), myMessage, myID, Date.now(), Date.now(), roomId)
+                myRef.current.clear();
+                setMyMessage('')
             }
         }
         catch (error) {
             console.log("Error here: ", error);
         }
-        myRef.current.clear();
-        setMyMessage('')
+      
     }
 
     const _keyExtractor = item => item.id;
@@ -110,6 +110,12 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         }
     }
 
+    const getInitials = (first_name, last_name) => {
+      
+        return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
+    }
+
+
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
             <View style={styles.container}>
@@ -132,7 +138,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                         onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
                     >
                         <View>
-                            {newList.map((item, key) => {
+                            {newList?.map((item, key) => {
                                 return <>
                                     {
                                     /* {item?.action == 'join' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has joined</Text></View>
@@ -143,16 +149,16 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                                          */}
                                     {item?.sender_id === myID ?
                                         <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                            <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{item?.created_at}</Text>
+                                            <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
                                             <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
                                         </View>
                                         :
                                         <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
                                             <View style={styles.othersChat}>
-                                                <Avatar.Text size={45} label={"S"} />
+                                                <Avatar.Text size={45} label={getInitials(item?.first_name,item?.last_name)} />
                                                 <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                                    <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {item?.created_at} </Text>
+                                                    <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
                                                     <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
                                                 </View>

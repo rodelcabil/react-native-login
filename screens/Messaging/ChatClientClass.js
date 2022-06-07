@@ -18,6 +18,7 @@ export default class ChatClientClass extends React.Component {
     super(props);
     this.state = {
       messages: [],
+      allUser: [],
       chat: '',
       date: '',
       sender_id: '',
@@ -101,72 +102,104 @@ export default class ChatClientClass extends React.Component {
         this.setState({
           messages: response.data
         })
+      })
+
+    await axios.get(
+      `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response => {
+
+        this.setState({
+          allUser: response.data
+        })
+        const mappedData = response.data.map((user) => {
+          const userID = user.id;
+          const tempArr = [];
+
+          this.state.messages.map((item) => {
 
 
+            tempArr.push({
+              ...item,
+              first_name: user.first_name,
+              last_name: user.last_name
+            })
 
+          })
+
+          return tempArr
+        })
+
+
+        this.setState({
+          messages: mappedData[0]
+        })
       })
   }
 
-  componentWillUnmount() { // (8)
+  async componentWillUnmount() { // (8)
     fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
       method: 'DELETE'
     });
+    const token = await AsyncStorage.getItem('token');
+    const tokenget = token === null ? route.params.token : token;
+    await axios.get(
+      `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${this.props.roomId}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response => {
+        this.setState({
+          messages: response.data
+        })
+      })
+
+    await axios.get(
+      `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response => {
+
+        this.setState({
+          allUser: response.data
+        })
+        const mappedData = response.data.map((user) => {
+          const userID = user.id;
+          const tempArr = [];
+
+          this.state.messages.map((item) => {
+
+
+            tempArr.push({
+              ...item,
+              first_name: user.first_name,
+              last_name: user.last_name
+            })
+
+          })
+
+          return tempArr
+        })
+
+
+        this.setState({
+          messages: mappedData[0]
+        })
+      })
   }
 
-  // async onSendMessage(text, sender_id, roomId) { // (9)
-  //   const token = await AsyncStorage.getItem('token');
-  //   const tokenget = token === null ? route.params.token : token;
-  //   console.log("called onSendMessage");
-  //   console.log("User ID:", sender_id, "Room ID: ", roomId, "Message:", text);
-  //   const payload = {
-  //     message: text,
-  //     sender_id: sender_id,
-  //     channelName: this.state.roomId
-  //   };
-  //   try {
-
-  //     const resp = await axios({
-  //       method: 'post',
-  //       url: `${pusherConfig.restServer}/api/chat/group/${roomId}`,
-  //       data: {
-  //         sender_id: sender_id,
-  //         message: text,
-  //       },
-  //       body: JSON.stringify(payload),
-  //       headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + tokenget, },
-  //     });
-
-  //     if (resp.status === 200) {
-
-  //       console.log(resp.data);
-
-
-  //       await axios.get(
-  //         `${pusherConfig.restServer}/api/chat/client-group-message?group_id=${roomId}`,
-  //         {
-  //           headers: {
-  //             'Accept': 'application/json',
-  //             'Authorization': 'Bearer ' + tokenget
-  //           },
-  //         }).then(response => {
-
-  //           this.setState({
-  //             messages: response.data
-  //           })
-  //         })
-
-
-  //     }
-  //   }
-  //   catch (error) {
-  //     console.log(error);
-  //   }
-
-  //   console.log(text, " Room ID: ", roomId, 'uuid: ', sender_id);
-  // }
 
   async onSendMessage(id, message, sender_id, created_at, updated_at, roomId) { // (9)
-    
+
     console.log("called onSendMessage");
     const payload = {
       id: id,
