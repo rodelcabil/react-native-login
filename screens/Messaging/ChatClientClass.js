@@ -19,6 +19,7 @@ export default class ChatClientClass extends React.Component {
     this.state = {
       messages: [],
       allUser: [],
+      loader: true,
       chat: '',
       date: '',
       sender_id: '',
@@ -146,8 +147,10 @@ export default class ChatClientClass extends React.Component {
         });
         console.log("MOUNTED SORTED DATA:", sort)
         this.setState({
-          messages: sort
+          messages: sort,
+          loader: false
         })
+        
       })
   }
 
@@ -212,7 +215,8 @@ export default class ChatClientClass extends React.Component {
         });
         console.log("UNMOUNTED SORTED DATA:", sort)
         this.setState({
-          messages: sort
+          messages: sort,
+          loader: false
         })
       })
   }
@@ -257,10 +261,11 @@ export default class ChatClientClass extends React.Component {
     const last_name = this.props.last_name;
     const roomId = this.props.roomId;
     const userID = this.props.myID;
+    
     //this.state.roomId = roomId;
 
     return (
-      <ChatView message={this.state.messages} onSendMessage={this.handleSendMessage} name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID} />
+      <ChatView message={this.state.messages} onSendMessage={this.handleSendMessage} name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID} loader={this.state.loader} />
     );
   }
 }

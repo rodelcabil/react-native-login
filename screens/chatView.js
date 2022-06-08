@@ -10,9 +10,11 @@ import axios from 'axios';
 import { Searchbar } from 'react-native-paper';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import ChatAppBar from './ReusableComponents/ChatAppBar';
+import LoaderSmall from './ReusableComponents/LottieLoader-Small';
+import { ca } from 'date-fns/locale';
 var width = Dimensions.get('window').width - 20;
 
-const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, userID }) => {
+const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, loader }) => {
     const isFocused = useIsFocused();
     const [myMessage, setMyMessage] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
@@ -30,12 +32,35 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
             setMyID(data?.id)
             setFirstName(data?.first_name)
             setLastName(data?.last_name)
-           
+
         }
 
+        const replace = strReplace('2022-06-08 03:47:15 +0000')
+        const convert = convertTZ(replace, 'Asia/Singapore');
+
+        
+        console.log("CHECK DATE: ", moment(convert).calendar())
         getUserDetails();
         // getGroupMessages();
-    }, [isFocused, scrollRef])
+    }, [isFocused])
+
+
+    function convertTZ(date, tzString) {
+        return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
+    }
+
+    function strReplace(str) {
+        var newStr = str.replace(/-/g, "/");
+
+        return newStr;
+    }
+
+    const convertDate =(str)=>{
+        const replace = strReplace(str+' +0000');
+        const convertedDate = convertTZ(replace, "Asia/Singapore")
+
+        return convertedDate
+    }
 
 
     const onChangeSearch = query => { setSearchQuery(query) };
@@ -45,10 +70,10 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
     const handleSendMessage = async () => {
 
-        // onSendMessage(myMessage, myID, roomId);
-     
+
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
+        
         try {
 
             const resp = await axios({
@@ -64,7 +89,12 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
             if (resp.status === 200) {
                 console.log(resp.data);
-                onSendMessage(uuid.v4(), myMessage, myID, Date.now(), Date.now(), roomId, firstName, lastName)
+              
+                const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
+                const convertedDate = convertTZ(replace , "America/Chicago")
+                const fixDate = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
+                console.log("DATE: ", fixDate)
+                onSendMessage(uuid.v4(), myMessage, myID, fixDate, fixDate, roomId, firstName, lastName)
                 myRef.current.clear();
                 setMyMessage('')
             }
@@ -72,47 +102,40 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         catch (error) {
             console.log("Error here: ", error);
         }
+
       
     }
 
     const _keyExtractor = item => item.id;
 
     const renderItem = ({ item }) => {
-        const action = item.action;
-        const name = item.name;
-        const date = item.date;
-        const uuid = item.uuid;
 
-        if (action == 'join') {
-            return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has joined</Text></View>;
-        } else if (action == 'part') {
-            return <View style={styles.inOutContainer}><Text style={styles.joinPart}>{name} has left</Text></View>;
-        } else if (action == 'message') {
-            return uuid === myUuid ?
-                <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{date}</Text>
-                    <Text style={styles.bubbleChatOwn}>{item.message}</Text>
+        const sender_id = item.sender_id;
 
-                </View>
+        return sender_id === myID ?
+            <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+                <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment.utc(item?.created_at).format('LLL')}</Text>
+                <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+            </View>
+            :
+            <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+                <View style={styles.othersChat}>
+                    <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
+                    <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
+                        <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment.utc(item?.created_at).format('LLL')} </Text>
+                        <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
-                :
-                <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-                    <View style={styles.othersChat}>
-                        <Avatar.Text size={45} label={item.name[0]} />
-                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-
-                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{name}, {date} </Text>
-                            <Text style={styles.bubbleChatOthers}>{item.message}</Text>
-
-                        </View>
                     </View>
-                </View>;
-        }
+                </View>
+            </View>
+
+
+
     }
 
     const getInitials = (first_name, last_name) => {
-      
+
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
@@ -121,62 +144,63 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
             <View style={styles.container}>
                 <ChatAppBar title={name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} />
-                <View style={{ backgroundColor: '#fff', }} >
-                    <Searchbar
-                        style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}
-                        placeholder="Search"
-                        onChangeText={onChangeSearch}
-                        value={searchQuery}
-                        inputStyle={{ fontSize: 15 }}
-                        autoFocus={false}
-                        showSoftInputOnFocus={false}
+                {loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
+                    <>
+                        <View style={{ backgroundColor: '#fff', }} >
+                            <Searchbar
+                                style={{ width: Dimensions.get('window').width - 20, alignSelf: 'center', marginBottom: 10, shadowOpacity: 0, elevation: 0, backgroundColor: '#e3e3e3' }}
+                                placeholder="Search"
+                                onChangeText={onChangeSearch}
+                                value={searchQuery}
+                                inputStyle={{ fontSize: 15 }}
+                                autoFocus={false}
+                                showSoftInputOnFocus={false}
 
-                    />
-                </View>
-                <View style={{ flex: 1 }}>
-                    <ScrollView
-                        ref={scrollRef}
-                        onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
-                    >
-                        <View>
-                            {newList?.map((item, key) => {
-                                return <>
-                                    {
-                                    /* {item?.action == 'join' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has joined</Text></View>
-                                    :
-                                    item?.action == 'part' ? <View key={key} style={styles.inOutContainer}><Text style={styles.joinPart}>{item?.name} has left</Text></View>
-                                        :
-                                        item?.action == 'message' ? 
-                                         */}
-                                    {item?.sender_id === myID ?
-                                        <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                            <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).format('L')}&nbsp;{moment(item?.created_at).format('LT')}</Text>
-                                            <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
-                                        </View>
-                                        :
-                                        <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-                                            <View style={styles.othersChat}>
-                                                <Avatar.Text size={45} label={getInitials(item?.first_name,item?.last_name)} />
-                                                <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-
-                                                    <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).format('LLL')} </Text>
-                                                    <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
-
-                                                </View>
-                                            </View>
-                                        </View>
-
-                                    }
-                                    {/* } */}
-                                </>
-
-
-                            })}
+                            />
                         </View>
 
+                        <View style={{ flex: 1 }}>
+                            <ScrollView
+                                ref={scrollRef}
+                                onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+                            >
+                                <View>
+                                    {newList?.map((item, key) => {
 
-                    </ScrollView>
-                </View>
+                                      
+
+                                        return <>
+
+                                            {item?.sender_id === myID ?
+                                                <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+                                                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
+                                                    <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+                                                </View>
+                                                :
+                                                <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+                                                    <View style={styles.othersChat}>
+                                                        <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
+                                                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
+
+                                                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
+                                                            <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
+
+                                                        </View>
+                                                    </View>
+                                                </View>
+
+                                            }
+
+                                        </>
+
+
+                                    })}
+                                </View>
+                            </ScrollView>
+                        </View>
+                    </>
+                }
+
 
                 <View style={styles.textInputContainer}>
                     <KeyboardAvoidingView>
