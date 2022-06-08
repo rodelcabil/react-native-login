@@ -41,7 +41,7 @@ export default class ChatClientClass extends React.Component {
         this.handlePart(data.name);
       });
       this.chatChannel.bind('message', (data) => { // (6)
-        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name,  data.channelName,);
+        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
       });
     });
 
@@ -80,7 +80,7 @@ export default class ChatClientClass extends React.Component {
       sender_id: sender_id,
       updated_at: updated_at,
     });
-    console.log("HANDLE MESSAGE: ", messages)
+   
     this.setState({
       messages: messages,
     });
@@ -91,7 +91,7 @@ export default class ChatClientClass extends React.Component {
     fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
       method: 'PUT'
     });
-    
+
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -123,27 +123,30 @@ export default class ChatClientClass extends React.Component {
         const tempArr = [];
         response.data.map((user) => {
           const userID = user.id;
-          
+
 
           this.state.messages.map((item) => {
             const senderID = item.sender_id;
 
-              if(senderID === userID ){
-                tempArr.push({
-                  ...item,
-                  first_name: user.first_name,
-                  last_name: user.last_name
-                })
-              }
-           
+            if (senderID === userID) {
+              tempArr.push({
+                ...item,
+                first_name: user.first_name,
+                last_name: user.last_name
+              })
+            }
+
           })
-          console.log("MAPPEDD DATA:",tempArr)
+        
           return tempArr
         })
 
-       
+        let sort = tempArr.sort(function (a, b) {
+          return (a.created_at > b.created_at) - (a.created_at < b.created_at);
+        });
+        console.log("MOUNTED SORTED DATA:", sort)
         this.setState({
-          messages: tempArr
+          messages: sort
         })
       })
   }
@@ -152,6 +155,8 @@ export default class ChatClientClass extends React.Component {
     fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
       method: 'DELETE'
     });
+
+
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -167,45 +172,49 @@ export default class ChatClientClass extends React.Component {
         })
       })
 
-      await axios.get(
-        `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + tokenget
-          },
-        }).then(response => {
-  
-          this.setState({
-            allUser: response.data
-          })
-  
-          const tempArr = [];
-          response.data.map((user) => {
-            const userID = user.id;
-            
-  
-            this.state.messages.map((item) => {
-              const senderID = item.sender_id;
-  
-                if(senderID === userID ){
-                  tempArr.push({
-                    ...item,
-                    first_name: user.first_name,
-                    last_name: user.last_name
-                  })
-                }
-             
-            })
-            console.log("MAPPEDD DATA:",tempArr)
-            return tempArr
-          })
-  
-         
-          this.setState({
-            messages: tempArr
-          })
+    await axios.get(
+      `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response => {
+
+        this.setState({
+          allUser: response.data
         })
+
+        const tempArr = [];
+        response.data.map((user) => {
+          const userID = user.id;
+
+
+          this.state.messages.map((item) => {
+            const senderID = item.sender_id;
+
+            if (senderID === userID) {
+              tempArr.push({
+                ...item,
+                first_name: user.first_name,
+                last_name: user.last_name
+              })
+            }
+
+          })
+         
+          return tempArr
+        })
+
+
+        let sort = tempArr.sort(function (a, b) {
+          return (a.created_at > b.created_at) - (a.created_at < b.created_at);
+        });
+        console.log("UNMOUNTED SORTED DATA:", sort)
+        this.setState({
+          messages: sort
+        })
+      })
   }
 
 
@@ -235,7 +244,7 @@ export default class ChatClientClass extends React.Component {
     catch (error) {
       console.log(error);
     }
-    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ',first_name, 'Last Name: ', last_name );
+    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name);
   }
 
 
