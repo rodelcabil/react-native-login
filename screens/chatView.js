@@ -150,7 +150,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                                          */}
                                     {item?.sender_id === myID ?
                                         <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                            <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
+                                            <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).format('L')}&nbsp;{moment(item?.created_at).format('LT')}</Text>
                                             <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
                                         </View>
                                         :
@@ -159,7 +159,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                                                 <Avatar.Text size={45} label={getInitials(item?.first_name,item?.last_name)} />
                                                 <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                                    <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
+                                                    <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).format('LLL')} </Text>
                                                     <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
                                                 </View>
