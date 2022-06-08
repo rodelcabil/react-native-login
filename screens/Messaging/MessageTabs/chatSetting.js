@@ -137,7 +137,7 @@ const ChatSetting = ({ route }) => {
                                 return (
                                 <View style={{flex:1,}} key={i}>
                                 <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}  key={i} >
-                                    <Avatar.Text size={45} style={{backgroundColor: '#075DA7'}} label={getInitials(item.first_name, item.last_name)} />
+                                    <Avatar.Text size={35} style={{backgroundColor: '#075DA7'}} label={getInitials(item.first_name, item.last_name)} />
                                     <Text style={{marginLeft: 10, fontSize: 15}}>{item.first_name +" " + item.last_name }</Text>
                                 </View>
                                 </View>

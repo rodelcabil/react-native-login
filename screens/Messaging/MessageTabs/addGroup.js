@@ -319,7 +319,7 @@ const AddGroup = ({ route, userID}) => {
                     {
                         creator.length === 0? <></> :
                         <View style={{flexDirection: 'row', marginBottom: 15, alignItems: 'center'}}>
-                            <Avatar.Text size={45} label={getInitials(creator[0].first_name, creator[0].last_name)} />
+                            <Avatar.Text size={35} label={getInitials(creator[0].first_name, creator[0].last_name)} />
                             <Text style={{marginLeft: 10, fontSize: 15}}>{creator[0].first_name + "  " + creator[0].last_name}</Text>
                         </View>
                     }
@@ -335,7 +335,7 @@ const AddGroup = ({ route, userID}) => {
                         {selectedMemberDisplay.map((item, i) => {
                            return <View  key={i}  style={{flexDirection: 'row', marginBottom: 8, justifyContent: 'space-between'}}>
                                <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
-                                <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                                <Avatar.Text size={35} label={getInitials(item.first_name, item.last_name)} />
                                 <Text style={{marginLeft: 10, fontSize: 15}}>{item.id === route.params.userID ? item.name + " ( Creator )" : item.name }</Text>
                             </View>
                             
@@ -346,7 +346,7 @@ const AddGroup = ({ route, userID}) => {
                                     style={{alignSelf: 'center'}}
                                     onPress={() => handleRemoveItem(item.id)}
                                 >
-                                <Avatar.Image size={20} source={require('../../../assets/x.png')} 
+                                <Avatar.Image size={15} source={require('../../../assets/x.png')} 
                                     style={{backgroundColor: 'white', alignSelf: 'center', marginRight: 10, marginLeft: 10}} />
 
                             </TouchableHighlight>

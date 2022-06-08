@@ -35,12 +35,14 @@ const black_theme = {
 };
 
 const LeadsFunnelChart = ({ route }) => {
-    const initialLayout = { width: Dimensions.get('window').width };
+
+    const [initialWidth, setInitialWidth] = useState( Dimensions.get("window").width+500);
+
     const [DataBar, setDataBar] = useState({});
     const [DataBarLegend, setDataBarLegend] = useState({});
 
     useEffect(() =>{
-        getLeadsFunnelData();   
+        getLeadsFunnelDataThisYear();
     },[]);
 
     const getLeadsFunnelData = async () => {
@@ -174,6 +176,7 @@ const LeadsFunnelChart = ({ route }) => {
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
+        setInitialWidth(Dimensions.get("window").width)
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?category=leads_funnel&datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}`,
@@ -197,41 +200,36 @@ const LeadsFunnelChart = ({ route }) => {
                     });
                     dataLegend.push({
                         name: response.data.datasets[i].label + "   ",
-                        symbol: {fill: response.data.datasets[i].backgroundColor,}
+                        backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
 
                 console.log("LOOOOPPP: ", data)
 
-                let InquiryData = []
-                let ConsultFormData = []
-                let BookedConsultData = []
-                let BookedProcedureData = []
-                let ClosedData = []
-                for(let x = 0; x<data.length; x++){
-                    InquiryData.push({
-                        x: months[x], y: data[0].data[x]
-                    })
-                    ConsultFormData.push({
-                        x: months[x], y: data[1].data[x]
-                    })
-                    BookedConsultData.push({
-                        x: months[x], y: data[2].data[x]
-                    })
-                    BookedProcedureData.push({
-                        x: months[x], y: data[3].data[x]
-                    })
-                    ClosedData.push({
-                        x: months[x], y: data[4].data[x]
-                    })
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
+                for(let x = 0; x<months.length; x++){
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
+                const getMonth = today.startOf('week').format("MMMM DD") + " - " + today.endOf('week').format("DD, YYYY");;
+                
                 let data2 = {
-                    Inquiry: InquiryData,
-                    ConsultForm: ConsultFormData,
-                    BookedConsult:BookedConsultData,
-                    BookedProcedure: BookedProcedureData,
-                    Closed: ClosedData,
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
                 };
 
                 console.log("SET LEAD FUNNELS", data2);
@@ -253,7 +251,7 @@ const LeadsFunnelChart = ({ route }) => {
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
-
+        setInitialWidth(Dimensions.get("window").width)
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?category=leads_funnel&datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}`,
             {
@@ -276,41 +274,36 @@ const LeadsFunnelChart = ({ route }) => {
                     });
                     dataLegend.push({
                         name: response.data.datasets[i].label + "   ",
-                        symbol: {fill: response.data.datasets[i].backgroundColor,}
+                        backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
 
                 console.log("LOOOOPPP: ", data)
 
-                let InquiryData = []
-                let ConsultFormData = []
-                let BookedConsultData = []
-                let BookedProcedureData = []
-                let ClosedData = []
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
                 for(let x = 0; x<months.length; x++){
-                    InquiryData.push({
-                        x: months[x], y: data[0].data[x]
-                    })
-                    ConsultFormData.push({
-                        x: months[x], y: data[1].data[x]
-                    })
-                    BookedConsultData.push({
-                        x: months[x], y: data[2].data[x]
-                    })
-                    BookedProcedureData.push({
-                        x: months[x], y: data[3].data[x]
-                    })
-                    ClosedData.push({
-                        x: months[x], y: data[4].data[x]
-                    })
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
+                const getMonth = today.startOf('month').format("MMMM YYYY");
+
                 let data2 = {
-                    Inquiry: InquiryData,
-                    ConsultForm: ConsultFormData,
-                    BookedConsult:BookedConsultData,
-                    BookedProcedure: BookedProcedureData,
-                    Closed: ClosedData,
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
                 };
 
                 console.log("SET LEAD FUNNELS", data2);
@@ -320,7 +313,6 @@ const LeadsFunnelChart = ({ route }) => {
             })
     }
 
-    
     const getLeadsFunnelDataThisLastMonth = async () => {
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
@@ -332,7 +324,7 @@ const LeadsFunnelChart = ({ route }) => {
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
-
+        setInitialWidth(Dimensions.get("window").width)
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?category=leads_funnel&datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}`,
@@ -356,41 +348,36 @@ const LeadsFunnelChart = ({ route }) => {
                     });
                     dataLegend.push({
                         name: response.data.datasets[i].label + "   ",
-                        symbol: {fill: response.data.datasets[i].backgroundColor,}
+                        backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
 
                 console.log("LOOOOPPP: ", data)
 
-                let InquiryData = []
-                let ConsultFormData = []
-                let BookedConsultData = []
-                let BookedProcedureData = []
-                let ClosedData = []
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
                 for(let x = 0; x<months.length; x++){
-                    InquiryData.push({
-                        x: months[x], y: data[0].data[x]
-                    })
-                    ConsultFormData.push({
-                        x: months[x], y: data[1].data[x]
-                    })
-                    BookedConsultData.push({
-                        x: months[x], y: data[2].data[x]
-                    })
-                    BookedProcedureData.push({
-                        x: months[x], y: data[3].data[x]
-                    })
-                    ClosedData.push({
-                        x: months[x], y: data[4].data[x]
-                    })
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
+                const getMonth = today.startOf('month').format("MMMM YYYY");
+
                 let data2 = {
-                    Inquiry: InquiryData,
-                    ConsultForm: ConsultFormData,
-                    BookedConsult:BookedConsultData,
-                    BookedProcedure: BookedProcedureData,
-                    Closed: ClosedData,
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
                 };
 
                 console.log("SET LEAD FUNNELS", data2);
@@ -411,7 +398,7 @@ const LeadsFunnelChart = ({ route }) => {
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
-
+        setInitialWidth(Dimensions.get("window").width)
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?category=leads_funnel&datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}`,
@@ -435,43 +422,110 @@ const LeadsFunnelChart = ({ route }) => {
                     });
                     dataLegend.push({
                         name: response.data.datasets[i].label + "   ",
-                        symbol: {fill: response.data.datasets[i].backgroundColor,}
+                        backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
 
                 console.log("LOOOOPPP: ", data)
 
-                let InquiryData = []
-                let ConsultFormData = []
-                let BookedConsultData = []
-                let BookedProcedureData = []
-                let ClosedData = []
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
                 for(let x = 0; x<months.length; x++){
-                    InquiryData.push({
-                        x: months[x], y: data[0].data[x]
-                    })
-                    ConsultFormData.push({
-                        x: months[x], y: data[1].data[x]
-                    })
-                    BookedConsultData.push({
-                        x: months[x], y: data[2].data[x]
-                    })
-                    BookedProcedureData.push({
-                        x: months[x], y: data[3].data[x]
-                    })
-                    ClosedData.push({
-                        x: months[x], y: data[4].data[x]
-                    })
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
+                const getMonth = today.startOf('year').format("YYYY");
+
                 let data2 = {
-                    Inquiry: InquiryData,
-                    ConsultForm: ConsultFormData,
-                    BookedConsult:BookedConsultData,
-                    BookedProcedure: BookedProcedureData,
-                    Closed: ClosedData,
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
                 };
 
+                console.log("SET LEAD FUNNELS", data2);
+                setDataBarLegend(dataLegend)
+                setDataBar(data2)
+                setLoader(false);
+            })
+    }
+
+    const getLeadsFunnelDataThisYear = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const tokenget = token === null ? route.params.token : token;
+
+        const today = moment(new Date(Date.now())).subtract('year');
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
+        console.log(begginingOfCurrentWeek, endOfWeek);
+
+        const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
+        setFilterText(setText);
+        setInitialWidth(Dimensions.get("window").width)
+
+        await axios.get(
+            `https://beta.centaurmd.com/api/dashboard/filter-graph?category=leads_funnel&datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}`,
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + tokenget
+                },
+            }).then(response => {
+                console.log('lead funnels this month', response.data)
+                let data = [];
+                let dataLegend = [];
+
+                let months = response.data.labels;
+
+                console.log("Days", months);
+                for (var i = 0; i < response.data.datasets.length; i++) {
+                    data.push({
+                        data: response.data.datasets[i].data,
+                        name: response.data.datasets[i].label,
+                    });
+                    dataLegend.push({
+                        name: response.data.datasets[i].label + "   ",
+                        backgroundColor: response.data.datasets[i].backgroundColor,
+                    });
+                }
+
+                console.log("LOOOOPPP: ", data)
+
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
+                for(let x = 0; x<months.length; x++){
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
+                }
+
+                const getMonth = today.startOf('year').format("YYYY");
+                let data2 = {
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
+                };
                 console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
@@ -490,7 +544,7 @@ const LeadsFunnelChart = ({ route }) => {
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
-
+        setInitialWidth(Dimensions.get("window").width)
 
         await axios.get(
             `https://beta.centaurmd.com/api/dashboard/filter-graph?category=leads_funnel&datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}`,
@@ -514,41 +568,36 @@ const LeadsFunnelChart = ({ route }) => {
                     });
                     dataLegend.push({
                         name: response.data.datasets[i].label + "   ",
-                        symbol: {fill: response.data.datasets[i].backgroundColor,}
+                        backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
 
                 console.log("LOOOOPPP: ", data)
 
-                let InquiryData = []
-                let ConsultFormData = []
-                let BookedConsultData = []
-                let BookedProcedureData = []
-                let ClosedData = []
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
                 for(let x = 0; x<months.length; x++){
-                    InquiryData.push({
-                        x: months[x], y: data[0].data[x]
-                    })
-                    ConsultFormData.push({
-                        x: months[x], y: data[1].data[x]
-                    })
-                    BookedConsultData.push({
-                        x: months[x], y: data[2].data[x]
-                    })
-                    BookedProcedureData.push({
-                        x: months[x], y: data[3].data[x]
-                    })
-                    ClosedData.push({
-                        x: months[x], y: data[4].data[x]
-                    })
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
+                const getMonth = today.startOf('year').format("YYYY");
+
                 let data2 = {
-                    Inquiry: InquiryData,
-                    ConsultForm: ConsultFormData,
-                    BookedConsult:BookedConsultData,
-                    BookedProcedure: BookedProcedureData,
-                    Closed: ClosedData,
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
                 };
 
                 console.log("SET LEAD FUNNELS", data2);
@@ -587,41 +636,36 @@ const LeadsFunnelChart = ({ route }) => {
                     });
                     dataLegend.push({
                         name: response.data.datasets[i].label + "   ",
-                        symbol: {fill: response.data.datasets[i].backgroundColor,}
+                        backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
 
                 console.log("LOOOOPPP: ", data)
 
-                let InquiryData = []
-                let ConsultFormData = []
-                let BookedConsultData = []
-                let BookedProcedureData = []
-                let ClosedData = []
+                let getCountI = 0;
+                let getCountCo = 0;
+                let getCountBC = 0;
+                let getCountBP = 0;
+                let getCountC = 0;
+
                 for(let x = 0; x<months.length; x++){
-                    InquiryData.push({
-                        x: months[x], y: data[0].data[x]
-                    })
-                    ConsultFormData.push({
-                        x: months[x], y: data[1].data[x]
-                    })
-                    BookedConsultData.push({
-                        x: months[x], y: data[2].data[x]
-                    })
-                    BookedProcedureData.push({
-                        x: months[x], y: data[3].data[x]
-                    })
-                    ClosedData.push({
-                        x: months[x], y: data[4].data[x]
-                    })
+                    getCountI += data[0].data[x]
+                    getCountCo += data[1].data[x]
+                    getCountBC += data[2].data[x]
+                    getCountBP += data[3].data[x]
+                    getCountC += data[4].data[x]
+
+                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
+                const getMonth = moment(startDate).format("MMMM YYYY") + " -  " + moment(endDate).format("MMMM YYYY");
+
                 let data2 = {
-                    Inquiry: InquiryData,
-                    ConsultForm: ConsultFormData,
-                    BookedConsult:BookedConsultData,
-                    BookedProcedure: BookedProcedureData,
-                    Closed: ClosedData,
+                    Inquiry: [{x: getMonth, y: getCountI}],
+                    ConsultForm: [{x: getMonth, y: getCountCo}],
+                    BookedConsult:[{x: getMonth, y: getCountBC}],
+                    BookedProcedure: [{x: getMonth, y: getCountBP}],
+                    Closed: [{x: getMonth, y: getCountC}],
                 };
 
                 console.log("SET LEAD FUNNELS", data2);
@@ -786,7 +830,7 @@ const LeadsFunnelChart = ({ route }) => {
                                             <Menu>
                                                 <MenuTrigger><AntdIcon name="calendar" size={25} color="#7e7e7e" style={{ marginRight: 10 }} /></MenuTrigger>
                                                 <MenuOptions>
-                                                    <MenuOption onSelect={() => {getLeadsFunnelData(), setLoader(true)}} >
+                                                    <MenuOption onSelect={() => {getLeadsFunnelDataThisYear(), setLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>All</Text></View>
                                                     </MenuOption>
                                                     <MenuOption onSelect={() => {getLeadsFunnelDataThisWeek(), setLoader(true)}} >
@@ -798,7 +842,7 @@ const LeadsFunnelChart = ({ route }) => {
                                                     <MenuOption onSelect={() => {getLeadsFunnelDataThisLastMonth(), setLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>Last Month</Text></View>
                                                     </MenuOption>
-                                                    <MenuOption onSelect={() => {getLeadsFunnelData(), setLoader(true)}} >
+                                                    <MenuOption onSelect={() => {getLeadsFunnelDataThisYear(), setLoader(true)}} >
                                                         <View style={styles.popupItem}><Text style={styles.popupItemText}>This Year</Text></View>
                                                     </MenuOption>
                                                     <MenuOption onSelect={() => {getLeadsFunnelDataThisLastYear(), setLoader(true)}} >
@@ -817,11 +861,19 @@ const LeadsFunnelChart = ({ route }) => {
                                                 </MenuOptions>
                                             </Menu>
                                  </View>
+                                 {    Loader === true ? <></> :
+                                 <View style={styles.typesContainer}>
+                                    {DataBarLegend.map((item, i) => {
+                                        return <View style={styles.types} key={i}>
+                                            <View style={{ marginRight: 10, height: 15, width: 15, borderRadius: 15, backgroundColor: item.backgroundColor }}></View>
+                                            <Text style={styles.text2}>{item.name}</Text>
+                                        </View>
+                                    })}
+                                </View>}
                                  {    Loader === true ? <View style={{ flex: 1, justifyContent: 'center'}}><LoaderSmall/></View> :
                                 <ScrollView nestedScrollEnabled = {true} horizontal={true}>
-                                <View style={{ paddingVertical: 5,  backgroundColor: '#fff', marginTop: -2, }}>
-
-                                   <VictoryChart width={Dimensions.get("window").width+1000}>
+                                <View style={{ paddingVertical: 5,  backgroundColor: '#fff', marginTop: -2,}}>
+                                   <VictoryChart width={initialWidth} >
                                        <VictoryGroup offset={5}>
                                         <VictoryBar
                                             data={DataBar.Inquiry}
@@ -844,14 +896,11 @@ const LeadsFunnelChart = ({ route }) => {
                                             style={{data:{fill: '#A9D18E'}}}
                                         />
                                        </VictoryGroup>
-                                       <VictoryLegend
-                                            orientation="horizontal"
-                                            data={DataBarLegend}
-                                       />
 
                                    </VictoryChart>
                                 </View>
                                 </ScrollView>}
+
                                 </View>
 
                             </List.Accordion>
@@ -947,9 +996,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'flex-start',
         display: 'flex',
-        marginTop: 20,
-        flexWrap: 'wrap'
-
+        marginTop: 10,
+        flexWrap: 'wrap',
+        marginLeft: 15
     },
 
     typesPie: {

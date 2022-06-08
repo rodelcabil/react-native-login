@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Avatar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import {GoogleSignin, GoogleSigninButton, statusCodes} from 'react-native-google-signin'
+import RNRestart from 'react-native-restart'; 
 
 const MainChatPageAppBar = ({ searchQuery, onChangeSearch }) => {
 

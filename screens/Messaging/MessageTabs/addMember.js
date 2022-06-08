@@ -226,14 +226,14 @@ const AddMembers = ({ route }) => {
                           :<></>}
             </View>
 
-            <View style={{marginLeft: 15, marginRight: 15, marginBottom: 15, flex: 1}}>
+            <View style={{marginTop: 15,marginLeft: 15, marginRight: 15, marginBottom: 15, flex: 1}}>
             {
                 selectedMemberDisplay.map((item, i) => {
                     return (
                     <View style={[styles.card, styles.shadowProp]}>
                     <View style={{flex:1, flexDirection: 'row', justifyContent: 'space-between', }} key={i}>
                         <View style={{flexDirection: 'row',  alignItems: 'center'}}  key={i} >
-                            <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} />
+                            <Avatar.Text size={35} label={getInitials(item.first_name, item.last_name)} />
                             <Text style={{marginLeft: 10, fontSize: 15}}>{item.first_name +" " + item.last_name }</Text>
                         </View>
                         <TouchableHighlight
@@ -242,7 +242,7 @@ const AddMembers = ({ route }) => {
                                     style={{alignSelf: 'center'}}
                                     onPress={() => handleRemoveItem(item.id)}
                                 >
-                                <Avatar.Image size={20} source={require('../../../assets/x.png')} 
+                                <Avatar.Image size={18} source={require('../../../assets/x.png')} 
                                     style={{backgroundColor: 'white', alignSelf: 'center', marginRight: 10, marginLeft: 10}} />
 
                             </TouchableHighlight>
