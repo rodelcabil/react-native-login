@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { View, Text, TextInput, StyleSheet, FlatList, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { View, Text, TextInput, StyleSheet, VirtualizedList, ScrollView } from 'react-native'
 import { Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import uuid from 'react-native-uuid';
@@ -10,20 +10,22 @@ import axios from 'axios';
 import { Searchbar } from 'react-native-paper';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import ChatAppBar from './ReusableComponents/ChatAppBar';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import LoaderSmall from './ReusableComponents/LottieLoader-Small';
 import { ca } from 'date-fns/locale';
 var width = Dimensions.get('window').width - 20;
 
 const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, loader }) => {
-    const isFocused = useIsFocused();
+
     const [myMessage, setMyMessage] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
     const [firstName, setFirstName] = useState();
     const [lastName, setLastName] = useState();
+    const [offset,setOffset] = useState(0);
     const myRef = useRef();
-    const scrollRef = useRef();
+    const scrollRef = useRef(scrollRef => scrollRef.current?.scrollToEnd({ animated: true }));
 
     useEffect(() => {
         const getUserDetails = async () => {
@@ -35,6 +37,8 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
         }
 
+       
+
         const replace = strReplace('2022-06-08 03:47:15 +0000')
         const convert = convertTZ(replace, 'Asia/Singapore');
 
@@ -42,7 +46,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         console.log("CHECK DATE: ", moment(convert).calendar())
         getUserDetails();
         // getGroupMessages();
-    }, [isFocused])
+    }, [])
 
 
     function convertTZ(date, tzString) {
@@ -139,6 +143,10 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
+    const getItem = (data, index) => ({
+        id: Math.random().toString(12).substring(0),
+        title: `Item box ${index+1}`
+      });
 
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
@@ -158,11 +166,12 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
                             />
                         </View>
+                      
 
                         <View style={{ flex: 1 }}>
                             <ScrollView
                                 ref={scrollRef}
-                                onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+                                onContentSizeChange={() =>  scrollRef.current?.scrollToEnd({ animated: true })}
                             >
                                 <View>
                                     {newList?.map((item, key) => {
@@ -203,7 +212,9 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
 
                 <View style={styles.textInputContainer}>
-                    <KeyboardAvoidingView>
+                <KeyboardAwareScrollView  keyboardShouldPersistTaps={'always'} ref={scrollRef}
+                    style={{flex:1}}
+                    showsVerticalScrollIndicator={false}>
                         <TextInput
                             autoFocus={false}
                             keyboardType="default"
@@ -229,7 +240,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                             ref={myRef}
                             multiline={true}
                         />
-                    </KeyboardAvoidingView>
+                    </KeyboardAwareScrollView>
                     <Icon name='send-circle' size={40} color="#3a87ad" onPress={() => handleSendMessage()} style={{ display: myMessage.length === 0 ? 'none' : 'flex', marginBottom: 12.6 }} />
                 </View>
             </View>

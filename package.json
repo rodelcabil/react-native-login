@@ -55,6 +55,7 @@
     "react-native-google-signin": "^2.1.1",
     "react-native-hide-show-password-input": "^1.2.0",
     "react-native-ionicons": "^4.6.5",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-material-menu": "^2.0.0",
     "react-native-modal-datetime-picker": "^13.1.2",

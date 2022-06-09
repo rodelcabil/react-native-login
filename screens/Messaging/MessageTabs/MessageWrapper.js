@@ -5,10 +5,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { te } from 'date-fns/locale';
 
-const MessageWrapper = ({ name, myID, clientID }) => {
+const MessageWrapper = () => {
   const [groupMessage, setGroupMessage] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
-  const [tempArr, setTempArr] = useState([])
+  const [userDetails, setUserDetails] = useState([]);
+  
 
   const route = useRoute();
   const user_name = route.params.user_name;
@@ -17,13 +17,25 @@ const MessageWrapper = ({ name, myID, clientID }) => {
   const type = route.params.type;
   const roomId = route.params.roomId;
   const groupId = route.params.roomId;
+  const myMame = userDetails?.first_name +" "+ userDetails?.last_name;
+  const clientID = userDetails?.client_id;
+  const myID = userDetails?.id;
 
   console.log("PASSED NAME: ", user_name)
   console.log("PASSED TYPE: ", type)
   console.log("PASSED ROOM ID: ", roomId)
   console.log(myID)
+  console.log(myMame)
 
   useEffect(() => {
+
+    const getUserDetails = async () => {
+      const value = await AsyncStorage.getItem('userDetails')
+      const data = JSON.parse(value)
+     setUserDetails(data)
+     console.log("MESSAGE WRAPPER: ", data)
+  }
+
     const getGroupMessages = async () => {
 
       const token = await AsyncStorage.getItem('token');
@@ -45,58 +57,16 @@ const MessageWrapper = ({ name, myID, clientID }) => {
 
     }
 
-    const getUserList = async () => {
-
-      const token = await AsyncStorage.getItem('token');
-      const tokenget = token === null ? route.params.token : token;
-
-      await axios.get(
-        `https://beta.centaurmd.com/api/users/${clientID}`,
-        {
-          headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + tokenget
-          },
-        }).then(response => {
-
-          setAllUsers(response.data)
-          const mappedData = response.data.map((user) => {
-            const userID = user.id;
-            const tempArr = [];
-      
-            groupMessage.map((item) => {
-              
-              const senderID = item.sender_id;
-              if(senderID !== userID){
-                tempArr.push({
-                  ...item,
-                  first_name: user.first_name, 
-                  last_name: user.last_name
-                })
-              }
-            })
-      
-            return tempArr
-          })
-      
-          console.log("MAPPED [0]: ",mappedData)
-          setTempArr(mappedData[0])
-        })
-
-
-    }
-
     
-
+    getUserDetails();
     getGroupMessages();
-    getUserList();
 
 
 
   }, [])
 
   return (
-    <ChatClientClass name={name} route={route} clientID={clientID} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name} groupMessage={groupMessage} />
+    <ChatClientClass name={myMame} route={route} clientID={clientID} chatMateName={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} myID={myID} groupName={user_name} groupMessage={groupMessage} />
   )
 }
 

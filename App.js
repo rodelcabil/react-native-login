@@ -141,7 +141,7 @@ const App = () => {
             options={{ headerShown: false }}
           />
 
-          
+
           <Stack.Screen
             name="Add Members"
             component={AddMembers}
@@ -151,12 +151,13 @@ const App = () => {
 
           <Stack.Screen
             name="Chat Client"
-            // component={ChatClientClass}
+            component={MessageWrapper}
             options={{ headerShown: false }}
+            
           >
-            {props => <MessageWrapper name={userDetails.first_name + " " + userDetails.last_name} myID={userDetails.id} clientID={userDetails.client_id}/>}
+            {/* {props => <MessageWrapper name={userDetails.first_name + " " + userDetails.last_name} myID={userDetails.id} clientID={userDetails.client_id} />} */}
           </Stack.Screen>
-{/* 
+          {/* 
           <Stack.Screen
             name="Chat View"
             component={ChatView}

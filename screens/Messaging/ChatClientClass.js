@@ -18,11 +18,8 @@ export default class ChatClientClass extends React.Component {
     super(props);
     this.state = {
       messages: [],
-      allUser: [],
       loader: true,
-      chat: '',
-      date: '',
-      sender_id: '',
+      name: '',
       roomId: `${this.props.roomId}`,
     };
 
@@ -89,10 +86,8 @@ export default class ChatClientClass extends React.Component {
   }
 
   async componentDidMount() { // (7)
-    fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
-      method: 'PUT'
-    });
-
+    
+    console.log("MY NAME", this.props.name)
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -116,10 +111,6 @@ export default class ChatClientClass extends React.Component {
           'Authorization': 'Bearer ' + tokenget
         },
       }).then(response => {
-
-        this.setState({
-          allUser: response.data
-        })
 
         const tempArr = [];
         response.data.map((user) => {
@@ -148,18 +139,20 @@ export default class ChatClientClass extends React.Component {
         console.log("MOUNTED SORTED DATA:", sort)
         this.setState({
           messages: sort,
-          loader: false
+          loader: false,
+          name: this.props.name
         })
-        
+       
       })
+      fetch(`${pusherConfig.restServer}/users/${this.state.name}`, {
+        method: 'PUT'
+      });
   }
 
   async componentWillUnmount() { // (8)
-    fetch(`${pusherConfig.restServer}/users/${this.props.name}`, {
-      method: 'DELETE'
-    });
+   
 
-
+    console.log("MY NAME: ", this.props.name)
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -184,9 +177,7 @@ export default class ChatClientClass extends React.Component {
         },
       }).then(response => {
 
-        this.setState({
-          allUser: response.data
-        })
+       
 
         const tempArr = [];
         response.data.map((user) => {
@@ -216,9 +207,14 @@ export default class ChatClientClass extends React.Component {
         console.log("UNMOUNTED SORTED DATA:", sort)
         this.setState({
           messages: sort,
-          loader: false
+          loader: false,
+          name: this.state.name
         })
+      
       })
+      fetch(`${pusherConfig.restServer}/users/${this.state.name}`, {
+        method: 'DELETE'
+      });
   }
 
 
