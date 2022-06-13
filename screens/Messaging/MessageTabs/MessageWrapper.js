@@ -21,6 +21,7 @@ const MessageWrapper = () => {
   const myMame = userDetails?.first_name +" "+ userDetails?.last_name;
   const clientID = userDetails?.client_id;
   const myID = userDetails?.id;
+  const receiverId = route.params.receiverId;
 
   // console.log("PASSED NAME: ", user_name)
   // console.log("PASSED TYPE: ", type)

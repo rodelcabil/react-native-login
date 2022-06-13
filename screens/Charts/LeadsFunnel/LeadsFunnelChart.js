@@ -518,13 +518,15 @@ const LeadsFunnelChart = ({ route }) => {
                     console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
-                const getMonth = today.startOf('year').format("YYYY");
+                const getMonth = today.startOf('year').format("MMMM");
+                const getEndMonth = today.endOf('year').format("MMMM YYYY");
+                const labelMonth = getMonth + " - "+ getEndMonth;
                 let data2 = {
-                    Inquiry: [{x: getMonth, y: getCountI}],
-                    ConsultForm: [{x: getMonth, y: getCountCo}],
-                    BookedConsult:[{x: getMonth, y: getCountBC}],
-                    BookedProcedure: [{x: getMonth, y: getCountBP}],
-                    Closed: [{x: getMonth, y: getCountC}],
+                    Inquiry: [{x: labelMonth, y: getCountI}],
+                    ConsultForm: [{x: labelMonth, y: getCountCo}],
+                    BookedConsult:[{x: labelMonth, y: getCountBC}],
+                    BookedProcedure: [{x: labelMonth, y: getCountBP}],
+                    Closed: [{x: labelMonth, y: getCountC}],
                 };
                 console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)

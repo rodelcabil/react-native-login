@@ -7,7 +7,7 @@ import axios from 'axios';
 import { set } from 'date-fns';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
-const AllChat = ({ navigation, filterData, loader, allChat }) => {
+const AllChat = ({ navigation, filterData, loader, allChat, lastMessage }) => {
 
     const getInitials = (first_name, last_name) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
@@ -21,6 +21,7 @@ const AllChat = ({ navigation, filterData, loader, allChat }) => {
                 <ScrollView>
                     <View style={styles.body}>
                         {newList.map((item, i) => {
+                              const getIDMap = item.id;
                             return item.type === 'user' ?
                                 <TouchableOpacity
                                     key={i}
@@ -65,7 +66,11 @@ const AllChat = ({ navigation, filterData, loader, allChat }) => {
                                         <Avatar.Icon size={45} icon="account-group" style={styles.avatar}/>
                                         <View style={styles.columnContainer}>
                                             <Text style={styles.name}>{item.name}</Text>
-                                            <Text style={styles.message}>{item.message}</Text>
+                                            {lastMessage.filter(function(item){
+                                                return item.groupID == getIDMap;
+                                                }).map(function({message}){
+                                                    return  <Text style={styles.message}>{message}</Text>
+                                            })}
                                         </View>
                                         {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
                                         <View style={{ width: 50 }} />
