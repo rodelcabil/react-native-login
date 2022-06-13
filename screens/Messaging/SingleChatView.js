@@ -9,13 +9,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Searchbar } from 'react-native-paper';
 import { useIsFocused, useRoute } from '@react-navigation/native';
-import ChatAppBar from './ReusableComponents/ChatAppBar';
+import ChatAppBar from '../ReusableComponents/ChatAppBar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import LoaderSmall from './ReusableComponents/LottieLoader-Small';
+import LoaderSmall from '../ReusableComponents/LottieLoader-Small';
 import { ca } from 'date-fns/locale';
 var width = Dimensions.get('window').width - 20;
 
-const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, loader }) => {
+const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, loader, receiverID }) => {
 
     const [myMessage, setMyMessage] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
@@ -77,14 +77,16 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
 
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
-        
+      
         try {
 
             const resp = await axios({
                 method: 'post',
-                url: `https://beta.centaurmd.com/api/chat/group/${roomId}`,
+              
+                url: `https://beta.centaurmd.com/api/chat/user?`,
                 data: {
                     sender_id: myID,
+                    receiver_id: receiverID,
                     message: myMessage,
                 },
                 // body: JSON.stringify(payload),
@@ -98,7 +100,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                 const convertedDate = convertTZ(replace , "America/Chicago")
                 const fixDate = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
                 console.log("DATE: ", fixDate)
-                onSendMessage(uuid.v4(), myMessage, myID, fixDate, fixDate, roomId, firstName, lastName)
+                onSendMessage(uuid.v4(), myMessage, myID, receiverID, fixDate, fixDate, roomId, firstName, lastName)
                 myRef.current.clear();
                 setMyMessage('')
             }
@@ -222,7 +224,7 @@ const ChatView = ({ message, onSendMessage, name, type, first_name, last_name, r
                             enablesReturnKeyAutomatically
                             placeholder='Type a message'
                             style={{
-                                width: myMessage.length === 0 ? Dimensions.get('window').width - 20 : Dimensions.get('window').width - 60,
+                                width: myMessage.length === 0 ? Dimensions.get('window').width - 10 : Dimensions.get('window').width - 60,
 
                                 paddingVertical: 10,
                                 paddingHorizontal: 20,
@@ -341,4 +343,4 @@ const styles = StyleSheet.create({
         marginBottom: 12.6
     }
 });
-export default ChatView
+export default SingleChatView

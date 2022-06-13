@@ -43,6 +43,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
+
             await axios.get(
                 `https://beta.centaurmd.com/api/chat/user-group?user_id=${userID}`,
                 {
@@ -57,7 +58,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                     setGroupList(sort)
                     setGroupChatLoader(false);
-                    console.log("GROUP LIST: ", sort)
+                    // console.log("GROUP LIST: ", sort)
 
                 })
 
@@ -142,7 +143,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                             }).then(response => {
                                 
                                 arr.push({message: response.data[response.data.length - 1].message})
-                                console.log("Last group messages\n",response.data[response.data.length - 1].message)
+                               
                                 setLasGroupMessage(arr)
                             })
 
@@ -151,7 +152,6 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                         return {
                             ...data,
-                           
                             type: 'group'
                         }
 

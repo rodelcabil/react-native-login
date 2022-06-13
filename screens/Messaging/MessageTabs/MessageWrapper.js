@@ -1,6 +1,6 @@
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react'
-import ChatClientClass from '../ChatClientClass'
+import ChatClientClass from '../GroupChatClientClass'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { te } from 'date-fns/locale';
@@ -22,11 +22,11 @@ const MessageWrapper = () => {
   const clientID = userDetails?.client_id;
   const myID = userDetails?.id;
 
-  console.log("PASSED NAME: ", user_name)
-  console.log("PASSED TYPE: ", type)
-  console.log("PASSED ROOM ID: ", roomId)
-  console.log(myID)
-  console.log(myMame)
+  // console.log("PASSED NAME: ", user_name)
+  // console.log("PASSED TYPE: ", type)
+  // console.log("PASSED ROOM ID: ", roomId)
+  // console.log(myID)
+  // console.log(myMame)
 
   useEffect(() => {
 
@@ -34,7 +34,7 @@ const MessageWrapper = () => {
       const value = await AsyncStorage.getItem('userDetails')
       const data = JSON.parse(value)
      setUserDetails(data)
-     console.log("MESSAGE WRAPPER: ", data)
+    //  console.log("MESSAGE WRAPPER: ", data)
   }
 
     const getGroupMessages = async () => {

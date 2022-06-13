@@ -1,16 +1,15 @@
 import React from 'react';
 import Pusher from 'pusher-js/react-native';
 import pusherConfig from '../../pusher.json';
-import ChatViewClass from '../Messaging/ChatViewClass'
-import ChatView from '../chatView';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import uuid from 'react-native-uuid';
 import { update } from 'lodash';
+import GroupChatView from './GroupChatView';
 
 
-export default class ChatClientClass extends React.Component {
+export default class GroupChatClientClass extends React.Component {
 
   constructor(props) {
 
@@ -38,7 +37,7 @@ export default class ChatClientClass extends React.Component {
       this.chatChannel.bind('part', (data) => { // (5)
         this.handlePart(data.name);
       });
-      this.chatChannel.bind('message', (data) => { // (6)
+      this.chatChannel.bind('group_message', (data) => { // (6)
         this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
       });
     });
@@ -261,7 +260,7 @@ export default class ChatClientClass extends React.Component {
     //this.state.roomId = roomId;
 
     return (
-      <ChatView message={this.state.messages} onSendMessage={this.handleSendMessage} name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID} loader={this.state.loader} />
+      <GroupChatView message={this.state.messages} onSendMessage={this.handleSendMessage} name={user_name} type={type} first_name={first_name} last_name={last_name} roomId={roomId} userID={userID} loader={this.state.loader} />
     );
   }
 }

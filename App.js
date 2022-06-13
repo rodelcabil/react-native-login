@@ -18,16 +18,13 @@ import Account from './screens/account';
 import APICalls from './screens/apiPage';
 import Settings from './screens/Home/HomeScreens/settings';
 import EditSchedule from './screens/editCalendar';
-import ChatClientClass from './screens/Messaging/ChatClientClass';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ChatClient from './screens/chatClient';
-import ChatList from './screens/Messaging/ChatList';
 
 import AddGroup from './screens/Messaging/MessageTabs/addGroup';
-import ChatView from './screens/chatView';
 import MessageWrapper from './screens/Messaging/MessageTabs/MessageWrapper';
 import ChatSetting from './screens/Messaging/MessageTabs/chatSetting';
 import AddMembers from './screens/Messaging/MessageTabs/addMember';
+import SingleMessageWrapper from './screens/Messaging/MessageTabs/SingleMessageWrapper';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -154,17 +151,15 @@ const App = () => {
             component={MessageWrapper}
             options={{ headerShown: false }}
             
-          >
-            {/* {props => <MessageWrapper name={userDetails.first_name + " " + userDetails.last_name} myID={userDetails.id} clientID={userDetails.client_id} />} */}
-          </Stack.Screen>
-          {/* 
+          />
+
           <Stack.Screen
-            name="Chat View"
-            component={ChatView}
+            name="Single Chat Client"
+            component={SingleMessageWrapper}
             options={{ headerShown: false }}
-
-          /> */}
-
+            
+          />
+         
 
 
 

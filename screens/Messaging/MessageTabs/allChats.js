@@ -26,10 +26,11 @@ const AllChat = ({ navigation, filterData, loader, allChat }) => {
                                     key={i}
                                     activeOpacity={0.6}
                                     onPress={() => {
-                                        navigation.navigate('Chat Client', {
+                                        navigation.navigate('Single Chat Client', {
                                             user_name: item.first_name +' '+item.last_name,
                                             first_name: item.first_name,
                                             last_name: item.last_name,
+                                            id: item.id,
                                             type: 'user'
                                         });
 

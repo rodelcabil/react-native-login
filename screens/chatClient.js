@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Pusher from 'pusher-js/react-native';
 import pusherConfig from '../pusher.json'
 import { View, Text, TextInput, StyleSheet } from 'react-native'
-import ChatView from './chatView';
-import ChatViewClass from './Messaging/ChatViewClass';
+import ChatView from './Messaging/GroupChatView';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
