@@ -50,7 +50,7 @@ const ConsultsTab = ({ summary, summaryData, monthSelected, loader }) => {
                 width={Dimensions.get("window").width - 44} // from react-native
                 height={monthSelected === true ? 350 : 230}
                 fromZero={false}
-                segments={2}
+                // segments={2}
                 verticalLabelRotation={monthSelected === true ? 90 : 0}
                 chartConfig={{
                     backgroundColor: "#F6F7F9",
@@ -73,7 +73,7 @@ const ConsultsTab = ({ summary, summaryData, monthSelected, loader }) => {
                 }}
                 bezier
                 style={{ borderRadius: 10, borderWidth: 1, borderColor: '#e3e3e3' }}
-                formatYLabel={() => yLabelIterator.next().value}
+                // formatYLabel={() => yLabelIterator.next().value}
             />
             <View style={styles.typesContainer}>
                 {summaryData.map((item, i) => {

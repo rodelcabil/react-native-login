@@ -33,8 +33,10 @@ const black_theme = {
 const ReportSummary = ({route}) => {
 
     const today = moment(new Date(Date.now()));
-    const begginingOfYear = today.startOf('year').format("YYYY-MM-DD");
-    const endOfYear = today.endOf('year').format("YYYY-MM-DD");
+  
+
+    const begginingOfYear = today.startOf('week').format("YYYY-MM-DD");
+    const endOfYear = today.endOf('week').format("YYYY-MM-DD");
 
     const [dateFrom, setDateFrom] = useState(begginingOfYear);
     const [dateTo, setDateTo] = useState(endOfYear);
@@ -234,11 +236,11 @@ const ReportSummary = ({route}) => {
     const getReportSummaryData = async () => {
 
         const today = moment(new Date(Date.now()));
-        const begginingOfYear = today.startOf('year').format("YYYY-MM-DD");
-        const endOfYear = today.endOf('year').format("YYYY-MM-DD");
+        const begginingOfCurrentWeek = today.startOf('week').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
 
-        setDateFrom(begginingOfYear);
-        setDateTo(endOfYear)
+        setDateFrom(begginingOfCurrentWeek);
+        setDateTo(endOfWeek)
 
         setmonthSelected(false)
 
@@ -248,7 +250,7 @@ const ReportSummary = ({route}) => {
 
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfYear}&dateto=${endOfYear}&filter=Inquiries&`,
+            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Inquiries&`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -285,7 +287,7 @@ const ReportSummary = ({route}) => {
             });
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfYear}&dateto=${endOfYear}&filter=Consults`,
+            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Consults`,
             {
                 headers: {
                     'Accept': 'application/json',
@@ -322,7 +324,7 @@ const ReportSummary = ({route}) => {
             })
 
         await axios.get(
-            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfYear}&dateto=${endOfYear}&filter=Procedures`,
+            `https://beta.centaurmd.com/api/dashboard/reports-summary?datefrom=${begginingOfCurrentWeek}&dateto=${endOfWeek}&filter=Procedures`,
             {
                 headers: {
                     'Accept': 'application/json',

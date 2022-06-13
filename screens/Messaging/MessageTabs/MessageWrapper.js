@@ -4,6 +4,7 @@ import ChatClientClass from '../ChatClientClass'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { te } from 'date-fns/locale';
+import ChatClient from '../../chatClient';
 
 const MessageWrapper = () => {
   const [groupMessage, setGroupMessage] = useState([]);

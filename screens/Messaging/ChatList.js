@@ -7,7 +7,7 @@ import RNRestart from 'react-native-restart';
 import AppBar from '../ReusableComponents/AppBar'
 
 import moment from 'moment';
-import { sr } from 'date-fns/locale';
+import { hi, sr } from 'date-fns/locale';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useIsFocused } from '@react-navigation/native';
@@ -21,11 +21,12 @@ import MainChatPageAppBar from '../ReusableComponents/MainChatPageAppBar';
 
 const ChatList = ({ navigation, route, clientID, userID }) => {
     const isFocused = useIsFocused();
-    
-   
+
+
     const [groupList, setGroupList] = useState([]);
     const [userList, setUserList] = useState([]);
     const [allChat, setAllChat] = useState([]);
+    const [lastGroupMessage, setLasGroupMessage] = useState([])
 
     const [allChatLoader, setAllChatLoader] = useState(true);
     const [groupChatLoader, setGroupChatLoader] = useState(true);
@@ -43,7 +44,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             const tokenget = token === null ? route.params.token : token;
 
             await axios.get(
-                `https://beta.centaurmd.com/api/chat/user-group`,
+                `https://beta.centaurmd.com/api/chat/user-group?user_id=${userID}`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -56,7 +57,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                     setGroupList(sort)
                     setGroupChatLoader(false);
-                    // console.log("GROUP LIST: ", sort)
+                    console.log("GROUP LIST: ", sort)
 
                 })
 
@@ -115,11 +116,10 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                     mappedData1 = newList.filter(item => { return item.id !== userID });
 
-                    // console.log("ALL CHAT - USER LIST: ", mappedData1)
                 })
 
             await axios.get(
-                `https://beta.centaurmd.com/api/chat/user-group`,
+                `https://beta.centaurmd.com/api/chat/user-group?user_id=${userID}`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -127,12 +127,36 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     },
                 }).then(response => {
 
-                    mappedData2 = response.data.map((data) => {
+                    mappedData2 = response.data.map((data, index) => {
+                        const groupID = data.id;
+                        let arrtempCombinedArray = [];
+                        let arr = [];
+                     
+                        axios.get(
+                            `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${groupID}`,
+                            {
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Authorization': 'Bearer ' + tokenget
+                                },
+                            }).then(response => {
+                                
+                                arr.push({message: response.data[response.data.length - 1].message})
+                                console.log("Last group messages\n",response.data[response.data.length - 1].message)
+                                setLasGroupMessage(arr)
+                            })
+
+                            
+                            // console.log("Last group messages\n",lastGroupMessage)
+
                         return {
-                            ...data, type: 'group'
+                            ...data,
+                           
+                            type: 'group'
                         }
+
                     })
-                    // console.log("ALL CHAT - GROUP LIST: ", mappedData2)
+
                     const combined = mappedData1.concat(mappedData2)
 
                     let sort = combined.sort(function (a, b) {
@@ -163,7 +187,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     response.data.map((data, key) => {
                         const id = data.id
                         const name = data.name
-                       
+
                         const Api2 = async () => {
                             await axios.get(
                                 `https://beta.centaurmd.com/api/chat/client-group-user?group_id=${id}`,
@@ -181,25 +205,25 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                                 userid: element.user_id,
                                                 type: 'group'
                                             })
-                                            console.log("TEMP ARRAY: ",tempArr)
+                                            console.log("TEMP ARRAY: ", tempArr)
                                         }
                                         setGroupChatLoader(false)
                                     });
                                     setGroupList(tempArr)
-                                   
+
                                 })
 
                         }
                         Api2()
 
                     });
-                  
+
                 })
 
         }
 
 
-    
+
         getUserList();
         getGroupList();
         getCombinedList();
@@ -209,7 +233,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
 
     // const navigation = useNavigation(); 
-    
+
 
     const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -245,7 +269,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
     return (
         <View style={styles.container}>
-            <MainChatPageAppBar searchQuery={searchQuery} onChangeSearch={onChangeSearch}/>
+            <MainChatPageAppBar searchQuery={searchQuery} onChangeSearch={onChangeSearch} />
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}

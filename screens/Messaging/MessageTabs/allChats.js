@@ -64,7 +64,7 @@ const AllChat = ({ navigation, filterData, loader, allChat }) => {
                                         <Avatar.Icon size={45} icon="account-group" style={styles.avatar}/>
                                         <View style={styles.columnContainer}>
                                             <Text style={styles.name}>{item.name}</Text>
-                                            {/* <Text style={styles.message}>{item.email_address}</Text> */}
+                                            <Text style={styles.message}>{item.message}</Text>
                                         </View>
                                         {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
                                         <View style={{ width: 50 }} />

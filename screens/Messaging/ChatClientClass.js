@@ -91,7 +91,7 @@ export default class ChatClientClass extends React.Component {
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
-      `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${this.props.roomId}`,
+      `https://beta.centaurmd.com/api/chat/client-group-message?group_id=${this.props.roomId}`,
       {
         headers: {
           'Accept': 'application/json',
