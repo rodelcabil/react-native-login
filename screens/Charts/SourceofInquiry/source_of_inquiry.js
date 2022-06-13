@@ -21,6 +21,7 @@ import axios from 'axios';
 import moment from 'moment';
 import AntdIcon from 'react-native-vector-icons/AntDesign';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
+import SOI from '../../Tabs/Soi'
 
 const black_theme = {
     ...DefaultTheme,
@@ -603,70 +604,7 @@ const SourceOfInquiry = ({ route }) => {
                                     }}
                                     />
                                         
-                                 <View style={{ backgroundColor: '#fff', borderBottomWidth: 1, height: 320, borderLeftWidth: 0.6, borderRightWidth: 0.6, borderColor: '#e3e3e3', marginTop: 5, }}>
-                                    { sourceofinquiryLoader === true ? <View style={{ height: '100%', justifyContent: 'center'}}><LoaderSmall/></View> :
-                                    ifZeroDataSOI === true ?
-                                    <HorizontalBarGraph
-                                        //data={filterDataSOIData}
-                                        data={[1,2,3,4,5,6,7,8,9,10]}
-                                        labels={filterDataSOI.labels.reverse()}
-                                        width={Dimensions.get("window").width - 44}
-                                        height={400}
-                                        barRadius={5}
-                                        barColor="transparent"
-                                        barWidthPercentage={0.5}
-                                        baseConfig={{
-                                            hasYAxisBackgroundLines: true,
-                                            hasXAxisBackgroundLines: true,
-                                            xAxisLabelStyle: {
-                                                rotation: 0,
-                                                fontSize: 12,
-                                                width: 150,
-                                                yOffset: 0,
-                                                xOffset: -60,
-                                                margin: 10,
-                                            },
-                                            yAxisLabelStyle: {
-                                                fontSize: 13,
-                                                position: 'bottom',
-                                                xOffset: 15,
-                                                height: 100,
-                                                decimal: 1
-                                            }
-                                        }}
-                                    />
-                                    :
-                                    <HorizontalBarGraph
-                                        //data={filterDataSOIData}
-                                        data={filterDataSOIData}
-                                        labels={filterDataSOI.labels.reverse()}
-                                        width={Dimensions.get("window").width - 44}
-                                        height={400}
-                                        barRadius={5}
-                                        barColor="#e3e3e3"
-                                        barWidthPercentage={0.5}
-                                        baseConfig={{
-                                            hasYAxisBackgroundLines: true,
-                                            hasXAxisBackgroundLines: true,
-                                            xAxisLabelStyle: {
-                                                rotation: 0,
-                                                fontSize: 12,
-                                                width: 150,
-                                                yOffset: 0,
-                                                xOffset: -60,
-                                                margin: 10,
-                                            },
-                                            yAxisLabelStyle: {
-                                                fontSize: 13,
-                                                position: 'bottom',
-                                                xOffset: 15,
-                                                height: 100,
-                                                decimal: 1
-                                            }
-                                        }}
-                                    />
-                                }
-                                </View>
+                                <SOI filterDataSOIData={filterDataSOIData} filterDataSOI={filterDataSOI} ifZeroDataSOI={ifZeroDataSOI} sourceofinquiryLoader={sourceofinquiryLoader}/>
 
                                 </View>
                             </List.Accordion>
