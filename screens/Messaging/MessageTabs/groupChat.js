@@ -5,9 +5,8 @@ import moment from 'moment';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const GroupChat = ({ navigation, route, filterData, loader, groupList, userID }) => {
+const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, lastMessage }) => {
     const newList = filterData === "" ? groupList : groupList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
-
     return (
         loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
 
@@ -16,7 +15,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID })
                 <ScrollView >
                     <View style={styles.body}>
                         {newList.map((item, i) => {
-
+                            const getIDMap = item.id;
                             return <TouchableOpacity
                                 key={i}
                                 activeOpacity={0.6}
@@ -36,6 +35,11 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID })
                                     <Avatar.Icon size={45} icon="account-group"  style={styles.avatar}/>
                                     <View style={styles.columnContainer}>
                                         <Text style={styles.name}>{item.name}</Text>
+                                       {lastMessage.filter(function(item){
+                                            return item.groupID == getIDMap;
+                                            }).map(function({message}){
+                                                return  <Text style={styles.name}>{message}</Text>
+                                            })}
                                         {/* <Text style={styles.message}>{item.email_address}</Text> */}
                                     </View>
                                     {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
@@ -61,6 +65,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID })
 
                     />
                 </TouchableOpacity>
+                
             </View>
 
 

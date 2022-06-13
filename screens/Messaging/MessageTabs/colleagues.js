@@ -24,10 +24,12 @@ const Colleagues = ({navigation, filterData, loader, userList }) => {
                             key={i}
                             activeOpacity={0.6}
                             onPress={() => {
+                                console.log(item)
                                 navigation.navigate('Chat Client',{
                                     user_name: item.first_name +' '+item.last_name,
                                     first_name: item.first_name,
                                     last_name: item.last_name,
+                                    receiverId: item.id,
                                     type: 'user'
                                 });
                                 
