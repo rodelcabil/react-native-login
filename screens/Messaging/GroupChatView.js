@@ -170,7 +170,7 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
 
                         <View style={{ flex: 1 }}>
                             <ScrollView
-                                ref={scrollRef}
+                                ref={(it) => (scrollRef.current = it)}
                                 onContentSizeChange={() =>  scrollRef.current?.scrollToEnd({ animated: true })}
                             >
                                 <View>

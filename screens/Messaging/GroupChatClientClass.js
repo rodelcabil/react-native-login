@@ -86,7 +86,7 @@ export default class GroupChatClientClass extends React.Component {
 
   async componentDidMount() { // (7)
     
-    console.log("MY NAME", this.props.name)
+    // console.log("MY NAME", this.props.name)
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -135,7 +135,7 @@ export default class GroupChatClientClass extends React.Component {
         let sort = tempArr.sort(function (a, b) {
           return (a.created_at > b.created_at) - (a.created_at < b.created_at);
         });
-        console.log("MOUNTED SORTED DATA:", sort)
+        // console.log("MOUNTED SORTED DATA:", sort)
         this.setState({
           messages: sort,
           loader: false,
@@ -151,7 +151,7 @@ export default class GroupChatClientClass extends React.Component {
   async componentWillUnmount() { // (8)
    
 
-    console.log("MY NAME: ", this.props.name)
+    // console.log("MY NAME: ", this.props.name)
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -203,7 +203,7 @@ export default class GroupChatClientClass extends React.Component {
         let sort = tempArr.sort(function (a, b) {
           return (a.created_at > b.created_at) - (a.created_at < b.created_at);
         });
-        console.log("UNMOUNTED SORTED DATA:", sort)
+        // console.log("UNMOUNTED SORTED DATA:", sort)
         this.setState({
           messages: sort,
           loader: false,
@@ -219,7 +219,7 @@ export default class GroupChatClientClass extends React.Component {
 
   async onSendMessage(id, message, sender_id, created_at, updated_at, roomId, first_name, last_name) { // (9)
 
-    console.log("called onSendMessage");
+    // console.log("called onSendMessage");
     const payload = {
       id: id,
       group_id: roomId,
@@ -243,7 +243,7 @@ export default class GroupChatClientClass extends React.Component {
     catch (error) {
       console.log(error);
     }
-    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name);
+  //  console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name);
   }
 
 

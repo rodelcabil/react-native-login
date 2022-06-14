@@ -15,18 +15,20 @@ import LoaderSmall from '../ReusableComponents/LottieLoader-Small';
 import { ca } from 'date-fns/locale';
 var width = Dimensions.get('window').width - 20;
 
-const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, loader, receiverID }) => {
+const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_name, loader, roomId, receiverID }) => {
 
     const [myMessage, setMyMessage] = useState('');
     const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
+    // const [loader, setLoader] = useState(true);
     const [myID, setMyID] = useState('');
+    const [clientID, setClientID] = useState('');
     const [firstName, setFirstName] = useState();
     const [lastName, setLastName] = useState();
-    const [offset,setOffset] = useState(0);
+    const [allMessages, setAllMessages] = useState([]);
+    const [offset, setOffset] = useState(0);
     const myRef = useRef();
     const scrollRef = useRef(scrollRef => scrollRef.current?.scrollToEnd({ animated: true }));
-
     useEffect(() => {
         const getUserDetails = async () => {
             const value = await AsyncStorage.getItem('userDetails')
@@ -34,18 +36,99 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
             setMyID(data?.id)
             setFirstName(data?.first_name)
             setLastName(data?.last_name)
-
+            setClientID(data?.client_id)
         }
 
-       
+        // const getCombinedMessages = async () => {
+        //     setLoader(true)
+        //     const token = await AsyncStorage.getItem('token');
+        //     const tokenget = token === null ? route.params.token : token;
+
+        //     let arr;
+        //     let combinedMessage;
+
+        //     await axios.get(
+        //         `https://beta.centaurmd.com/api/chat/user?sender_id=${myID}&receiver_id=${receiverID}`,
+        //         {
+        //             headers: {
+        //                 'Accept': 'application/json',
+        //                 'Authorization': 'Bearer ' + tokenget
+        //             },
+        //         }).then(response => {
+        //             arr = response.data.messages.map(data => {
+        //                 return { ...data }
+        //             })
+        //         })
+
+        //     await axios.get(
+        //         `https://beta.centaurmd.com/api/chat/user?sender_id=${receiverID}&receiver_id=${myID}`,
+        //         {
+        //             headers: {
+        //                 'Accept': 'application/json',
+        //                 'Authorization': 'Bearer ' + tokenget
+        //             },
+        //         }).then(response2 => {
+
+
+        //              combinedMessage = arr.concat(response2.data.messages)
+
+                   
+
+        //             console.log('COCMBINED: ', combinedMessage)
+
+        //         })
+
+        //     await axios.get(
+        //         `https://beta.centaurmd.com/api/users/${clientID}`,
+        //         {
+        //             headers: {
+        //                 'Accept': 'application/json',
+        //                 'Authorization': 'Bearer ' + tokenget
+        //             },
+        //         }).then(response => {
+
+        //             const tempArr = [];
+
+        //             response.data.map((user) => {
+        //                 const userID = user.id;
+
+
+        //                 combinedMessage.map((item) => {
+        //                     const senderID = item.sender_id;
+
+        //                     if (senderID === userID) {
+        //                         tempArr.push({
+        //                             ...item,
+        //                             first_name: user.first_name,
+        //                             last_name: user.last_name
+        //                         })
+        //                     }
+
+        //                 })
+
+        //                 return tempArr
+        //             })
+
+        //             let sort = tempArr.sort(function (a, b) {
+        //                 return (a.created_at > b.created_at) - (a.created_at < b.created_at);
+        //             });
+
+        //             setLoader(false)
+        //             setAllMessages(sort)
+
+
+        //         })
+        // }
+
+
+
 
         const replace = strReplace('2022-06-08 03:47:15 +0000')
         const convert = convertTZ(replace, 'Asia/Singapore');
 
-        
-        console.log("CHECK DATE: ", moment(convert).calendar())
+
         getUserDetails();
-        // getGroupMessages();
+        // getCombinedMessages()
     }, [])
 
 
@@ -59,8 +142,8 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
         return newStr;
     }
 
-    const convertDate =(str)=>{
-        const replace = strReplace(str+' +0000');
+    const convertDate = (str) => {
+        const replace = strReplace(str + ' +0000');
         const convertedDate = convertTZ(replace, "Asia/Singapore")
 
         return convertedDate
@@ -77,12 +160,12 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
-      
+
         try {
 
             const resp = await axios({
                 method: 'post',
-              
+
                 url: `https://beta.centaurmd.com/api/chat/user?`,
                 data: {
                     sender_id: myID,
@@ -95,9 +178,9 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
             if (resp.status === 200) {
                 console.log(resp.data);
-              
+
                 const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
-                const convertedDate = convertTZ(replace , "America/Chicago")
+                const convertedDate = convertTZ(replace, "America/Chicago")
                 const fixDate = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
                 console.log("DATE: ", fixDate)
                 onSendMessage(uuid.v4(), myMessage, myID, receiverID, fixDate, fixDate, roomId, firstName, lastName)
@@ -109,7 +192,7 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
             console.log("Error here: ", error);
         }
 
-      
+
     }
 
     const _keyExtractor = item => item.id;
@@ -147,8 +230,8 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
     const getItem = (data, index) => ({
         id: Math.random().toString(12).substring(0),
-        title: `Item box ${index+1}`
-      });
+        title: `Item box ${index + 1}`
+    });
 
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
@@ -168,17 +251,17 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
                             />
                         </View>
-                      
+
 
                         <View style={{ flex: 1 }}>
                             <ScrollView
                                 ref={scrollRef}
-                                onContentSizeChange={() =>  scrollRef.current?.scrollToEnd({ animated: true })}
+                                onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
                             >
                                 <View>
                                     {newList?.map((item, key) => {
 
-                                      
+
 
                                         return <>
 
@@ -214,9 +297,9 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
 
                 <View style={styles.textInputContainer}>
-                <KeyboardAwareScrollView  keyboardShouldPersistTaps={'always'} ref={scrollRef}
-                    style={{flex:1}}
-                    showsVerticalScrollIndicator={false}>
+                    <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'} ref={scrollRef}
+                        style={{ flex: 1 }}
+                        showsVerticalScrollIndicator={false}>
                         <TextInput
                             autoFocus={false}
                             keyboardType="default"

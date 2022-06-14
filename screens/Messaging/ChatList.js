@@ -131,7 +131,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     mappedData2 = response.data.map((data, index) => {
                         const groupID = data.id;
                         let arrtempCombinedArray = [];
-                     
+
                         axios.get(
                             `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${groupID}`,
                             {
@@ -140,18 +140,22 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                     'Authorization': 'Bearer ' + tokenget
                                 },
                             }).then(response => {
-                                    arr.push({message: response.data[response.data.length - 1].message, groupID: groupID})
-                                    console.log("Last group messages\n",response.data[response.data.length - 1].message, groupID)
-                                    console.log(arr);
+                                arr.push({ message: response.data[response.data.length - 1].message, groupID: groupID, date: response.data[response.data.length - 1].created_at })
+                                // console.log("Last group messages\n", response.data[response.data.length - 1].message, groupID, moment(response.data[response.data.length - 1].created_at).startOf('hour').fromNow())
+                                // console.log(arr);
+                             
                             })
 
-                            // console.log("Last group messages\n",lastGroupMessage)
-                            setLasGroupMessage(arr)
+                        // console.log("Last group messages\n",lastGroupMessage)
+                        setLasGroupMessage(arr)
                         return {
                             ...data,
+                           
                             type: 'group'
                         }
                     })
+
+                
 
                     const combined = mappedData1.concat(mappedData2)
 
@@ -167,65 +171,20 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
         }
 
-        const tryCombineAPI = async () => {
-            const token = await AsyncStorage.getItem('token');
-            const tokenget = token === null ? route.params.token : token;
-
-            await axios.get(
-                `https://beta.centaurmd.com/api/chat/client-group`,
-                {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': 'Bearer ' + tokenget
-                    },
-                }).then(response => {
-                    let tempArr = [];
-                    response.data.map((data, key) => {
-                        const id = data.id
-                        const name = data.name
-
-                        const Api2 = async () => {
-                            await axios.get(
-                                `https://beta.centaurmd.com/api/chat/client-group-user?group_id=${id}`,
-                                {
-                                    headers: {
-                                        'Accept': 'application/json',
-                                        'Authorization': 'Bearer ' + tokenget
-                                    },
-                                }).then(response2 => {
-                                    response2.data.forEach(element => {
-                                        if (element.user_id === userID) {
-                                            tempArr.push({
-                                                id: id,
-                                                name: name,
-                                                userid: element.user_id,
-                                                type: 'group'
-                                            })
-                                            console.log("TEMP ARRAY: ", tempArr)
-                                        }
-                                        setGroupChatLoader(false)
-                                    });
-                                    setGroupList(tempArr)
-
-                                })
-
-                        }
-                        Api2()
-
-                    });
-
-                })
-
-        }
-
-
-
         getUserList();
         getGroupList();
         getCombinedList();
-        // tryCombineAPI();
 
-    }, [isFocused]);
+        const unsubscribe = navigation.addListener('focus', () => {
+            getUserList();
+            getGroupList();
+            getCombinedList();
+          });
+
+          return unsubscribe
+
+
+    }, [navigation]);
 
 
     // const navigation = useNavigation(); 
@@ -257,7 +216,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     );
 
     const renderScene = SceneMap({
-        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat}  lastMessage={lastGroupMessage}/>,
+        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat} lastMessage={lastGroupMessage} />,
         second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={groupChatLoader} groupList={groupList} userID={userID} lastMessage={lastGroupMessage} />,
         third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={colleagueLoader} userList={userList} />
     });

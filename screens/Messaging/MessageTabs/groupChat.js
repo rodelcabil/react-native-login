@@ -21,7 +21,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
                                 activeOpacity={0.6}
                                 onPress={() => {
                                     console.log(item);
-                                    navigation.navigate('Chat Client',{
+                                    navigation.navigate('Chat Client', {
                                         user_name: item.name,
                                         type: 'group',
                                         roomId: item.id,
@@ -32,17 +32,24 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
                                 }}
                             >
                                 <View style={styles.rowContainer}>
-                                    <Avatar.Icon size={45} icon="account-group"  style={styles.avatar}/>
-                                    <View style={styles.columnContainer}>
-                                        <Text style={styles.name}>{item.name}</Text>
-                                       {lastMessage.filter(function(item){
-                                            return item.groupID == getIDMap;
-                                            }).map(function({message}){
-                                                return  <Text style={styles.name}>{message}</Text>
+                                    <Avatar.Icon size={45} icon="account-group" style={styles.avatar} />
+                                    <View style={styles.messageDetails}>
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.name}>{item.name}</Text>
+                                            {lastMessage.filter(function (item) {
+                                                return item.groupID == getIDMap;
+                                            }).map(function ({ message }) {
+                                                return <Text style={styles.message} numberOfLines={1} ellipsizeMode='tail'>{message}</Text>
                                             })}
-                                        {/* <Text style={styles.message}>{item.email_address}</Text> */}
+
+                                        </View>
+                                        {lastMessage.filter(function (item) {
+                                                return item.groupID == getIDMap;
+                                            }).map(function ({ date }) {
+                                                return <Text style={styles.date}>{moment(date).fromNow()}</Text>
+                                            })}
+                                        
                                     </View>
-                                    {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
                                     <View style={{ width: 50 }} />
                                 </View>
                             </TouchableOpacity>
@@ -65,7 +72,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
 
                     />
                 </TouchableOpacity>
-                
+
             </View>
 
 
@@ -88,6 +95,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginBottom: 10
     },
+    messageDetails: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginLeft: 10
+
+    },
     columnContainer: {
         justifyContent: 'center'
     },
@@ -97,11 +110,11 @@ const styles = StyleSheet.create({
         color: 'black'
     },
     message: {
-        fontSize: 13,
+        fontSize: 14,
         maxWidth: 250,
     },
     date: {
-        fontSize: 11,
+        fontSize: 14,
     },
     buttonGPlusStyle: {
         flexDirection: 'row',
