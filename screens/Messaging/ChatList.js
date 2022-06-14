@@ -5,7 +5,7 @@ import { Searchbar } from 'react-native-paper';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin'
 import RNRestart from 'react-native-restart';
 import AppBar from '../ReusableComponents/AppBar'
-
+import LoaderSmall from '../ReusableComponents/LottieLoader-Small';
 import moment from 'moment';
 import { hi, sr } from 'date-fns/locale';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -93,7 +93,6 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
         }
         const getCombinedList = async () => {
-
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
@@ -119,7 +118,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
                 })
 
-            let arr = [];
+        
             await axios.get(
                 `https://beta.centaurmd.com/api/chat/user-group?user_id=${userID}`,
                 {
@@ -128,6 +127,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
+                    let arr = [];
                     mappedData2 = response.data.map((data, index) => {
                         const groupID = data.id;
                         let arrtempCombinedArray = [];
@@ -147,15 +147,12 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                     arr.push({message: response.data[response.data.length - 1].message, groupID: groupID})
                                     console.log("Last group messages\n",response.data[response.data.length - 1].message, groupID)
                                 }
-                                    console.log(arr);
-                                    setLasGroupMessage(arr)
                             })
-
                             // console.log("Last group messages\n",lastGroupMessage)
-                            
+                            console.log(arr);
+                            setLasGroupMessage(arr)
                         return {
                             ...data,
-                           
                             type: 'group'
                         }
                     })
@@ -190,7 +187,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
           return unsubscribe
 
 
-    }, [navigation]);
+    }, [isFocused]);
 
 
     // const navigation = useNavigation(); 
@@ -231,6 +228,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     return (
         <View style={styles.container}>
             <MainChatPageAppBar searchQuery={searchQuery} onChangeSearch={onChangeSearch} />
+            {allChatLoader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
             <TabView
                 navigationState={{ index, routes }}
                 renderScene={renderScene}
@@ -238,7 +236,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={renderTabBar}
             />
-
+             }
 
         </View>
     )
