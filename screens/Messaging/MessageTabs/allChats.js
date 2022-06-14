@@ -69,7 +69,7 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage }) => {
                                             {lastMessage.filter(function(item){
                                                 return item.groupID == getIDMap;
                                                 }).map(function({message}){
-                                                    return  <Text style={styles.message}>{message}</Text>
+                                                    return  <Text style={styles.message} numberOfLines={1}>{message}</Text>
                                             })}
                                         </View>
                                         {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}

@@ -7,10 +7,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, lastMessage }) => {
     const newList = filterData === "" ? groupList : groupList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
+
     return (
         loader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
-
-
             <View style={styles.container}>
                 <ScrollView >
                     <View style={styles.body}>
@@ -38,7 +37,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
                                        {lastMessage.filter(function(item){
                                             return item.groupID == getIDMap;
                                             }).map(function({message}){
-                                                return  <Text style={styles.name}>{message}</Text>
+                                                return  <Text style={styles.message} numberOfLines={1}>{message}</Text>
                                             })}
                                         {/* <Text style={styles.message}>{item.email_address}</Text> */}
                                     </View>

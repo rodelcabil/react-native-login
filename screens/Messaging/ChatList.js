@@ -131,7 +131,6 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     mappedData2 = response.data.map((data, index) => {
                         const groupID = data.id;
                         let arrtempCombinedArray = [];
-                     
                         axios.get(
                             `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${groupID}`,
                             {
@@ -140,29 +139,35 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                     'Authorization': 'Bearer ' + tokenget
                                 },
                             }).then(response => {
+                                if(response.data.length === 0){
+                                    arr.push({message: "No message yet, Start the conversation.", groupID: groupID})
+                                }
+                                else{
                                     arr.push({message: response.data[response.data.length - 1].message, groupID: groupID})
                                     console.log("Last group messages\n",response.data[response.data.length - 1].message, groupID)
+                                }
                                     console.log(arr);
+                                    setLasGroupMessage(arr)
                             })
 
                             // console.log("Last group messages\n",lastGroupMessage)
-                            setLasGroupMessage(arr)
+                            
                         return {
                             ...data,
                             type: 'group'
                         }
                     })
-
                     const combined = mappedData1.concat(mappedData2)
 
                     let sort = combined.sort(function (a, b) {
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
                     });
-
+    
                     setAllChat(sort)
                     // console.log("COMBINED: ALL CHAT", sort)
-
+    
                     setAllChatLoader(false)
+
                 })
 
         }
