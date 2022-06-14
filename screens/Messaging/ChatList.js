@@ -140,14 +140,19 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                     'Authorization': 'Bearer ' + tokenget
                                 },
                             }).then(response => {
-                                arr.push({ message: response.data[response.data.length - 1].message, groupID: groupID, date: response.data[response.data.length - 1].created_at })
-                                // console.log("Last group messages\n", response.data[response.data.length - 1].message, groupID, moment(response.data[response.data.length - 1].created_at).startOf('hour').fromNow())
-                                // console.log(arr);
-                             
+                                if(response.data.length === 0){
+                                    arr.push({message: "No message yet, Start the conversation.", groupID: groupID})
+                                }
+                                else{
+                                    arr.push({message: response.data[response.data.length - 1].message, groupID: groupID})
+                                    console.log("Last group messages\n",response.data[response.data.length - 1].message, groupID)
+                                }
+                                    console.log(arr);
+                                    setLasGroupMessage(arr)
                             })
 
-                        // console.log("Last group messages\n",lastGroupMessage)
-                        setLasGroupMessage(arr)
+                            // console.log("Last group messages\n",lastGroupMessage)
+                            
                         return {
                             ...data,
                            
@@ -162,11 +167,12 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     let sort = combined.sort(function (a, b) {
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
                     });
-
+    
                     setAllChat(sort)
                     // console.log("COMBINED: ALL CHAT", sort)
-
+    
                     setAllChatLoader(false)
+
                 })
 
         }
