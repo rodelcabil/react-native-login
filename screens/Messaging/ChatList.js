@@ -144,7 +144,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                     arr.push({message: "No message yet, Start the conversation.", groupID: groupID})
                                 }
                                 else{
-                                    arr.push({message: response.data[response.data.length - 1].message, groupID: groupID})
+                                    arr.push({message: response.data[response.data.length - 1].message, groupID: groupID, date: response.data[response.data.length - 1].created_at})
                                     console.log("Last group messages\n",response.data[response.data.length - 1].message, groupID)
                                 }
                                     console.log(arr);

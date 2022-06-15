@@ -39,94 +39,11 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
             setClientID(data?.client_id)
         }
 
-        // const getCombinedMessages = async () => {
-        //     setLoader(true)
-        //     const token = await AsyncStorage.getItem('token');
-        //     const tokenget = token === null ? route.params.token : token;
-
-        //     let arr;
-        //     let combinedMessage;
-
-        //     await axios.get(
-        //         `https://beta.centaurmd.com/api/chat/user?sender_id=${myID}&receiver_id=${receiverID}`,
-        //         {
-        //             headers: {
-        //                 'Accept': 'application/json',
-        //                 'Authorization': 'Bearer ' + tokenget
-        //             },
-        //         }).then(response => {
-        //             arr = response.data.messages.map(data => {
-        //                 return { ...data }
-        //             })
-        //         })
-
-        //     await axios.get(
-        //         `https://beta.centaurmd.com/api/chat/user?sender_id=${receiverID}&receiver_id=${myID}`,
-        //         {
-        //             headers: {
-        //                 'Accept': 'application/json',
-        //                 'Authorization': 'Bearer ' + tokenget
-        //             },
-        //         }).then(response2 => {
 
 
-        //              combinedMessage = arr.concat(response2.data.messages)
-
-                   
-
-        //             console.log('COCMBINED: ', combinedMessage)
-
-        //         })
-
-        //     await axios.get(
-        //         `https://beta.centaurmd.com/api/users/${clientID}`,
-        //         {
-        //             headers: {
-        //                 'Accept': 'application/json',
-        //                 'Authorization': 'Bearer ' + tokenget
-        //             },
-        //         }).then(response => {
-
-        //             const tempArr = [];
-
-        //             response.data.map((user) => {
-        //                 const userID = user.id;
-
-
-        //                 combinedMessage.map((item) => {
-        //                     const senderID = item.sender_id;
-
-        //                     if (senderID === userID) {
-        //                         tempArr.push({
-        //                             ...item,
-        //                             first_name: user.first_name,
-        //                             last_name: user.last_name
-        //                         })
-        //                     }
-
-        //                 })
-
-        //                 return tempArr
-        //             })
-
-        //             let sort = tempArr.sort(function (a, b) {
-        //                 return (a.created_at > b.created_at) - (a.created_at < b.created_at);
-        //             });
-
-        //             setLoader(false)
-        //             setAllMessages(sort)
-
-
-        //         })
-        // }
-
-
-
-
-        const replace = strReplace('2022-06-08 03:47:15 +0000')
-        const convert = convertTZ(replace, 'Asia/Singapore');
-
-
+        var date = new Date();
+        var offsetInHours = date.getTimezoneOffset() / 60;
+        console.log("DATEEE: ",offsetInHours)
         getUserDetails();
         // getCombinedMessages()
     }, [])
@@ -182,7 +99,7 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
                 const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
                 const convertedDate = convertTZ(replace, "America/Chicago")
                 const fixDate = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
-                console.log("DATE: ", fixDate)
+                console.log("DATE: ", moment(Date.now()).format("lll"))
                 onSendMessage(uuid.v4(), myMessage, myID, receiverID, fixDate, fixDate, roomId, firstName, lastName)
                 myRef.current.clear();
                 setMyMessage('')
@@ -195,43 +112,12 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
     }
 
-    const _keyExtractor = item => item.id;
-
-    const renderItem = ({ item }) => {
-
-        const sender_id = item.sender_id;
-
-        return sender_id === myID ?
-            <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment.utc(item?.created_at).format('LLL')}</Text>
-                <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
-            </View>
-            :
-            <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-                <View style={styles.othersChat}>
-                    <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
-                    <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-
-                        <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment.utc(item?.created_at).format('LLL')} </Text>
-                        <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
-
-                    </View>
-                </View>
-            </View>
-
-
-
-    }
 
     const getInitials = (first_name, last_name) => {
 
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-    const getItem = (data, index) => ({
-        id: Math.random().toString(12).substring(0),
-        title: `Item box ${index + 1}`
-    });
 
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
@@ -261,13 +147,15 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
                                 <View>
                                     {newList?.map((item, key) => {
 
-
+                                        const replace = strReplace(moment(item?.created_at).format("YYYY-MM-DD hh:mm:ss"));
+                                        const convertedDate = convertTZ(replace, "Asia/Manila")
+                                        const fixDate = moment(convertedDate).format('LLL')
 
                                         return <>
 
                                             {item?.sender_id === myID ?
                                                 <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
+                                                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{ moment(item?.created_at).format('LLL')}</Text>
                                                     <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
                                                 </View>
                                                 :
@@ -276,7 +164,7 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
                                                         <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
                                                         <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
+                                                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, { moment(item?.created_at).format('LLL')} </Text>
                                                             <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
                                                         </View>

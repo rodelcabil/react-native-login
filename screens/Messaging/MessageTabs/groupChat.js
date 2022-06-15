@@ -45,7 +45,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
                                         {lastMessage.filter(function (item) {
                                                 return item.groupID == getIDMap;
                                             }).map(function ({ date }) {
-                                                return <Text style={styles.date}>{moment(date).fromNow()}</Text>
+                                                return <Text style={styles.date}>{moment(date).format('L')}</Text>
                                             })}
                                         
                                     </View>
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
         maxWidth: 250,
     },
     date: {
-        fontSize: 14,
+        fontSize: 13,
     },
     buttonGPlusStyle: {
         flexDirection: 'row',

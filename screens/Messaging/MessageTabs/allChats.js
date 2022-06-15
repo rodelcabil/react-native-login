@@ -67,6 +67,7 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage }) => {
                                         <View style={styles.messageDetails}>
                                             <View style={styles.columnContainer}>
                                                 <Text style={styles.name}>{item.name}</Text>
+                                               
                                                 {lastMessage.filter(function (item) {
                                                     return item.groupID == getIDMap;
                                                 }).map(function ({ message }) {
@@ -74,11 +75,15 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage }) => {
                                                 })}
 
                                             </View>
-                                            {lastMessage.filter(function (item) {
+                                            <View>
+                                                
+                                                {lastMessage.filter(function (item) {
                                                 return item.groupID == getIDMap;
                                             }).map(function ({ date }) {
-                                                return <Text style={styles.date}>{moment(date).fromNow()}</Text>
+                                                return <Text style={styles.date}>{moment(date).format('L')}</Text>
                                             })}
+                                            </View>
+
 
                                         </View>
                                         <View style={{ width: 50 }} />
@@ -112,7 +117,9 @@ const styles = StyleSheet.create({
     messageDetails: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginLeft: 10
+        marginLeft: 10,
+        marginRight: 10
+
 
     },
     columnContainer: {
@@ -128,7 +135,8 @@ const styles = StyleSheet.create({
         maxWidth: 250,
     },
     date: {
-        fontSize: 11,
+        fontSize: 13,
+        marginRight: 100
     },
     avatar: {
         backgroundColor: '#3a87ad'
