@@ -149,8 +149,6 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                                 }
                             })
                             // console.log("Last group messages\n",lastGroupMessage)
-                            console.log(arr);
-                            setLasGroupMessage(arr)
                         return {
                             ...data,
                             type: 'group'
@@ -169,7 +167,8 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     // console.log("COMBINED: ALL CHAT", sort)
     
                     setAllChatLoader(false)
-
+                    console.log(arr);
+                    setLasGroupMessage(arr)
                 })
 
         }
