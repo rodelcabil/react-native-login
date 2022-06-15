@@ -165,10 +165,9 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     
                     setAllChat(sort)
                     // console.log("COMBINED: ALL CHAT", sort)
-    
-                    setAllChatLoader(false)
                     console.log(arr);
                     setLasGroupMessage(arr)
+                    setAllChatLoader(false)
                 })
 
         }
