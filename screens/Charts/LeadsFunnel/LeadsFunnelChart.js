@@ -52,7 +52,6 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now()));
         const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
@@ -65,7 +64,6 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels', response.data)
                 let data = [];
                 let dataLegend = [];
                 let months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -79,9 +77,6 @@ const LeadsFunnelChart = ({ route }) => {
                         symbol: {fill: response.data.datasets[i].backgroundColor,}
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
-
                 let data2 = {
                     Inquiry: [
                         {x: months[0], y: data[0].data[0]},
@@ -155,13 +150,10 @@ const LeadsFunnelChart = ({ route }) => {
                     ],
                 };
 
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
-                console.log("LEADS FUNNEL DATA: ", data[0].data, data[1].data, data[2].data, data[3].data, data[4].data)
             })
-        // console.log("DASHBOARD - SCHEDULES: ", schedule)
     }
 
     const getLeadsFunnelDataThisWeek = async () => {
@@ -171,7 +163,6 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now()));
         const begginingOfCurrentWeek = today.startOf('week').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
@@ -186,13 +177,10 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this week', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
 
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -203,8 +191,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
 
                 let getCountI = 0;
                 let getCountCo = 0;
@@ -218,8 +204,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBC += data[2].data[x]
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
-
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = today.startOf('week').format("MMMM DD") + " - " + today.endOf('week').format("DD, YYYY");;
@@ -231,8 +215,6 @@ const LeadsFunnelChart = ({ route }) => {
                     BookedProcedure: [{x: getMonth, y: getCountBP}],
                     Closed: [{x: getMonth, y: getCountC}],
                 };
-
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
@@ -246,8 +228,7 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now()));
         const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
-
+        
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
 
@@ -260,13 +241,10 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this month', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
 
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -277,8 +255,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
 
                 let getCountI = 0;
                 let getCountCo = 0;
@@ -292,8 +268,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBC += data[2].data[x]
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
-
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = today.startOf('month').format("MMMM YYYY");
@@ -305,8 +279,6 @@ const LeadsFunnelChart = ({ route }) => {
                     BookedProcedure: [{x: getMonth, y: getCountBP}],
                     Closed: [{x: getMonth, y: getCountC}],
                 };
-
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
@@ -320,7 +292,6 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now())).subtract(1, 'month');
         const begginingOfCurrentWeek = today.startOf('month').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('month').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
@@ -334,13 +305,10 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this month', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
 
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -351,9 +319,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
-
                 let getCountI = 0;
                 let getCountCo = 0;
                 let getCountBC = 0;
@@ -366,8 +331,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBC += data[2].data[x]
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
-
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = today.startOf('month').format("MMMM YYYY");
@@ -379,8 +342,6 @@ const LeadsFunnelChart = ({ route }) => {
                     BookedProcedure: [{x: getMonth, y: getCountBP}],
                     Closed: [{x: getMonth, y: getCountC}],
                 };
-
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
@@ -394,7 +355,6 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now())).subtract(2, 'year');
         const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
@@ -408,13 +368,10 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this month', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
 
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -425,8 +382,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
 
                 let getCountI = 0;
                 let getCountCo = 0;
@@ -440,8 +395,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBC += data[2].data[x]
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
-
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = today.startOf('year').format("YYYY");
@@ -453,8 +406,6 @@ const LeadsFunnelChart = ({ route }) => {
                     BookedProcedure: [{x: getMonth, y: getCountBP}],
                     Closed: [{x: getMonth, y: getCountC}],
                 };
-
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
@@ -468,7 +419,6 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now())).subtract('year');
         const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
@@ -482,13 +432,9 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this month', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
-
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -499,8 +445,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
 
                 let getCountI = 0;
                 let getCountCo = 0;
@@ -514,8 +458,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBC += data[2].data[x]
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
-
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = today.startOf('year').format("MMMM");
@@ -528,7 +470,6 @@ const LeadsFunnelChart = ({ route }) => {
                     BookedProcedure: [{x: labelMonth, y: getCountBP}],
                     Closed: [{x: labelMonth, y: getCountC}],
                 };
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
@@ -542,7 +483,6 @@ const LeadsFunnelChart = ({ route }) => {
         const today = moment(new Date(Date.now())).subtract(1, 'year');
         const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
         const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
-        console.log(begginingOfCurrentWeek, endOfWeek);
 
         const setText = " DATE (" + begginingOfCurrentWeek + " - " + endOfWeek + ")";
         setFilterText(setText);
@@ -556,13 +496,10 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this month', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
 
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -573,8 +510,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
 
                 let getCountI = 0;
                 let getCountCo = 0;
@@ -588,8 +523,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBC += data[2].data[x]
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
-
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = today.startOf('year').format("YYYY");
@@ -602,7 +535,6 @@ const LeadsFunnelChart = ({ route }) => {
                     Closed: [{x: getMonth, y: getCountC}],
                 };
 
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);
@@ -624,13 +556,10 @@ const LeadsFunnelChart = ({ route }) => {
                     'Authorization': 'Bearer ' + tokenget
                 },
             }).then(response => {
-                console.log('lead funnels this month', response.data)
                 let data = [];
                 let dataLegend = [];
-
                 let months = response.data.labels;
 
-                console.log("Days", months);
                 for (var i = 0; i < response.data.datasets.length; i++) {
                     data.push({
                         data: response.data.datasets[i].data,
@@ -641,8 +570,6 @@ const LeadsFunnelChart = ({ route }) => {
                         backgroundColor: response.data.datasets[i].backgroundColor,
                     });
                 }
-
-                console.log("LOOOOPPP: ", data)
 
                 let getCountI = 0;
                 let getCountCo = 0;
@@ -657,7 +584,6 @@ const LeadsFunnelChart = ({ route }) => {
                     getCountBP += data[3].data[x]
                     getCountC += data[4].data[x]
 
-                    console.log("Count", x, getCountI, getCountCo, getCountBC, getCountBP, getCountC);
                 }
 
                 const getMonth = moment(startDate).format("MMMM YYYY") + " -  " + moment(endDate).format("MMMM YYYY");
@@ -670,7 +596,6 @@ const LeadsFunnelChart = ({ route }) => {
                     Closed: [{x: getMonth, y: getCountC}],
                 };
 
-                console.log("SET LEAD FUNNELS", data2);
                 setDataBarLegend(dataLegend)
                 setDataBar(data2)
                 setLoader(false);

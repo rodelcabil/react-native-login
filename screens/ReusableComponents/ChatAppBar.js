@@ -30,6 +30,7 @@ const ChatAppBar = ({title, type, first_name, last_name, roomId}) => {
                        
                         <Text style={{marginLeft: 10 , fontSize: 16, fontWeight: 'bold', color: 'black'}}>{title}</Text>
                     </View>
+                    {type === "user" ? <></> :
                     <TouchableOpacity
                                     activeOpacity={0.6}
                                     onPress={() => {
@@ -43,6 +44,7 @@ const ChatAppBar = ({title, type, first_name, last_name, roomId}) => {
                                 >
                     <Icon name="information" size={30} color="#3a87ad"/>
                     </TouchableOpacity>
+                    }
                 </View>
             </SafeAreaView>
         </View>
