@@ -178,10 +178,9 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
 
             if (resp.status === 200) {
                 console.log(resp.data);
-
-                const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD HH:mm"));
-                const convertedDate = convertTZ(replace, "Asia/Manila")
-                const fixDate = moment(convertedDate).format("YYYY-MM-DD HH:mm")
+                const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
+                const convertedDate = convertTZ(replace, "America/Chicago")
+                const fixDate = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
                 console.log("DATE: ", fixDate)
                 onSendMessage(uuid.v4(), myMessage, myID, receiverID, fixDate, fixDate, roomId, firstName, lastName)
                 myRef.current.clear();
