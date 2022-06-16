@@ -25,6 +25,7 @@ import MessageWrapper from './screens/Messaging/MessageTabs/MessageWrapper';
 import ChatSetting from './screens/Messaging/MessageTabs/chatSetting';
 import AddMembers from './screens/Messaging/MessageTabs/addMember';
 import SingleMessageWrapper from './screens/Messaging/MessageTabs/SingleMessageWrapper';
+import WriteMessage from './screens/Messaging/MessageTabs/writeMessage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -156,6 +157,12 @@ const App = () => {
           <Stack.Screen
             name="Single Chat Client"
             component={SingleMessageWrapper}
+            options={{ headerShown: false }}
+            
+          />
+          <Stack.Screen
+            name="New Message"
+            component={WriteMessage}
             options={{ headerShown: false }}
             
           />

@@ -43,7 +43,6 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
 
-
             await axios.get(
                 `https://beta.centaurmd.com/api/chat/user-group?user_id=${userID}`,
                 {
@@ -136,17 +135,18 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                         }
                     })
 
-
+                
+                    setLasGroupMessage(arr)
                     const combined = mappedData1.concat(mappedData2)
 
                     let sort = combined.sort(function (a, b) {
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
                     });
-    
+                  
                     setAllChat(sort)
                     // console.log("COMBINED: ALL CHAT", sort)
                     console.log(arr);
-                    setLasGroupMessage(arr)
+                    
                     setAllChatLoader(false)
                 })
 
@@ -155,7 +155,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
         getUserList();
         getGroupList();
         getCombinedList();
-
+       
         const unsubscribe = navigation.addListener('focus', () => {
             getUserList();
             getGroupList();
@@ -199,7 +199,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     const renderScene = SceneMap({
         first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat} userList={userList} myID={userID}/>,
         second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={groupChatLoader} groupList={groupList} myID={userID} userList={userList} />,
-        third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={colleagueLoader} userList={userList} />
+        third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={colleagueLoader} userList={userList} userID={userID} clientID={clientID} />
     });
 
 
