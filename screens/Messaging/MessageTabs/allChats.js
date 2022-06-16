@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, useWindowDimensions, Dimensions } from 'react-native'
 import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +23,39 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage, userLis
                         {newList.map((item, i) => {
                             const getIDMap = item.id;
                             const getLastMessageDetails = item.last_message !== null ? item.last_message : null;
+
+                            const convertToAgoChatScreen = (input) => {
+                                function convertTZ(date, tzString) {
+                                    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
+                                }
+                            
+                                function strReplace(str) {
+                                    var newStr = str.replace(/-/g, "/");
+                            
+                                    return newStr;
+                                }
+                                
+                                const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
+                                const convertedDate = convertTZ(replace, "America/Chicago")
+                                const now = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
+                                const diff=  moment(now).diff(input); 
+                                let diffDuration = moment.duration(diff);
+
+                                console.log(diffDuration.days() , "DIFF");
+                                if (diffDuration.days()  > 0) {
+                                  return `${diffDuration.days() } day(s) ago`;
+                                } else if (diffDuration.hours()  > 0) {
+                                  return `${diffDuration.hours()} hour(s) ago`;
+                                } else if (diffDuration.minutes()  > 0) {
+                                  return `${diffDuration.minutes()} minute(s) ago`;
+                                } else if (diffDuration.seconds()  > 0) {
+                                  return `${diffDuration.seconds()} second(s) ago`;
+                                } else {
+                                  return 'just now';
+                                }
+                              }
+
+                              
 
                             return item.type === 'user' ?
                                 <TouchableOpacity
@@ -77,7 +110,7 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage, userLis
                                                     return first_name + " " + last_name + ": " + getLastMessageDetails.message
                                                 }) :  "No message yet. Start Conversation" }</Text>
                                             </View>
-                                            <Text style={styles.date}>{item.last_message !== null ?  moment(getLastMessageDetails.created_at).format('L') : ""}</Text>
+                                            <Text style={styles.date}>{item.last_message !== null ?  convertToAgoChatScreen(moment(getLastMessageDetails.created_at)) : ""}</Text>
                                             <View>
                                              {/**
                                             {lastMessage.filter(function (item) {
@@ -110,6 +143,7 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         padding: 10,
+        width: Dimensions.get('window').width,
         // backgroundColor: 'orange'
     },
     rowContainer: {
