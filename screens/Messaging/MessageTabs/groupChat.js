@@ -5,7 +5,7 @@ import moment from 'moment';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, lastMessage }) => {
+const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, userList }) => {
     const newList = filterData === "" ? groupList : groupList.filter(item => { return String(item.name.toUpperCase()).includes(filterData.toUpperCase()) });
 
     return (
@@ -15,17 +15,18 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
                     <View style={styles.body}>
                         {newList.map((item, i) => {
                             const getIDMap = item.id;
+                            const getLastMessageDetails = item.last_message !== null ? item.last_message : null;
                             return <TouchableOpacity
                                 key={i}
                                 activeOpacity={0.6}
                                 onPress={() => {
                                     console.log(item);
                                     navigation.navigate('Chat Client', {
-                                        user_name: item.name,
+                                        user_name: item.group.name,
                                         type: 'group',
-                                        roomId: item.id,
-                                        userID: userID,
-                                        groupName: item.name
+                                        roomId: item.group.id,
+                                        userID: myID,
+                                        groupName: item.group.name
                                     });
 
                                 }}
@@ -33,21 +34,17 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, userID, l
                                 <View style={styles.rowContainer}>
                                     <Avatar.Icon size={45} icon="account-group" style={styles.avatar} />
                                     <View style={styles.messageDetails}>
-                                        <View style={styles.columnContainer}>
-                                            <Text style={styles.name}>{item.name}</Text>
-                                            {lastMessage.filter(function (item) {
-                                                return item.groupID == getIDMap;
-                                            }).map(function ({ message }) {
-                                                return <Text style={styles.message} numberOfLines={1} ellipsizeMode='tail'>{message}</Text>
-                                            })}
+                                    <View style={styles.columnContainer}>
+                                                <Text style={styles.name}>{item.group.name}</Text>
+                                                <Text style={styles.message} numberOfLines={1} ellipsizeMode='tail'>{item.last_message !== null ?
+                                                myID === item.last_message.sender_id ? "You: " + item.last_message.message :
+                                                userList.filter(function (item) {
+                                                    return item.id === getLastMessageDetails.sender_id;
+                                                }).map(function ({ first_name, last_name }) {
+                                                    return first_name + " " + last_name + ": " + getLastMessageDetails.message
+                                                }) :  "No message yet. Start Conversation" }</Text>
 
-                                        </View>
-                                        {lastMessage.filter(function (item) {
-                                                return item.groupID == getIDMap;
-                                            }).map(function ({ date }) {
-                                                return <Text style={styles.date}>{moment(date).format('L')}</Text>
-                                            })}
-                                        
+                                            </View>
                                     </View>
                                     <View style={{ width: 50 }} />
                                 </View>

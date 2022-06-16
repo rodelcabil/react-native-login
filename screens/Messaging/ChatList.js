@@ -128,34 +128,14 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     },
                 }).then(response => {
                     let arr = [];
-                    mappedData2 = response.data.map((data, index) => {
-                        const groupID = data.id;
-                        let arrtempCombinedArray = [];
 
-                        axios.get(
-                            `https:beta.centaurmd.com/api/chat/client-group-message?group_id=${groupID}`,
-                            {
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Authorization': 'Bearer ' + tokenget
-                                },
-                            }).then(response => {
-                                if(response.data.length === 0){
-                                    arr.push({message: "No message yet, Start the conversation.", groupID: groupID})
-                                }
-                                else{
-                                    arr.push({message: response.data[response.data.length - 1].message, groupID: groupID, date: response.data[response.data.length - 1].created_at})
-                                    console.log("Last group messages\n",response.data[response.data.length - 1].message, groupID)
-                                }
-                            })
-                            // console.log("Last group messages\n",lastGroupMessage)
+                    mappedData2 = response.data.map((data, index) => {
                         return {
                             ...data,
                             type: 'group'
                         }
                     })
 
-                
 
                     const combined = mappedData1.concat(mappedData2)
 
@@ -217,8 +197,8 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     );
 
     const renderScene = SceneMap({
-        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat} lastMessage={lastGroupMessage} />,
-        second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={groupChatLoader} groupList={groupList} userID={userID} lastMessage={lastGroupMessage} />,
+        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat} userList={userList} myID={userID}/>,
+        second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={groupChatLoader} groupList={groupList} myID={userID} userList={userList} />,
         third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={colleagueLoader} userList={userList} />
     });
 
