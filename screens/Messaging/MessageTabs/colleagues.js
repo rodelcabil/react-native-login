@@ -4,8 +4,10 @@ import { Avatar } from 'react-native-paper';
 import moment from 'moment';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 import { useNavigation } from '@react-navigation/native';
+import EntypoIcon from 'react-native-vector-icons/Entypo';
 
-const Colleagues = ({ navigation, filterData, loader, userList }) => {
+
+const Colleagues = ({ navigation, filterData, loader, userList, userID, clientID }) => {
     // const navigation = useNavigation();
 
     const getInitials = (first_name, last_name) => {
@@ -49,6 +51,21 @@ const Colleagues = ({ navigation, filterData, loader, userList }) => {
                     </View>
 
                 </ScrollView>
+                <TouchableOpacity activeOpacity={0.5}
+                    onPress={() => {
+                        navigation.navigate('New Message',{
+                            userID: userID,
+                            clientID: clientID
+                        });
+                    }}>
+                    <Avatar.Icon
+                        size={55}
+                        style={styles.fab}
+                        icon={() => <EntypoIcon name='new-message' size={25} color="#fff" />}
+
+
+                    />
+                </TouchableOpacity>
             </View>
     )
 }
@@ -86,7 +103,21 @@ const styles = StyleSheet.create({
     },
     avatar: {
         backgroundColor: '#3a87ad'
-    }
+    },
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+        padding: 0,
+        borderColor: '#fff',
+        borderWidth: 2,
+        backgroundColor: '#3a87ad',
+        shadowColor: 'black',
+        shadowOffset: { width: -2, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
 
 });
 

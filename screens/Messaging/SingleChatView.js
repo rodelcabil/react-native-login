@@ -132,7 +132,7 @@ const SingleChatView = ({ message, onSendMessage, name, type, first_name, last_n
                                 value={searchQuery}
                                 inputStyle={{ fontSize: 15 }}
                                 autoFocus={false}
-                                showSoftInputOnFocus={false}
+                               
 
                             />
                         </View>
