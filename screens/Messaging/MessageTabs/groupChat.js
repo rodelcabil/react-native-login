@@ -45,7 +45,10 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                                                 }) :  "No message yet. Start Conversation" }</Text>
 
                                             </View>
+                                            <Text style={item.last_message !== null ? styles.date : styles.dateHide}>{item.last_message !== null ?  moment(getLastMessageDetails.created_at).format('L') : 
+                                              moment(Date.now()).format('L') }</Text>
                                     </View>
+
                                     <View style={{ width: 50 }} />
                                 </View>
                             </TouchableOpacity>
@@ -94,8 +97,8 @@ const styles = StyleSheet.create({
     messageDetails: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginLeft: 10
-
+        marginLeft: 10,
+        alignItems: 'center'
     },
     columnContainer: {
         justifyContent: 'center'
@@ -111,6 +114,10 @@ const styles = StyleSheet.create({
     },
     date: {
         fontSize: 13,
+    },
+    dateHide: {
+        fontSize: 13,
+        color: 'white'
     },
     buttonGPlusStyle: {
         flexDirection: 'row',

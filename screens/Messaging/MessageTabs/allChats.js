@@ -76,10 +76,9 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage, userLis
                                                 }).map(function ({ first_name, last_name }) {
                                                     return first_name + " " + last_name + ": " + getLastMessageDetails.message
                                                 }) :  "No message yet. Start Conversation" }</Text>
-
                                             </View>
+                                            <Text style={styles.date}>{item.last_message !== null ?  moment(getLastMessageDetails.created_at).format('L') : ""}</Text>
                                             <View>
-                                                
                                              {/**
                                             {lastMessage.filter(function (item) {
                                                 return item.groupID == getIDMap;
@@ -123,8 +122,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginLeft: 10,
-        marginRight: 10
-
+        marginRight: 10,
+        alignItems: 'center'
+        
 
     },
     columnContainer: {
