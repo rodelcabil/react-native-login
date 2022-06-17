@@ -18,6 +18,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                             const getLastMessageDetails = item.last_message !== null ? item.last_message : null;
 
                             const convertToAgoChatScreen = (input) => {
+                                const dateget = moment(input).format("YYYY-MM-DD");
                                 function convertTZ(date, tzString) {
                                     return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
                                 }
@@ -35,7 +36,11 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                                 let diffDuration = moment.duration(diff);
 
                                 console.log(diffDuration.days() , "DIFF");
-                                if (diffDuration.days()  > 0) {
+                                
+                                if (diffDuration.days() >= 7) {
+                                    return `${dateget}`;
+                                } 
+                                else if (diffDuration.days()  > 0) {
                                   return `${diffDuration.days() } day(s) ago`;
                                 } else if (diffDuration.hours()  > 0) {
                                   return `${diffDuration.hours()} hour(s) ago`;

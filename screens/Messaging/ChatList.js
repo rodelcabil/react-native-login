@@ -165,7 +165,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
           return unsubscribe
 
 
-    }, [isFocused]);
+    }, [navigation]);
 
 
     // const navigation = useNavigation(); 
