@@ -26,7 +26,7 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
     const [offset,setOffset] = useState(0);
     const myRef = useRef();
     const scrollRef = useRef(scrollRef => scrollRef.current?.scrollToEnd({ animated: true }));
-
+    const container = useRef(null);
     useEffect(() => {
         const getUserDetails = async () => {
             const value = await AsyncStorage.getItem('userDetails')
@@ -172,6 +172,15 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
                             <ScrollView
                                 ref={(it) => (scrollRef.current = it)}
                                 onContentSizeChange={() =>  scrollRef.current?.scrollToEnd({ animated: true })}
+                                showsVerticalScrollIndicator={true}
+                                scrollEventThrottle={10}
+                                // onScroll={(event) => this.shouldLoadMoreContent(event)}
+                                // onScroll={(event) => {
+                                //     container.current?.onScroll();
+                                // }}
+                                // bounces={false}
+                                // scrollEnabled={true}
+                                // snapToEnd
                             >
                                 <View>
                                     {newList?.map((item, key) => {

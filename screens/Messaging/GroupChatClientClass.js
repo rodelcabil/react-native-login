@@ -96,11 +96,15 @@ export default class GroupChatClientClass extends React.Component {
           'Accept': 'application/json',
           'Authorization': 'Bearer ' + tokenget
         },
-      }).then(response => {
+      }).then(response  => {
+       
+      
         this.setState({
-          messages: response.data
+          messages: response.data.data
         })
       })
+
+      
 
     await axios.get(
       `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
@@ -163,7 +167,7 @@ export default class GroupChatClientClass extends React.Component {
         },
       }).then(response => {
         this.setState({
-          messages: response.data
+          messages: response.data.data
         })
       })
 

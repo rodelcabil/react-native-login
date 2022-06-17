@@ -8,7 +8,7 @@ import { set } from 'date-fns';
 import LoaderSmall from '../../ReusableComponents/LottieLoader-Small';
 
 const AllChat = ({ navigation, filterData, loader, allChat, lastMessage, userList, myID}) => {
-    console.log(allChat);
+    
     const getInitials = (first_name, last_name) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
@@ -80,13 +80,7 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage, userLis
                                             </View>
                                             <View>
                                                 
-                                             {/**
-                                            {lastMessage.filter(function (item) {
-                                                return item.groupID == getIDMap;
-                                            }).map(function ({ date }) {
-                                                return <Text style={styles.date}>{moment(date).format('L')}</Text>
-                                            })}
-                                              */}   
+                                            <Text style={styles.date}>{moment(item.last_message.created_at).format('L')}</Text>
                                             </View>
 
 

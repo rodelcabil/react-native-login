@@ -145,7 +145,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                   
                     setAllChat(sort)
                     // console.log("COMBINED: ALL CHAT", sort)
-                    console.log(arr);
+                    // console.log("ARR",arr);
                     
                     setAllChatLoader(false)
                 })

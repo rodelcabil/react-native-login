@@ -34,17 +34,18 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                                 <View style={styles.rowContainer}>
                                     <Avatar.Icon size={45} icon="account-group" style={styles.avatar} />
                                     <View style={styles.messageDetails}>
-                                    <View style={styles.columnContainer}>
-                                                <Text style={styles.name}>{item.group.name}</Text>
-                                                <Text style={styles.message} numberOfLines={1} ellipsizeMode='tail'>{item.last_message !== null ?
+                                        <View style={styles.columnContainer}>
+                                            <Text style={styles.name}>{item.group.name}</Text>
+                                            <Text style={styles.message} numberOfLines={1} ellipsizeMode='tail'>{item.last_message !== null ?
                                                 myID === item.last_message.sender_id ? "You: " + item.last_message.message :
-                                                userList.filter(function (item) {
-                                                    return item.id === getLastMessageDetails.sender_id;
-                                                }).map(function ({ first_name, last_name }) {
-                                                    return first_name + " " + last_name + ": " + getLastMessageDetails.message
-                                                }) :  "No message yet. Start Conversation" }</Text>
+                                                    userList.filter(function (item) {
+                                                        return item.id === getLastMessageDetails.sender_id;
+                                                    }).map(function ({ first_name, last_name }) {
+                                                        return first_name + " " + last_name + ": " + getLastMessageDetails.message
+                                                    }) : "No message yet. Start Conversation"}</Text>
 
-                                            </View>
+                                        </View>
+                                        <Text style={styles.date}>{moment(item.last_message.created_at).format('L')}</Text>
                                     </View>
                                     <View style={{ width: 50 }} />
                                 </View>
