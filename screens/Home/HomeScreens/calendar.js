@@ -61,9 +61,15 @@ const Calendar = ({ navigation, route })  => {
 
     useEffect(() => {
         console.log(user);
-        const checkEmail = user === null ? null : user.user.email;
-        getData(checkEmail);
-    }, [isFocused, user]);
+
+        const unsubscribe = navigation.addListener('focus', () => {
+            const checkEmail = user === null ? null : user.user.email;
+            getData(checkEmail);
+          });
+
+          return unsubscribe
+
+    }, [navigation, user]);
 
 
     const signIn = async () => {

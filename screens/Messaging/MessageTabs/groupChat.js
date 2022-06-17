@@ -16,6 +16,43 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                         {newList.map((item, i) => {
                             const getIDMap = item.id;
                             const getLastMessageDetails = item.last_message !== null ? item.last_message : null;
+
+                            const convertToAgoChatScreen = (input) => {
+                                const dateget = moment(input).format("YYYY-MM-DD");
+                                function convertTZ(date, tzString) {
+                                    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", { timeZone: tzString }));
+                                }
+                            
+                                function strReplace(str) {
+                                    var newStr = str.replace(/-/g, "/");
+                            
+                                    return newStr;
+                                }
+                                
+                                const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
+                                const convertedDate = convertTZ(replace, "America/Chicago")
+                                const now = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
+                                const diff=  moment(now).diff(input); 
+                                let diffDuration = moment.duration(diff);
+
+                                console.log(diffDuration.days() , "DIFF");
+                                
+                                if (diffDuration.days() >= 7) {
+                                    return `${dateget}`;
+                                } 
+                                else if (diffDuration.days()  > 0) {
+                                  return `${diffDuration.days() } day(s) ago`;
+                                } else if (diffDuration.hours()  > 0) {
+                                  return `${diffDuration.hours()} hour(s) ago`;
+                                } else if (diffDuration.minutes()  > 0) {
+                                  return `${diffDuration.minutes()} minute(s) ago`;
+                                } else if (diffDuration.seconds()  > 0) {
+                                  return `${diffDuration.seconds()} second(s) ago`;
+                                } else {
+                                  return 'just now';
+                                }
+                              }
+
                             return <TouchableOpacity
                                 key={i}
                                 activeOpacity={0.6}
@@ -44,9 +81,11 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                                                         return first_name + " " + last_name + ": " + getLastMessageDetails.message
                                                     }) : "No message yet. Start Conversation"}</Text>
 
-                                        </View>
-                                        <Text style={styles.date}>{moment(item.last_message.created_at).format('L')}</Text>
+                                            </View>
+                                            <Text style={item.last_message !== null ? styles.date : styles.dateHide}>{item.last_message !== null ? convertToAgoChatScreen(moment(getLastMessageDetails.created_at))  : 
+                                              moment(Date.now()).format('L') }</Text>
                                     </View>
+
                                     <View style={{ width: 50 }} />
                                 </View>
                             </TouchableOpacity>
@@ -84,6 +123,7 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         padding: 10,
+        width: Dimensions.get('window').width,
         // backgroundColor: 'orange'
     },
     rowContainer: {
@@ -95,8 +135,8 @@ const styles = StyleSheet.create({
     messageDetails: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginLeft: 10
-
+        marginLeft: 10,
+        alignItems: 'center'
     },
     columnContainer: {
         justifyContent: 'center'
@@ -112,6 +152,10 @@ const styles = StyleSheet.create({
     },
     date: {
         fontSize: 13,
+    },
+    dateHide: {
+        fontSize: 13,
+        color: 'white'
     },
     buttonGPlusStyle: {
         flexDirection: 'row',
