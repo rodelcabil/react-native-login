@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { View, Text, TextInput, StyleSheet, VirtualizedList, ScrollView } from 'react-native'
+import { View, Text, TextInput, StyleSheet, VirtualizedList, ScrollView, ActivityIndicator, FlatList } from 'react-native'
 import { Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import uuid from 'react-native-uuid';
@@ -15,18 +15,21 @@ import LoaderSmall from '../ReusableComponents/LottieLoader-Small';
 import { ca } from 'date-fns/locale';
 var width = Dimensions.get('window').width - 20;
 
-const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_name, roomId, loader }) => {
+const GroupChatView = ({ message, onSendMessage, roomId, name, type, first_name, last_name, loader  }) => {
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isGettingMore, setIsGettingMore] = useState(false);
+    const [messages, setMessages] = useState(message);
 
     const [myMessage, setMyMessage] = useState('');
-    const [myUuid, setMyUuid] = useState(uuid.v4());
     const [searchQuery, setSearchQuery] = useState('');
     const [myID, setMyID] = useState('');
     const [firstName, setFirstName] = useState();
     const [lastName, setLastName] = useState();
-    const [offset,setOffset] = useState(0);
     const myRef = useRef();
     const scrollRef = useRef(scrollRef => scrollRef.current?.scrollToEnd({ animated: true }));
-    const container = useRef(null);
+
+
     useEffect(() => {
         const getUserDetails = async () => {
             const value = await AsyncStorage.getItem('userDetails')
@@ -34,18 +37,39 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
             setMyID(data?.id)
             setFirstName(data?.first_name)
             setLastName(data?.last_name)
-
         }
 
-       
+        const getMessages = async () => {
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+            await axios.get(
+                `https://beta.centaurmd.com/api/chat/client-group-message?group_id=14`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
 
-        const replace = strReplace('2022-06-08 03:47:15 +0000')
-        const convert = convertTZ(replace, 'Asia/Singapore');
+                //    console.log("RESP", response.data.links[1].url)
+                    axios.get(
+                    `${response.data.links[1].url}`,
+                    {
+                        headers: {
+                            'Accept': 'application/json',
+                            'Authorization': 'Bearer ' + tokenget
+                        },
+                    }).then(response => {
+    
+                       console.log("RESP", response.data.links[1].url)
+                        
+                    })
+                })
 
-        
-        console.log("CHECK DATE: ", moment(convert).calendar())
+        }
+        getMessages();
         getUserDetails();
-        // getGroupMessages();
+      
     }, [])
 
 
@@ -59,8 +83,8 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
         return newStr;
     }
 
-    const convertDate =(str)=>{
-        const replace = strReplace(str+' +0000');
+    const convertDate = (str) => {
+        const replace = strReplace(str + ' +0000');
         const convertedDate = convertTZ(replace, "Asia/Singapore")
 
         return convertedDate
@@ -77,7 +101,7 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
 
         const token = await AsyncStorage.getItem('token');
         const tokenget = token === null ? route.params.token : token;
-        
+
         try {
 
             const resp = await axios({
@@ -93,12 +117,12 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
 
             if (resp.status === 200) {
                 console.log(resp.data);
-              
+
                 const replace = strReplace(moment(Date.now()).format("YYYY-MM-DD hh:mm:ss +9"));
-                const convertedDate = convertTZ(replace , "America/Chicago")
+                const convertedDate = convertTZ(replace, "America/Chicago")
                 const fixDate = moment(convertedDate).format("YYYY-MM-DD hh:mm:ss")
                 console.log("DATE: ", fixDate)
-                onSendMessage(uuid.v4(), myMessage, myID, fixDate, fixDate, roomId, firstName, lastName)
+                onSendMessage(uuid.v4(), myMessage, myID, fixDate, fixDate, roomId, firstName, lastName, "message")
                 myRef.current.clear();
                 setMyMessage('')
             }
@@ -107,36 +131,9 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
             console.log("Error here: ", error);
         }
 
-      
-    }
-
-    const _keyExtractor = item => item.id;
-
-    const renderItem = ({ item }) => {
-
-        const sender_id = item.sender_id;
-
-        return sender_id === myID ?
-            <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment.utc(item?.created_at).format('LLL')}</Text>
-                <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
-            </View>
-            :
-            <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-                <View style={styles.othersChat}>
-                    <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
-                    <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
-
-                        <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment.utc(item?.created_at).format('LLL')} </Text>
-                        <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
-
-                    </View>
-                </View>
-            </View>
-
-
 
     }
+
 
     const getInitials = (first_name, last_name) => {
 
@@ -145,8 +142,47 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
 
     const getItem = (data, index) => ({
         id: Math.random().toString(12).substring(0),
-        title: `Item box ${index+1}`
-      });
+        title: `Item box ${index + 1}`
+    });
+
+    const renderItem = ({ item }) => {
+        if (item.action === 'join') {
+            return <Text style={styles.joinPart}>{name} has joined the group.</Text>
+        }
+        if (item.action === 'left') {
+            return <Text style={styles.joinPart}>{name} has left the group.</Text>
+        }
+        if (item.action === 'message') {
+            return item?.sender_id === myID ?
+                <View style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
+                    <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+                </View>
+                :
+                <View style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+                    <View style={styles.othersChat}>
+                        <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
+                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
+
+                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
+                            <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
+
+                        </View>
+                    </View>
+                </View>
+        }
+    }
+
+    const renderLoader = () => {
+        isLoading ?
+            <View style={styles.loaderStyle}>
+                <ActivityIndicator size="large" color="#aaa" />
+            </View> : null
+    }
+
+    const loadMoreItem = () => {
+        setCurrentPage(currentPage + 1);
+    };
 
     return (
         <View style={{ flex: 1, flexDirection: 'column', backgroundColor: '#fff' }}>
@@ -166,47 +202,60 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
 
                             />
                         </View>
-                      
+
 
                         <View style={{ flex: 1 }}>
-                            <ScrollView
+                            <FlatList
+                                ref={scrollRef}
+                                onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
+                                data={newList}
+                                renderItem={renderItem}
+                                keyExtractor={item => item.id}
+                                inverted
+                                contentContainerStyle={{ flexDirection: 'column-reverse', }}
+                                onEndReached={loadMoreItem}
+                                onEndReachedThreshold={0}
+
+                            />
+                            {/* <ScrollView
                                 ref={(it) => (scrollRef.current = it)}
-                                onContentSizeChange={() =>  scrollRef.current?.scrollToEnd({ animated: true })}
+                                onContentSizeChange={() => scrollRef.current?.scrollToEnd({ animated: true })}
                                 showsVerticalScrollIndicator={true}
                                 scrollEventThrottle={10}
-                                // onScroll={(event) => this.shouldLoadMoreContent(event)}
-                                // onScroll={(event) => {
-                                //     container.current?.onScroll();
-                                // }}
-                                // bounces={false}
-                                // scrollEnabled={true}
-                                // snapToEnd
+                           
                             >
                                 <View>
                                     {newList?.map((item, key) => {
 
-                                      
 
                                         return <>
 
-                                            {item?.sender_id === myID ?
-                                                <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
-                                                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
-                                                    <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
-                                                </View>
-                                                :
-                                                <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
-                                                    <View style={styles.othersChat}>
-                                                        <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
-                                                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
-                                                            <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
+                                            {
+                                                item.action === "join" ? <Text style={styles.joinPart}>{name} has joined the group.</Text> :
+                                                    item.action === "left" ? <Text style={styles.joinPart}>{name} has left the group.</Text> :
+                                                        item.action === "message" ?
+                                                            item?.sender_id === myID ?
+                                                                <View key={key} style={{ flex: 1, padding: 5, flexDirection: 'column', alignItems: 'flex-end', marginBottom: 5, marginRight: 10, }}>
+                                                                    <Text style={{ textAlign: 'right', maxWidth: 200, fontSize: 12 }}>{moment(item?.created_at).calendar()}</Text>
+                                                                    <Text style={styles.bubbleChatOwn}>{item?.message}</Text>
+                                                                </View>
+                                                                :
+                                                                <View key={key} style={{ flexDirection: 'column', flex: 1, justifyContent: 'flex-start', marginBottom: 5, }}>
+                                                                    <View style={styles.othersChat}>
+                                                                        <Avatar.Text size={45} label={getInitials(item?.first_name, item?.last_name)} />
+                                                                        <View style={{ flexDirection: 'column', marginLeft: 10, alignItems: 'flex-start' }}>
 
-                                                        </View>
-                                                    </View>
-                                                </View>
+                                                                            <Text style={{ maxWidth: 300, textAlign: 'left', fontSize: 12 }}>{item?.first_name + " " + item?.last_name}, {moment(item?.created_at).calendar()} </Text>
+                                                                            <Text style={styles.bubbleChatOthers}>{item?.message}</Text>
 
+                                                                        </View>
+                                                                    </View>
+                                                                </View>
+
+
+                                                            :
+                                                            <></>
                                             }
 
                                         </>
@@ -214,16 +263,16 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
 
                                     })}
                                 </View>
-                            </ScrollView>
+                            </ScrollView> */}
                         </View>
                     </>
                 }
 
 
                 <View style={styles.textInputContainer}>
-                <KeyboardAwareScrollView  keyboardShouldPersistTaps={'always'} ref={scrollRef}
-                    style={{flex:1}}
-                    showsVerticalScrollIndicator={false}>
+                    <KeyboardAwareScrollView keyboardShouldPersistTaps={'always'} ref={scrollRef}
+                        style={{ flex: 1 }}
+                        showsVerticalScrollIndicator={false}>
                         <TextInput
                             autoFocus={false}
                             keyboardType="default"
@@ -231,7 +280,7 @@ const GroupChatView = ({ message, onSendMessage, name, type, first_name, last_na
                             enablesReturnKeyAutomatically
                             placeholder='Type a message'
                             style={{
-                                
+
                                 width: myMessage.length === 0 ? Dimensions.get('window').width - 10 : Dimensions.get('window').width - 60,
 
                                 paddingVertical: 10,
@@ -349,6 +398,13 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginBottom: 12.6
-    }
+    },
+    joinPart: {
+        fontStyle: 'italic'
+    },
+    loaderStyle: {
+        marginVertical: 16,
+        alignItems: "center",
+    },
 });
 export default GroupChatView

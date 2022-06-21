@@ -81,7 +81,7 @@ export default class SingleChatClientClass extends React.Component {
             },
         }).then(response => {
 
-            arr = response.data.messages.map(data => {
+            arr = response.data.data.map(data => {
                 return {
                     ...data
                 }
@@ -101,7 +101,7 @@ export default class SingleChatClientClass extends React.Component {
             },
         }).then(response2 => {
 
-            arr2 = response2.data.messages.map(data => {
+            arr2 = response2.data.data.map(data => {
                 return {
                     ...data
                 }
@@ -189,7 +189,7 @@ export default class SingleChatClientClass extends React.Component {
         },
       }).then(response => {
 
-        arr = response.data.messages.map(data => {
+        arr = response.data.messages.data.map(data => {
           return {
             ...data
           }
@@ -206,7 +206,7 @@ export default class SingleChatClientClass extends React.Component {
         },
       }).then(response2 => {
 
-        arr2 = response2.data.messages.map(data => {
+        arr2 = response2.data.messages.data.map(data => {
           return {
             ...data
           }

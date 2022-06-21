@@ -24,6 +24,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
 
     const [groupList, setGroupList] = useState([]);
+    const [chatMateList, setChatMateList] = useState([]);
     const [userList, setUserList] = useState([]);
     const [allChat, setAllChat] = useState([]);
     const [lastGroupMessage, setLasGroupMessage] = useState([])
@@ -51,9 +52,14 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
-                    let sort = response.data.sort(function (a, b) {
+
+                    let sort = response.data.map(data => {
+                        return {
+                            ...data
+                        }
+                    }).sort(function (a, b) {
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
-                    });
+                    })
 
                     setGroupList(sort)
                     setGroupChatLoader(false);
@@ -63,11 +69,10 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
         }
-        const getUserList = async () => {
 
+        const getUserList = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
-
             await axios.get(
                 `https://beta.centaurmd.com/api/users/${clientID}`,
                 {
@@ -76,14 +81,31 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
+                    setUserList(response.data)
+                })
+        }
 
-                    const newList = response.data.filter(item => { return item.id !== userID });
+        const getChatMateList = async () => {
 
-                    let sort = newList.sort(function (a, b) {
-                        return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
+            const token = await AsyncStorage.getItem('token');
+            const tokenget = token === null ? route.params.token : token;
+
+            await axios.get(
+                `https://beta.centaurmd.com/api/chat/messages`,
+                {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + tokenget
+                    },
+                }).then(response => {
+
+                    // const newList = response.data.filter(item => { return item.id !== userID });
+
+                    let sort = response.data.chat_history.sort(function (a, b) {
+                        return new Date(b.created_at).getTime() < new Date(a.created_at).getTime() ? 1 : -1;
                     });
                     // console.log("USER DETAILS: ", sort)
-                    setUserList(sort)
+                    setChatMateList(sort)
                     setColleagueLoader(false);
                     // console.log("ROUTESSS: ", route.params.token);
 
@@ -91,6 +113,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
             // console.log("DASHBOARD - SCHEDULES: ", schedule)
 
         }
+
         const getCombinedList = async () => {
             const token = await AsyncStorage.getItem('token');
             const tokenget = token === null ? route.params.token : token;
@@ -99,7 +122,7 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
 
             await axios.get(
 
-                `https://beta.centaurmd.com/api/users/${clientID}`,
+                `https://beta.centaurmd.com/api/chat/messages`,
                 {
                     headers: {
                         'Accept': 'application/json',
@@ -107,17 +130,19 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                     },
                 }).then(response => {
 
-                    const newList = response.data.map((data) => {
+                    const newList = response.data.chat_history.map((data) => {
                         return {
-                            ...data, type: 'user'
+                            ...data,
+                            type: 'user'
                         }
                     })
 
                     mappedData1 = newList.filter(item => { return item.id !== userID });
 
+
                 })
 
-        
+
             await axios.get(
                 `https://beta.centaurmd.com/api/chat/user-group?user_id=${userID}`,
                 {
@@ -135,34 +160,34 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
                         }
                     })
 
-                
                     setLasGroupMessage(arr)
                     const combined = mappedData1.concat(mappedData2)
 
                     let sort = combined.sort(function (a, b) {
                         return new Date(b.updated_at).getTime() < new Date(a.updated_at).getTime() ? 1 : -1;
                     });
-                  
+
                     setAllChat(sort)
                     // console.log("COMBINED: ALL CHAT", sort)
                     // console.log("ARR",arr);
-                    
+
                     setAllChatLoader(false)
                 })
 
         }
-
+        getChatMateList();
         getUserList();
         getGroupList();
         getCombinedList();
-       
+
         const unsubscribe = navigation.addListener('focus', () => {
+            getChatMateList();
             getUserList();
             getGroupList();
             getCombinedList();
-          });
+        });
 
-          return unsubscribe
+        return unsubscribe
 
 
     }, [navigation]);
@@ -197,9 +222,9 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
     );
 
     const renderScene = SceneMap({
-        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat} userList={userList} myID={userID}/>,
+        first: () => <AllChat navigation={navigation} filterData={searchQuery} loader={allChatLoader} allChat={allChat} userList={userList} myID={userID} />,
         second: () => <GroupChat navigation={navigation} filterData={searchQuery} loader={groupChatLoader} groupList={groupList} myID={userID} userList={userList} />,
-        third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={colleagueLoader} userList={userList} userID={userID} clientID={clientID} />
+        third: () => <Colleagues navigation={navigation} filterData={searchQuery} loader={colleagueLoader} userList={chatMateList} userID={userID} clientID={clientID} />
     });
 
 
@@ -207,14 +232,14 @@ const ChatList = ({ navigation, route, clientID, userID }) => {
         <View style={styles.container}>
             <MainChatPageAppBar searchQuery={searchQuery} onChangeSearch={onChangeSearch} />
             {allChatLoader === true ? <View style={{ height: '100%', justifyContent: 'center' }}><LoaderSmall /></View> :
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width: layout.width }}
-                renderTabBar={renderTabBar}
-            />
-             }
+                <TabView
+                    navigationState={{ index, routes }}
+                    renderScene={renderScene}
+                    onIndexChange={setIndex}
+                    initialLayout={{ width: layout.width }}
+                    renderTabBar={renderTabBar}
+                />
+            }
 
         </View>
     )

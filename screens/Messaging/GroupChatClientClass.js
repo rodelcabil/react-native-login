@@ -38,7 +38,7 @@ export default class GroupChatClientClass extends React.Component {
         this.handlePart(data.name);
       });
       this.chatChannel.bind('group_message', (data) => { // (6)
-        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
+        this.handleMessage(data.id, data.message, data.sender_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.action, data.seen_by, data.channelName,);
       });
     });
 
@@ -65,7 +65,7 @@ export default class GroupChatClientClass extends React.Component {
 
 
 
-  async handleMessage(id, message, sender_id, roomId, created_at, updated_at, first_name, last_name) { // (6)
+  async handleMessage(id, message, sender_id, roomId, created_at, updated_at, first_name, last_name, action) { // (6)
     const messages = this.state.messages.slice();
     messages.push({
       created_at: created_at,
@@ -74,6 +74,7 @@ export default class GroupChatClientClass extends React.Component {
       id: id,
       last_name: last_name,
       message: message,
+      action: action,
       sender_id: sender_id,
       updated_at: updated_at,
     });
@@ -155,7 +156,7 @@ export default class GroupChatClientClass extends React.Component {
   async componentWillUnmount() { // (8)
    
 
-    // console.log("MY NAME: ", this.props.name)
+    
     const token = await AsyncStorage.getItem('token');
     const tokenget = token === null ? route.params.token : token;
     await axios.get(
@@ -221,7 +222,7 @@ export default class GroupChatClientClass extends React.Component {
   }
 
 
-  async onSendMessage(id, message, sender_id, created_at, updated_at, roomId, first_name, last_name) { // (9)
+  async onSendMessage(id, message, sender_id, created_at, updated_at, roomId, first_name, last_name, action ) { // (9)
 
     // console.log("called onSendMessage");
     const payload = {
@@ -233,7 +234,8 @@ export default class GroupChatClientClass extends React.Component {
       updated_at: updated_at,
       first_name: first_name,
       last_name: last_name,
-      channelName: this.state.roomId
+      channelName: this.state.roomId,
+      action: action,
     };
     try {
       fetch(`${pusherConfig.restServer}/users/${this.props.name}/messages`, {
@@ -247,7 +249,7 @@ export default class GroupChatClientClass extends React.Component {
     catch (error) {
       console.log(error);
     }
-  //  console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name);
+    console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name, 'Action: ', action);
   }
 
 
@@ -260,6 +262,7 @@ export default class GroupChatClientClass extends React.Component {
     const last_name = this.props.last_name;
     const roomId = this.props.roomId;
     const userID = this.props.myID;
+    const clientID = this.props.clientID;
     
     //this.state.roomId = roomId;
 

@@ -21,7 +21,7 @@ const ChatAppBar = ({title, type, first_name, last_name, roomId}) => {
                 <View style={styles.headerWrapper}> 
                     <View style={{flexDirection: 'row', alignItems: 'center', fontFamily: 'Roboto'}}>
                     
-                        <IonIcon name="arrow-back" size={30} color="black"  onPress={()=> navigation.goBack()}/>
+                        <IonIcon name="arrow-back" size={30} color="black"  onPress={()=> navigation.navigate('Messaging')}/>
                         {
                             type === 'group' ? <Avatar.Icon size={35} icon="account-group"  style={styles.avatar}/>
                             :

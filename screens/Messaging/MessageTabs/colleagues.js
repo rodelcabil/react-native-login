@@ -27,20 +27,20 @@ const Colleagues = ({ navigation, filterData, loader, userList, userID, clientID
                                 activeOpacity={0.6}
                                 onPress={() => {
                                     navigation.navigate('Single Chat Client', {
-                                        user_name: item.first_name + ' ' + item.last_name,
-                                        first_name: item.first_name,
-                                        last_name: item.last_name,
-                                        id: item.id,
+                                        user_name: item.user.first_name + ' ' + item.user.last_name,
+                                        first_name: item.user.first_name,
+                                        last_name: item.user.last_name,
+                                        id: item.user.id,
                                         type: 'user'
                                     });
 
                                 }}
                             >
                                 <View style={styles.rowContainer}>
-                                    <Avatar.Text size={45} label={getInitials(item.first_name, item.last_name)} style={styles.avatar} />
+                                    <Avatar.Text size={45} label={getInitials(item.user.first_name, item.user.last_name)} style={styles.avatar} />
                                     <View style={styles.columnContainer}>
-                                        <Text style={styles.name}>{item.first_name} {item.last_name}</Text>
-                                        <Text style={styles.message}>{item.email_address}</Text>
+                                        <Text style={styles.name}>{item.user.first_name} {item.user.last_name}</Text>
+                                        <Text style={styles.message}>{item.message}</Text>
                                     </View>
                                     {/* <Text style={styles.date}>{moment(new Date(Date.now())).format("YYYY-MM-DD")}</Text> */}
                                     <View style={{ width: 50 }} />

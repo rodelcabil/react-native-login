@@ -35,7 +35,7 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                                 const diff=  moment(now).diff(input); 
                                 let diffDuration = moment.duration(diff);
 
-                                console.log(diffDuration.days() , "DIFF");
+                               
                                 
                                 if (diffDuration.days() >= 7) {
                                     return `${dateget}`;
