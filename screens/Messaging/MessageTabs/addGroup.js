@@ -93,7 +93,7 @@ const AddGroup = ({ route, userID}) => {
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-    const [selectedMember, setSelectedMember] = useState();
+    const [selectedMember, setSelectedMember] = useState([]);
 
     const [selectedMemberDisplay, setSelectedMemberDisplay] = useState([]);
 
@@ -140,6 +140,11 @@ const AddGroup = ({ route, userID}) => {
           console.log(resp.data);
 
          if (resp.status === 200) {
+            if(resp.data.status === "failed"){
+                setAddLoader(false);
+                alert(resp.data.message)
+            }
+            else{
             //alert("Added Successfully");
             let groupID = '';
             await axios.get(
@@ -150,9 +155,10 @@ const AddGroup = ({ route, userID}) => {
                         'Authorization': 'Bearer ' + tokenget
                     },
                 }).then(response => {
+                    console.log(response.data)
                     response.data.map((data, index) => {
-                        const id = data.id
-                        if(data.name === title){
+                        const id = data.group.id
+                        if(data.group.name === title){
                             groupID = id
                             console.log(id, "success get id");
                         }
@@ -186,7 +192,7 @@ const AddGroup = ({ route, userID}) => {
                     setTimeout(() => {navigation.goBack();}, 1000)
                 })
 
-         } else {
+         }} else {
          alert("Error, please try again");
        }
     }
@@ -411,7 +417,7 @@ const AddGroup = ({ route, userID}) => {
                                 style={styles.buttonCont}
                                 title="Submit" 
                                 onPress={() => {
-                                  if(title !== "" && selectedMem.length !== 0){
+                                  if(title !== "" && selectedMember.length !== 0){
                                      setShowErrorTitle(false) 
                                      setShowErrorListMember(false) 
                                      addGroup();
@@ -423,7 +429,7 @@ const AddGroup = ({ route, userID}) => {
                                     else{
                                        setShowErrorTitle(false) 
                                     }
-                                    if(selectedMem.length === 0){
+                                    if(selectedMember.length === 0){
                                        setShowErrorListMember(true)
                                     }
                                     else{

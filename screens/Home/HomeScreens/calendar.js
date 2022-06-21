@@ -158,7 +158,7 @@ const Calendar = ({ navigation, route })  => {
                     );
                 }
             );
-
+            setLoader(false);
             await axios.get(
                 `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${userInfoToken.accessToken}`
             ).then(response =>{
@@ -198,7 +198,7 @@ const Calendar = ({ navigation, route })  => {
                 console.log("TEMP ARRAY FILTER", tempItems);
                 setItems({});
                 setItems(arrTemp);
-                setLoader(false);
+    
                 setGCSync(false);
             });
         } 
