@@ -9,6 +9,7 @@ import { update } from 'lodash';
 import GroupChatView from './GroupChatView';
 
 
+
 export default class GroupChatClientClass extends React.Component {
 
   constructor(props) {
@@ -43,6 +44,7 @@ export default class GroupChatClientClass extends React.Component {
     });
 
     this.handleSendMessage = this.onSendMessage.bind(this); // (9)
+
 
   }
 
