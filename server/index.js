@@ -42,6 +42,7 @@ app.post('/users/:name/messages', function (req, res) {
     res.sendStatus(204);
 });
 
+app.post('/users/:name/singleMessages', function (req, res) {
     console.log("Single Message: ",req.body.message, "\nMessage ID: ", req.body.id,"\nSender ID: ", req.body.sender_id, "\nReceiver ID: ", req.body.receiver_id, '\nCreated at: ', req.body.created_at, '\nUpdated at: ', req.body.updated_at, '\nGroup ID: ', req.body.group_id, "\nFirst Name: ",  req.body.first_name, "\nLast Name: ",  req.body.last_name  + "\n");
     pusherClient.trigger(`${req.body.channelName}`, 'single_message', {
         id: req.body.id,
@@ -54,8 +55,8 @@ app.post('/users/:name/messages', function (req, res) {
         first_name: req.body.first_name,
         last_name: req.body.last_name,
     });
-  
-
+    res.sendStatus(204);
+});
 
 app.listen(4000, function () { // (6)
     console.log('App listening on port 4000');
