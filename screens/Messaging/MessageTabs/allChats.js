@@ -117,7 +117,7 @@ const AllChat = ({ navigation, filterData, loader, allChat, lastMessage, userLis
                                             <Text style={styles.date}>{item.last_message !== null ?  convertToAgoChatScreen(moment(getLastMessageDetails.created_at)) : ""}</Text>
                                             <View>
                                                 
-                                            <Text style={styles.date}>{moment(item.last_message.created_at).format('L')}</Text>
+                                            <Text style={styles.date}>{moment(item.created_at).format('L')}</Text>
                                             </View>
 
 

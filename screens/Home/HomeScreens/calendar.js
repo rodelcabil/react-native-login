@@ -61,15 +61,16 @@ const Calendar = ({ navigation, route })  => {
 
     useEffect(() => {
         console.log(user);
-
-        const unsubscribe = navigation.addListener('focus', () => {
+        const checkEmail = user === null ? null : user.user.email;
+        getData(checkEmail);
+      /*  const unsubscribe = navigation.addListener('focus', () => {
             const checkEmail = user === null ? null : user.user.email;
             getData(checkEmail);
           });
 
-          return unsubscribe
+          return unsubscribe*/
 
-    }, [navigation, user]);
+    }, [isFocused, user]);
 
 
     const signIn = async () => {
@@ -158,7 +159,7 @@ const Calendar = ({ navigation, route })  => {
                     );
                 }
             );
-
+            setLoader(false);
             await axios.get(
                 `https://www.googleapis.com/calendar/v3/calendars/${email}/events?access_token=${userInfoToken.accessToken}`
             ).then(response =>{
@@ -198,7 +199,7 @@ const Calendar = ({ navigation, route })  => {
                 console.log("TEMP ARRAY FILTER", tempItems);
                 setItems({});
                 setItems(arrTemp);
-                setLoader(false);
+    
                 setGCSync(false);
             });
         } 
@@ -583,6 +584,9 @@ const Calendar = ({ navigation, route })  => {
                 items={items}
                 renderItem={renderItem}
                 renderEmptyData={renderEmptyDate}
+                pastScrollRange={31}
+                // Max amount of months allowed to scroll to the future. Default = 50
+                futureScrollRange={31}
                 onDayPress={day => {
                     setDay(day.dateString);
                     if(day.dateString < moment(new Date(Date.now())).format("YYYY-MM-DD")){

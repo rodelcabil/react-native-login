@@ -35,8 +35,8 @@ const ReportSummary = ({route}) => {
     const today = moment(new Date(Date.now()));
   
 
-    const begginingOfYear = today.startOf('week').format("YYYY-MM-DD");
-    const endOfYear = today.endOf('week').format("YYYY-MM-DD");
+    const begginingOfYear = today.startOf('year').format("YYYY-MM-DD");
+    const endOfYear = today.endOf('year').format("YYYY-MM-DD");
 
     const [dateFrom, setDateFrom] = useState(begginingOfYear);
     const [dateTo, setDateTo] = useState(endOfYear);
@@ -236,8 +236,8 @@ const ReportSummary = ({route}) => {
     const getReportSummaryData = async () => {
 
         const today = moment(new Date(Date.now()));
-        const begginingOfCurrentWeek = today.startOf('week').format("YYYY-MM-DD");
-        const endOfWeek = today.endOf('week').format("YYYY-MM-DD");
+        const begginingOfCurrentWeek = today.startOf('year').format("YYYY-MM-DD");
+        const endOfWeek = today.endOf('year').format("YYYY-MM-DD");
 
         setDateFrom(begginingOfCurrentWeek);
         setDateTo(endOfWeek)

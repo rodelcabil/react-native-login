@@ -262,8 +262,8 @@ const ViewPatientDetails = ({ route }) => {
                                                                                     <Text style={{ color: '#2A2B2F', fontSize: 16, fontWeight: 'bold', backgroundColor: '#D9DEDF', padding: 5, width: 210 }}>FIELD VALUE</Text>
                                                                                 </View>
                                                                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                                                                    <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10, }}>Title:</Text>
-                                                                                    <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10, }}>{mb?.message_html?.title}</Text>
+                                                                                {/*   <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10, }}>Title:</Text>
+                                                                                    <Text style={{ color: '#7E7E7E', fontSize: 16, width: 210, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10, }}>{mb?.message_html?.title}</Text>*/}
                                                                                 </View>
                                                                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                                                                     <Text style={{ color: '#7E7E7E', fontSize: 16, width: 120, borderBottomWidth: 1, borderColor: '#D9DEDF', paddingVertical: 10, }}>Description:</Text>

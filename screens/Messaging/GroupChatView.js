@@ -396,7 +396,9 @@ const styles = StyleSheet.create({
         marginBottom: 12.6
     },
     joinPart: {
-        fontStyle: 'italic'
+        fontStyle: 'italic',
+        alignSelf: 'center',
+        marginBottom: 5
     },
     loaderStyle: {
         marginVertical: 16,

@@ -95,9 +95,10 @@ const GroupChat = ({ navigation, route, filterData, loader, groupList, myID, use
                 </ScrollView>
                 <TouchableOpacity activeOpacity={0.5}
                     onPress={() => {
+                        console.log(myID, "My ID");
                         navigation.navigate('Add Group', {
                             route: route,
-                            userID: userID,
+                            userID: myID,
                         });
                     }}>
                     <Avatar.Icon
