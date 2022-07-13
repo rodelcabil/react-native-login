@@ -304,6 +304,7 @@ const Dashboard = ({ navigation, route }) => {
                             <SurgeonsChart route={route} />
                             <LocationChart route={route} />
                             <SourceOfInquiryChart route={route} />
+                            <View style={{ marginBottom: 5 }} />
                             <LeadsFunnel route={route}/>
 
                             <View style={{ marginBottom: 5 }} />

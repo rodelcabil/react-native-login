@@ -37,7 +37,8 @@ export default class SingleChatClientClass extends React.Component {
       });
 
       this.chatChannel.bind('single_message', (data) => {
-        this.handleMessage(data.id, data.message, data.sender_id, data.receiver_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
+          console.log('The Data', data)
+          this.handleMessage(data.id, data.message, data.sender_id, data.receiver_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
       });
     });
 
@@ -402,6 +403,8 @@ export default class SingleChatClientClass extends React.Component {
     catch (error) {
       console.log(error);
     }
+ 
+   
     console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, "Receiver ID: ", receiver_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name);
   }
 

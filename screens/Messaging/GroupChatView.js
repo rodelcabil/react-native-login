@@ -67,7 +67,7 @@ const GroupChatView = ({ message, onSendMessage, roomId, name, type, first_name,
                 })
 
         }
-        getMessages();
+      //  getMessages();
         getUserDetails();
       
     }, [])
@@ -140,10 +140,6 @@ const GroupChatView = ({ message, onSendMessage, roomId, name, type, first_name,
         return first_name?.charAt(0).toUpperCase() + last_name?.charAt(0).toUpperCase();
     }
 
-    const getItem = (data, index) => ({
-        id: Math.random().toString(12).substring(0),
-        title: `Item box ${index + 1}`
-    });
 
     const renderItem = ({ item }) => {
         if (item.action === 'join') {
