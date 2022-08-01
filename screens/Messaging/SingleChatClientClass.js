@@ -37,8 +37,7 @@ export default class SingleChatClientClass extends React.Component {
       });
 
       this.chatChannel.bind('single_message', (data) => {
-          console.log('The Data', data)
-          this.handleMessage(data.id, data.message, data.sender_id, data.receiver_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
+        this.handleMessage(data.id, data.message, data.sender_id, data.receiver_id, data.roomId, data.created_at, data.updated_at, data.first_name, data.last_name, data.channelName,);
       });
     });
 
@@ -46,7 +45,7 @@ export default class SingleChatClientClass extends React.Component {
 
   }
 
-  async handleMessage(id, message, sender_id, receiver_id, roomId, created_at, updated_at, first_name, last_name) {
+  async handleMessage(id, message, sender_id, receiver_id, roomId, created_at, updated_at, first_name, last_name, channelName) {
     const messages = this.state.messages.slice();
     messages.push({
       created_at: created_at,
@@ -58,6 +57,7 @@ export default class SingleChatClientClass extends React.Component {
       sender_id: sender_id,
       receiver_id: receiver_id,
       updated_at: updated_at,
+      channelName: channelName
     });
 
     this.setState({
@@ -74,44 +74,44 @@ export default class SingleChatClientClass extends React.Component {
     const tokenget = token === null ? route.params.token : token;
 
     await axios.get(
-        `https://beta.centaurmd.com/api/chat/user?sender_id=${37}&receiver_id=${38}`,
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + tokenget
-            },
-        }).then(response => {
+      `https://beta.centaurmd.com/api/chat/user?sender_id=${37}&receiver_id=${38}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response => {
 
-            arr = response.data.data.map(data => {
-                return {
-                    ...data
-                }
-            })
-            // this.setState({
-            //   message1: response.data.messages
-            // })
-
+        arr = response.data.data.map(data => {
+          return {
+            ...data
+          }
         })
+        // this.setState({
+        //   message1: response.data.messages
+        // })
+
+      })
 
     await axios.get(
-        `https://beta.centaurmd.com/api/chat/user?sender_id=${38}&receiver_id=${37}`,
-        {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + tokenget
-            },
-        }).then(response2 => {
+      `https://beta.centaurmd.com/api/chat/user?sender_id=${38}&receiver_id=${37}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ' + tokenget
+        },
+      }).then(response2 => {
 
-            arr2 = response2.data.data.map(data => {
-                return {
-                    ...data
-                }
-            })
-
-            // this.setState({
-            //   message2: response2.data.messages
-            // })
+        arr2 = response2.data.data.map(data => {
+          return {
+            ...data
+          }
         })
+
+        // this.setState({
+        //   message2: response2.data.messages
+        // })
+      })
 
     console.log("ARR 1", arr, 'ARR 2', arr2)
 
@@ -161,7 +161,7 @@ export default class SingleChatClientClass extends React.Component {
         })
 
       })
-}
+  }
 
 
 
@@ -178,8 +178,8 @@ export default class SingleChatClientClass extends React.Component {
     const data = JSON.parse(value)
 
     console.log("CLIENT ID", data.client_id)
-  
-  
+
+
 
     await axios.get(
       `https://beta.centaurmd.com/api/chat/user?sender_id=${this.props.myID}&receiver_id=${this.props.receiverID}`,
@@ -195,7 +195,7 @@ export default class SingleChatClientClass extends React.Component {
             ...data
           }
         })
-      
+
       })
 
     await axios.get(
@@ -215,7 +215,7 @@ export default class SingleChatClientClass extends React.Component {
 
       })
 
-   
+
 
     let combinedMessage = arr.concat(arr2)
 
@@ -223,7 +223,7 @@ export default class SingleChatClientClass extends React.Component {
       message: combinedMessage
     })
 
-   
+
 
     await axios.get(
       `https://beta.centaurmd.com/api/users/${this.props.clientID}`,
@@ -377,8 +377,8 @@ export default class SingleChatClientClass extends React.Component {
 
 
   async onSendMessage(id, message, sender_id, receiver_id, created_at, updated_at, roomId, first_name, last_name) { // (9)
-
-    console.log("called onSendMessage");
+ 
+    
     const payload = {
       id: id,
       group_id: roomId,
@@ -403,8 +403,6 @@ export default class SingleChatClientClass extends React.Component {
     catch (error) {
       console.log(error);
     }
- 
-   
     console.log("Message: ", message, "Message ID: ", id, "Sender ID: ", sender_id, "Receiver ID: ", receiver_id, 'Created at: ', created_at, 'Updated at: ', updated_at, 'Group ID: ', roomId, 'First Name: ', first_name, 'Last Name: ', last_name);
   }
 

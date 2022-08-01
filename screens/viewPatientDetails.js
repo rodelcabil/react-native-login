@@ -61,6 +61,7 @@ const ViewPatientDetails = ({ route }) => {
     const [messageBoard, setMessageBoard] = useState([]);
     const [chatList, setChatList] = useState([]);
     const [theme, setTheme] = useState(black_theme);
+    const [userDetails, setUserDetails] = useState([]);
     const [index, setIndex] = useState(0);
     const [routes] = useState([
         { key: 'first', title: 'Information' },
@@ -76,6 +77,7 @@ const ViewPatientDetails = ({ route }) => {
 
     useEffect(() => {
 
+      
         const getPatientDatails = async () => {
             const token = await AsyncStorage.getItem('token');
             // console.log(token, "token");
@@ -92,17 +94,15 @@ const ViewPatientDetails = ({ route }) => {
                     setCases(resData.cases)
                     setLoader(false)
                 });
-
-
-
         }
 
+        console.log("CASE ID: ", route.params.data?.case_id)
 
 
         const messageBoardDatails = async () => {
             const token = await AsyncStorage.getItem('token');
 
-            await fetch('https://beta.centaurmd.com/api/patient/case/2', {
+            await fetch('https://beta.centaurmd.com/api/patient/case/'+ route.params.data?.case_id, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -123,6 +123,8 @@ const ViewPatientDetails = ({ route }) => {
                 });
 
         }
+
+    
         getPatientDatails();
         messageBoardDatails();
 
@@ -1047,7 +1049,7 @@ const ViewPatientDetails = ({ route }) => {
                                                                                                                 </>
                                                                                                                 :
                                                                                                                 <>
-                                                                                                                    <List.Accordion
+                                                                                                                    {/* <List.Accordion
                                                                                                                         key={index}
                                                                                                                         title={mb.subject}
                                                                                                                         left={props => <ItemLogo iconFolder="IonIcon" name="chatbox-sharp" color="#5EA93D" />}
@@ -1086,7 +1088,7 @@ const ViewPatientDetails = ({ route }) => {
                                                                                                                             </View>
                                                                                                                         </View>
                                                                                                                     </List.Accordion>
-                                                                                                                    <View style={{ marginBottom: 5 }} />
+                                                                                                                    <View style={{ marginBottom: 5 }} /> */}
                                                                                                                 </>
                                                     }
 

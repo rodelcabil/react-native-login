@@ -37,7 +37,7 @@ const ViewSchedule = ({ route, navigation }) => {
     const [timeToGC, setTimeToGC] = useState(moment(route.params.item?.time_to, ["HH.mm"]).format("hh:mm A"));
 
     useEffect(()=>{
-        console.log(route.params.item);
+        console.log("ROUTEEE",route.params.item);
 
         const geConsultFormData = async () => {
             setImgLoading(true);
